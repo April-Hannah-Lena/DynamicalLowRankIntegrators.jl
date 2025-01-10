@@ -48,30 +48,22 @@ x_domain = PeriodicSegment(xlims...)
 fourierspace = Fourier(x_domain)
 chebspace = Chebyshev(Segment(xlims...))
 
-v_domain = Segment(vlims...)
-legendrespace = Legendre(v_domain)
-
-n_v = m_v ÷ 2  -  1
-legendre_vandermonde = zeros(m_v, n_v)
-for k in axes(legendre_vandermonde, 2)
-    legendre_vandermonde[:, k] .= Fun(legendrespace, [zeros(k-1);1]).(v_grid)
-    #legendre_vandermonde[:, k] ./= sqrt( 12 * 2 / (2*(k-1) + 1) )
-end
+hermitespace = Hermite()
 
 # initial conditions
 
-hermweight = cl.HermiteWeight()
-f0v = hermweight[v_grid] / sqrt(2π)
+hermweight = cl.HermiteWeight()   # == x -> exp(-x^2)
+f0v = hermweight[v_grid]
 
 cfourier = cl.Fourier()
 X = cfourier[x_grid, 1:r]
 X[:, 3] .*= -1
 X, _ = gram_schmidt(X, sqrt_x_gram)
 
-clegendre = cl.Legendre()
-V = [ones(m_v);; v_grid;; v_grid.^2;; clegendre[v_grid/vlims[2], m+1:r]]
+chermite = cl.Hermite()
+V = chermite[v_grid, 1:r]
 V, _ = gram_schmidt(V, sqrt_v_gram)
-
+#---------------------------------------------------------
 α = 1e-1
 S = zeros(r, r)
 S[1, 1] = 1 / ( maximum(X[:, 1]) * maximum(V[:, 1]) )
@@ -154,7 +146,7 @@ function RHS_unscaled(X, S, V)
     @einsum term1[x,v] := v_grid[v]^2 * X[x,i] * S[i,j] * V[v,j]
     @einsum term2[x,v] := X[x,i] * S[i,j] * v_grid[v] * ∇ᵥV[j,v]
     @einsum term3[x,v] := Ef[x] * ∇ₓX[x,i] * S[i,j] * V[v,j]
-    
+
     return - term1 + term2 - term3
 end
 
