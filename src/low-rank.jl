@@ -16,18 +16,18 @@ t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
 xlims = (-π, π)
-vlims = (-6, 6)
+#vlims = (-6, 6)
 
 # set up quadrature
 
 x_grid, x_weights = [-1:2/m_x:1-2/m_x;], ones(m_x)/m_x
-v_grid, v_weights = gausslegendre(m_v)
+v_grid, v_weights = gausshermite(m_v)
 
 x_grid .= (xlims[2]-xlims[1])/2 .* x_grid
-v_grid .= (vlims[2]-vlims[1])/2 .* v_grid# .+ (vlims[2]+vlims[1])/2
+#v_grid .= (vlims[2]-vlims[1])/2 .* v_grid# .+ (vlims[2]+vlims[1])/2
 
 x_weights .*= (xlims[2]-xlims[1])
-v_weights .*= (vlims[2]-vlims[1])
+#v_weights .*= (vlims[2]-vlims[1])/2
 
 x_gram = Diagonal(x_weights)
 sqrt_x_gram = sqrt(x_gram)
@@ -35,7 +35,7 @@ sqrt_x_gram = sqrt(x_gram)
 v_gram = Diagonal(v_weights)
 sqrt_v_gram = sqrt(v_gram)
 
-function weighted_gram_schmidt(f, sqrt_gram)
+function gram_schmidt(f, sqrt_gram)
     QR = qr(sqrt_gram * f)
     Q = inv(sqrt_gram) * Matrix(QR.Q)
     R = QR.R
@@ -66,11 +66,11 @@ f0v = hermweight[v_grid] / sqrt(2π)
 cfourier = cl.Fourier()
 X = cfourier[x_grid, 1:r]
 X[:, 3] .*= -1
-X, _ = weighted_gram_schmidt(X, sqrt_x_gram)
+X, _ = gram_schmidt(X, sqrt_x_gram)
 
 clegendre = cl.Legendre()
 V = [ones(m_v);; v_grid;; v_grid.^2;; clegendre[v_grid/vlims[2], m+1:r]]
-V, _ = weighted_gram_schmidt(V, sqrt_v_gram)
+V, _ = gram_schmidt(V, sqrt_v_gram)
 
 α = 1e-1
 S = zeros(r, r)
@@ -81,13 +81,17 @@ for k in 1:r
     S[k, k] += 1e-10    # for invertibility
 end
 
-f = X * S * V' .* f0v'
-heatmap(v_grid, x_grid, f, title="e⁻ density, time = 0")
-
-# rhs functions
-
 ∫dx(f) = vec(sum(f .* x_weights, dims=1))
 ∫dv(f) = vec(sum(f .* v_weights', dims=2))
+
+f = X * S * V' .* f0v'
+
+S ./= ∫dx(∫dv(f)) / (2π)   # normalized e⁻ density
+
+heatmap(v_grid, x_grid, f, title="e⁻ density, time = 0")
+
+
+# rhs functions
 
 function ∇ₓ(f)  # 1-dimensional circle domain
     ∂ = Derivative(fourierspace)
@@ -120,7 +124,7 @@ function ∇ᵥ(f)  # 1-dimensional real domain
 end
 
 function E(f)
-    h_fourier = Fun(fourierspace, transform(fourierspace, 1 .- ∫dv(f)))
+    h_fourier = Fun(fourierspace, transform(fourierspace, ∫dv(f0v') .- ∫dv(f)))
 
     ∇ = Derivative(chebspace)
     Δ = ∇^2#Laplacian(fr)
@@ -141,20 +145,30 @@ function E(f)
 end
 
 # 1 x dimension,  1 v dimension
-RHS(f) = v_grid' .* ∇ₓ(f)  -  E(f) .* ∇ᵥ(f)
+RHS(f) = E(f) .* ∇ᵥ(f)  -  v_grid' .* ∇ₓ(f)
 
+function RHS_unscaled(X, S, V)
+    f = X * S * V' .* f0v'
+    ∇ₓX, ∇ᵥV, Ef = ∇ₓ(X), ∇ᵥ(V'), E(f)
+
+    @einsum term1[x,v] := v_grid[v]^2 * X[x,i] * S[i,j] * V[v,j]
+    @einsum term2[x,v] := X[x,i] * S[i,j] * v_grid[v] * ∇ᵥV[j,v]
+    @einsum term3[x,v] := Ef[x] * ∇ₓX[x,i] * S[i,j] * V[v,j]
+    
+    return - term1 + term2 - term3
+end
 
 # step algorithm starts here
 function step(X, S, V, τ)
         
     f = X * S * V' .* f0v'
 
-    U = @view V[:, 1:3]
+    U = @view V[:, 1:m]
     W = @view V[:, m+1:r]
 
     ∂ₜf = RHS(f)
 
-    K = X*S
+    K = X * S
     @einsum ∂ₜK[x,k] := v_weights[v] * V[v,k] * ∂ₜf[x,v]
     K = K  +  τ * ∂ₜK
 
@@ -163,14 +177,14 @@ function step(X, S, V, τ)
     b3 = @view S[:, m+1:r]
 
     L = b3'b3 * W'
-    ∂ₜL = b3' * ( b1 ./ f0v' - b2*V' )
+    ∂ₜL = b3' * ( b1 ./ f0v'  -  b2*V' )
     L = L  +  τ * ∂ₜL
 
     X̃ = [X;; ∇ₓ(X);; K]
-    X̃, _ = weighted_gram_schmidt(X̃, sqrt_x_gram)
+    X̃, _ = gram_schmidt(X̃, sqrt_x_gram)
 
     Ṽ = [U;; L';; W]
-    Ṽ, _ = weighted_gram_schmidt(Ṽ, sqrt_v_gram)
+    Ṽ, _ = gram_schmidt(Ṽ, sqrt_v_gram)
 
     W̃ = @view Ṽ[:, m+1:end]
 
@@ -190,8 +204,8 @@ function step(X, S, V, τ)
     K̃cons = @view K̃[:, 1:m]
     K̃rem = @view K̃[:, m+1:end]
 
-    Xcons, Scons = weighted_gram_schmidt(K̃cons, sqrt_x_gram)
-    X̃rem, S̃rem = weighted_gram_schmidt(K̃rem, sqrt_x_gram)
+    Xcons, Scons = gram_schmidt(K̃cons, sqrt_x_gram)
+    X̃rem, S̃rem = gram_schmidt(K̃rem, sqrt_x_gram)
 
     svdSrem = svd(S̃rem)
     Û = svdSrem.U[:, 1:r-m]
@@ -206,7 +220,7 @@ function step(X, S, V, τ)
     Xrem = X̃rem * Û
     X̂ = [Xcons;; Xrem]
 
-    X, R = weighted_gram_schmidt(X̂, sqrt_x_gram)    # X update step
+    X, R = gram_schmidt(X̂, sqrt_x_gram)    # X update step
 
     S = R * BlockDiagonal([Scons, Srem])    # S update step
 
