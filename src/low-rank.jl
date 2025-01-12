@@ -7,7 +7,7 @@ import ClassicalOrthogonalPolynomials as cl
 
 m = 3 # number of conserved v components
 r = 5 # rank
-m_x, m_v = 64, 128 # points in x and v 
+m_x, m_v = 128, 16 # points in x and v 
 
 τ = 1e-2    # time step
 t_start = 0.
@@ -35,6 +35,9 @@ sqrt_x_gram = sqrt(x_gram)
 v_gram = Diagonal(v_weights)
 sqrt_v_gram = sqrt(v_gram)
 
+# bad 
+sqrt_v_gram.diag[sqrt_v_gram.diag .< 10*eps()] .= 10*eps()
+
 function gram_schmidt(f, sqrt_gram)
     QR = qr(sqrt_gram * f)
     Q = inv(sqrt_gram) * Matrix(QR.Q)
@@ -57,20 +60,25 @@ f0v = hermweight[v_grid]
 
 cfourier = cl.Fourier()
 X = cfourier[x_grid, 1:r]
-X[:, 3] .*= -1
-X, _ = gram_schmidt(X, sqrt_x_gram)
+#X[:, 3] .*= -1
+#X, _ = gram_schmidt(X, sqrt_x_gram)    # normalize
+X[:,1] ./= sqrt(2π)
+X[:,2:end] ./= sqrt(π)
+
 
 chermite = cl.Hermite()
 V = chermite[v_grid, 1:r]
-V, _ = gram_schmidt(V, sqrt_v_gram)
-#---------------------------------------------------------
+#V, _ = gram_schmidt(V, sqrt_v_gram)    # normalize
+V ./= sqrt.( (2 .^ (0:r-1)) .* factorial.(0:r-1) .* sqrt(π) )'
+
+
 α = 1e-1
 S = zeros(r, r)
-S[1, 1] = 1 / ( maximum(X[:, 1]) * maximum(V[:, 1]) )
-S[3, 1] = α / ( maximum(X[:, 3]) * maximum(V[:, 1]) )
+S[1, 1] = sqrt(2π) / sqrt(sqrt(π))
+S[3, 1] = - α * sqrt(π) / sqrt(sqrt(π))
 
 for k in 1:r
-    S[k, k] += 1e-10    # for invertibility
+    S[k, k] += 1e-12    # for invertibility
 end
 
 ∫dx(f) = vec(sum(f .* x_weights, dims=1))
@@ -78,7 +86,8 @@ end
 
 f = X * S * V' .* f0v'
 
-S ./= ∫dx(∫dv(f)) / (2π)   # normalized e⁻ density
+@assert ∫dx(∫dv(X * S * V')) ≈ [2π]   # e⁻ mass
+@assert f ≈ @. (1 - α * cos(x_grid)) * exp(-(v_grid^2)') / sqrt(π)
 
 heatmap(v_grid, x_grid, f, title="e⁻ density, time = 0")
 
@@ -101,11 +110,11 @@ function ∇ₓ(f)  # 1-dimensional circle domain
 end
 
 function ∇ᵥ(f)  # 1-dimensional real domain
-    ∂ = Derivative(legendrespace)
+    ∂ = Derivative(hermitespace)
     
     ∇ᵥf = similar(f)
     #= @threads =# for (j, fj) in enumerate(eachrow(f))
-        fit = Fun(legendrespace, legendre_vandermonde \ fj)
+        fit = Fun(hermitespace, transform(hermitespace, fj))
         ∂fit = ∂ * fit
         #= @simd =# for k in 1:size(f,2)
             ∇ᵥf[j, k] = ∂fit( v_grid[k] )
@@ -115,20 +124,21 @@ function ∇ᵥ(f)  # 1-dimensional real domain
     return ∇ᵥf
 end
 
-function E(f)
-    h_fourier = Fun(fourierspace, transform(fourierspace, ∫dv(f0v') .- ∫dv(f)))
+function E(X, S, V)
+    ∫fdv = ∫dv(X * S * V')
+    m = ∫dx(∫fdv) / (2π)
 
-    ∇ = Derivative(chebspace)
+    h = Fun(
+        fourierspace, 
+        transform(fourierspace, m .- ∫fdv)
+    )
+
+    ∇ = Derivative(fourierspace)
     Δ = ∇^2#Laplacian(fr)
     #B = periodic(dom, 0)
     
-    image_space = rangespace(Δ)
-    h = Fun(h_fourier, image_space)
-    
-    m = length(h.coefficients)
-    concrete_Δ = Matrix(Δ[1:m,1:m+2])
-
-    ϕ = Fun(chebspace, -concrete_Δ \ h.coefficients)
+    ϕ = -Δ \ h
+    coefficients(ϕ)[1] = 0
     #ϕ = \([B; Δ], [0.; h]; tolerance=1e-5)
     #ϕ = Δ \ h
     return (-∇*ϕ).(x_grid)
@@ -137,18 +147,20 @@ function E(f)
 end
 
 # 1 x dimension,  1 v dimension
-RHS(f) = E(f) .* ∇ᵥ(f)  -  v_grid' .* ∇ₓ(f)
+#RHS(f) = E(f) .* ∇ᵥ(f)  -  v_grid' .* ∇ₓ(f)
 
 function RHS_unscaled(X, S, V)
-    f = X * S * V' .* f0v'
-    ∇ₓX, ∇ᵥV, Ef = ∇ₓ(X), ∇ᵥ(V'), E(f)
+    #f = X * S * V' .* f0v'
+    ∇ₓX, ∇ᵥV, Ef = ∇ₓ(X), ∇ᵥ(V'), E(X, S, V)
 
-    @einsum term1[x,v] := v_grid[v]^2 * X[x,i] * S[i,j] * V[v,j]
+    @einsum term1[x,v] := 2 * v_grid[v]^2 * X[x,i] * S[i,j] * V[v,j]
     @einsum term2[x,v] := X[x,i] * S[i,j] * v_grid[v] * ∇ᵥV[j,v]
     @einsum term3[x,v] := Ef[x] * ∇ₓX[x,i] * S[i,j] * V[v,j]
 
     return - term1 + term2 - term3
 end
+
+RHS(X, S, V) = RHS_unscaled(X, S, V) .* f0v'
 
 # step algorithm starts here
 function step(X, S, V, τ)
@@ -158,13 +170,13 @@ function step(X, S, V, τ)
     U = @view V[:, 1:m]
     W = @view V[:, m+1:r]
 
-    ∂ₜf = RHS(f)
+    ∂ₜf = RHS_unscaled(X, S, V)
 
     K = X * S
     @einsum ∂ₜK[x,k] := v_weights[v] * V[v,k] * ∂ₜf[x,v]
     K = K  +  τ * ∂ₜK
 
-    @einsum b1[k,v] := x_weights[x] * X[x,k] * ∂ₜf[x,v]
+    @einsum b1[k,v] := x_weights[x] * X[x,k] * ∂ₜf[x,v] * f0v[v]
     @einsum b2[k,l] := x_weights[x] * v_weights[v] * X[x,k] * V[v,l] * ∂ₜf[x,v]
     b3 = @view S[:, m+1:r]
 
@@ -186,7 +198,7 @@ function step(X, S, V, τ)
     S̃ = M' * S * N
     f̂ = X̃ * S̃ * Ṽ' .* f0v'
 
-    ∂ₜf̂ = RHS(f̂)
+    ∂ₜf̂ = RHS_unscaled(X̃, S̃, Ṽ)
 
     @einsum ∂ₜS̃[k,l] := x_weights[x] * v_weights[v] * X̃[x,k] * Ṽ[v,l] * ∂ₜf̂[x,v]
     S̃ = S̃  +  τ * ∂ₜS̃
@@ -224,31 +236,32 @@ end
 
 # time evolution
 
-mass(f) = ∫dx(∫dv(f))
-momentum(f) = ∫dx(∫dv(f .* v_grid'))
-energy(f) = ∫dx( ∫dv( f .* (v_grid .^ 2)' )  +  E(f) .^ 2 ) / 2
+mass(X, S, V) = ∫dx(∫dv(X * S * V'))
+momentum(X, S, V) = ∫dx(∫dv(X * S * V' .* v_grid'))
+energy(X, S, V) = ∫dx( ∫dv( X * S * V' .* (v_grid .^ 2)' )  +  E(X, S, V) .^ 2 ) / 2
 
-mass_evolution = [mass(f)...]
-momentum_evolution = [momentum(f)...]
-energy_evolution = [energy(f)...]
+mass_evolution = [mass(X, S, V)...]
+momentum_evolution = [momentum(X, S, V)...]
+energy_evolution = [energy(X, S, V)...]
 
 @showprogress for t in t_grid[2:end]
 
     global X, S, V, f
 
     X, S, V = step(X, S, V, τ)
-    f = X * S * V' .* f0v'
+    #f = X * S * V' .* f0v'
 
-    push!(mass_evolution, mass(f)...)
-    push!(momentum_evolution, momentum(f)...)
-    push!(energy_evolution, energy(f)...)
+    push!(mass_evolution, mass(X, S, V)...)
+    push!(momentum_evolution, momentum(X, S, V)...)
+    push!(energy_evolution, energy(X, S, V)...)
 
     if all(f .> -20eps())
     else
         @error "negative density"
     end
 
-    if t in 2:2:t_end
+    if t in 1:t_end
+        f = X * S * V' .* f0v'
         display(heatmap(v_grid, x_grid, f, title="e⁻ density, time = $t"))
     end
 
