@@ -7,32 +7,37 @@ import ClassicalOrthogonalPolynomials as cl
 
 m = 3 # number of conserved v components
 r = 5 # rank
-m_x, m_v = 64, 128 # points in x and v 
+m_x, m_v = 256, 64 # points in x and v 
 
 τ = 1e-2    # time step
 t_start = 0.
-t_end = 10.
+t_end = 5.
 t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
 xlims = (-π, π)
-#vlims = (-6, 6)
+vlims = (-3, 3)
 
 # set up quadrature
 
 x_grid, x_weights = [-1:2/m_x:1-2/m_x;], ones(m_x)/m_x
-v_grid, v_weights = gausshermite(m_v)
+v_grid, v_weights = gausslegendre(m_v)
 
-x_grid .= (xlims[2]-xlims[1])/2 .* x_grid
-#v_grid .= (vlims[2]-vlims[1])/2 .* v_grid# .+ (vlims[2]+vlims[1])/2
+x_grid .= (xlims[2]-xlims[1])/2 .* x_grid# .+ (xlims[2]+xlims[1])/2
+v_grid .= (vlims[2]-vlims[1])/2 .* v_grid# .+ (vlims[2]+vlims[1])/2
 
 x_weights .*= (xlims[2]-xlims[1])
-#v_weights .*= (vlims[2]-vlims[1])/2
+v_weights .*= (vlims[2]-vlims[1])/2
+
+@assert sum(x_weights) ≈ xlims[2] - xlims[1]
+@assert sum(v_weights) ≈ vlims[2] - vlims[1]
+
+f0v = @. exp(-v_grid^2)
 
 x_gram = Diagonal(x_weights)
 sqrt_x_gram = sqrt(x_gram)
 
-v_gram = Diagonal(v_weights)
+v_gram = Diagonal(f0v .* v_weights)
 sqrt_v_gram = sqrt(v_gram)
 
 function gram_schmidt(f, sqrt_gram)
@@ -60,35 +65,46 @@ end
 
 # initial conditions
 
-hermweight = cl.HermiteWeight()
-f0v = hermweight[v_grid] / sqrt(2π)
-
 cfourier = cl.Fourier()
 X = cfourier[x_grid, 1:r]
 X[:, 3] .*= -1
 X, _ = gram_schmidt(X, sqrt_x_gram)
 
-clegendre = cl.Legendre()
-V = [ones(m_v);; v_grid;; v_grid.^2;; clegendre[v_grid/vlims[2], m+1:r]]
+chermite = cl.Hermite()
+V = chermite[v_grid, 1:r]
 V, _ = gram_schmidt(V, sqrt_v_gram)
 
 α = 1e-1
 S = zeros(r, r)
-S[1, 1] = 1 / ( maximum(X[:, 1]) * maximum(V[:, 1]) )
-S[3, 1] = α / ( maximum(X[:, 3]) * maximum(V[:, 1]) )
+S[1, 1] = 1 / ( sqrt(π) * maximum(X[:, 1]) * maximum(V[:, 1]) )
+S[3, 1] = α / ( sqrt(π) * maximum(X[:, 3]) * maximum(V[:, 1]) )
+
+@assert X * S * V' .* f0v' ≈ @. (1 - α * cos(x_grid)) * f0v' / sqrt(π)
 
 for k in 1:r
-    S[k, k] += 1e-10    # for invertibility
+    S[k, k] += 1e-12    # for invertibility
 end
 
 ∫dx(f) = vec(sum(f .* x_weights, dims=1))
 ∫dv(f) = vec(sum(f .* v_weights', dims=2))
 
+S ./= 2π   # normalized e⁻ density
+
 f = X * S * V' .* f0v'
 
-S ./= ∫dx(∫dv(f)) / (2π)   # normalized e⁻ density
+#@assert ∫dx(∫dv(f)) ≈ [1]
 
-heatmap(v_grid, x_grid, f, title="e⁻ density, time = 0")
+function plot_density(f; title="e⁻ density", t=0)
+    heatmap(
+        x_grid, v_grid, f', 
+        title="$title, time = $t", 
+        xlabel="x",
+        ylabel="v",
+        xticks=([-π, -π/2, 0, π/2, π], ["-π", "-π/2", "0", "π/2", "π"])
+    )
+end
+
+plot_density(f, t=0)
 
 
 # rhs functions
@@ -124,39 +140,21 @@ function ∇ᵥ(f)  # 1-dimensional real domain
 end
 
 function E(f)
-    h_fourier = Fun(fourierspace, transform(fourierspace, ∫dv(f0v') .- ∫dv(f)))
+    h = Fun(fourierspace, transform(fourierspace, 1/(2π) .- ∫dv(f)))
 
-    ∇ = Derivative(chebspace)
+    ∇ = Derivative(fourierspace)
     Δ = ∇^2#Laplacian(fr)
-    #B = periodic(dom, 0)
     
-    image_space = rangespace(Δ)
-    h = Fun(h_fourier, image_space)
-    
-    m = length(h.coefficients)
-    concrete_Δ = Matrix(Δ[1:m,1:m+2])
+    ϕ = -Δ \ h
+    coefficients(ϕ)[1] = 0  # will be NaN if h is not periodic
 
-    ϕ = Fun(chebspace, -concrete_Δ \ h.coefficients)
-    #ϕ = \([B; Δ], [0.; h]; tolerance=1e-5)
-    #ϕ = Δ \ h
     return (-∇*ϕ).(x_grid)
-    #minusgradϕ = -∇*ϕ
-    #plot(x_grid, [1 .- ∫dv(f), ϕ.(x_grid), minusgradϕ.(x_grid)])
 end
 
 # 1 x dimension,  1 v dimension
 RHS(f) = E(f) .* ∇ᵥ(f)  -  v_grid' .* ∇ₓ(f)
 
-function RHS_unscaled(X, S, V)
-    f = X * S * V' .* f0v'
-    ∇ₓX, ∇ᵥV, Ef = ∇ₓ(X), ∇ᵥ(V'), E(f)
-
-    @einsum term1[x,v] := v_grid[v]^2 * X[x,i] * S[i,j] * V[v,j]
-    @einsum term2[x,v] := X[x,i] * S[i,j] * v_grid[v] * ∇ᵥV[j,v]
-    @einsum term3[x,v] := Ef[x] * ∇ₓX[x,i] * S[i,j] * V[v,j]
-    
-    return - term1 + term2 - term3
-end
+plot_density(RHS(f), title="RHS")
 
 # step algorithm starts here
 function step(X, S, V, τ)
@@ -189,7 +187,7 @@ function step(X, S, V, τ)
     W̃ = @view Ṽ[:, m+1:end]
 
     @einsum M[k,l] := x_weights[x] * X[x,k] * X̃[x,l]
-    @einsum N[k,l] := v_weights[v] * V[v,k] * Ṽ[v,l]
+    @einsum N[k,l] := v_weights[v] * f0v[v] * V[v,k] * Ṽ[v,l]
 
     S̃ = M' * S * N
     f̂ = X̃ * S̃ * Ṽ' .* f0v'
@@ -244,20 +242,43 @@ energy_evolution = [energy(f)...]
 
     global X, S, V, f
 
-    X, S, V = step(X, S, V, τ)
+    try
+        X, S, V = step(X, S, V, τ)
+    catch err
+        p1 = plot_density(f, t=t)
+        p2 = plot_density(RHS(f), title="RHS", t=t)
+        p3 = plot(x_grid, [X[:,1], X[:,2], X[:,3], X[:,4], X[:,5]])
+        p4 = plot(v_grid, [V[:,1], V[:,2], V[:,3], V[:,4], V[:,5]])
+        display(plot(p1, p2))
+        display(plot(p3, p4))
+        rethrow(err)
+    end
+
     f = X * S * V' .* f0v'
 
     push!(mass_evolution, mass(f)...)
     push!(momentum_evolution, momentum(f)...)
     push!(energy_evolution, energy(f)...)
 
-    if all(f .> -20eps())
+    @info "step" time=t mass=mass_evolution[end] momentum=momentum_evolution[end] energy=energy_evolution[end]
+    @info "step" S=S
+
+    #=
+    if all(f .> -1e-5)
     else
         @error "negative density"
+        display(plot_density(f, t=t))
+        break
     end
+    =#
 
-    if t in 2:2:t_end
-        display(heatmap(v_grid, x_grid, f, title="e⁻ density, time = $t"))
+    if t in 0:0.1:t_end
+        p1 = plot_density(f, t=t)
+        p2 = plot_density(RHS(f), title="RHS", t=t)
+        p3 = plot(x_grid, [X[:,1], X[:,2], X[:,3], X[:,4], X[:,5]])
+        p4 = plot(v_grid, [V[:,1], V[:,2], V[:,3], V[:,4], V[:,5]])
+        display(plot(p1, p2))
+        display(plot(p3, p4))
     end
 
 end
