@@ -6,8 +6,8 @@ import ClassicalOrthogonalPolynomials as cl
 #using ApproxFun.ApproxFunOrthogonalPolynomials: weight
 
 m = 3 # number of conserved v components
-r = 5 # rank
-m_x, m_v = 256, 64 # points in x and v 
+r = 4 # rank
+m_x, m_v = 256, 128 # points in x and v 
 
 τ = 1e-2    # time step
 t_start = 0.
@@ -82,7 +82,7 @@ S[3, 1] = α / ( sqrt(π) * maximum(X[:, 3]) * maximum(V[:, 1]) )
 @assert X * S * V' .* f0v' ≈ @. (1 - α * cos(x_grid)) * f0v' / sqrt(π)
 
 for k in 1:r
-    S[k, k] += 1e-12    # for invertibility
+    S[k, k] += 1e-4    # for invertibility
 end
 
 ∫dx(f) = vec(sum(f .* x_weights, dims=1))
@@ -156,6 +156,9 @@ RHS(f) = E(f) .* ∇ᵥ(f)  -  v_grid' .* ∇ₓ(f)
 
 plot_density(RHS(f), title="RHS")
 
+
+∇ᵥlogf0v = ∇ᵥ(log.(f0v'))'
+
 # step algorithm starts here
 function step(X, S, V, τ)
         
@@ -163,26 +166,53 @@ function step(X, S, V, τ)
 
     U = @view V[:, 1:m]
     W = @view V[:, m+1:r]
+    b = @view S[:, m+1:r]
 
-    ∂ₜf = RHS(f)
+    # compute RHS
+    ∇ₓX = ∇ₓ(X)
+    ∇ᵥV = ∇ᵥ(V')'
+    Ef = E(f)
+    vV = v_grid .* V
+    ∇ᵥf0vV = ∇ᵥ((f0v .* V)')'
 
+    @einsum c1[k,j] := V[v,k] * v_weights[v] * f0v[v] * vV[v,j]
+    @einsum c2[k,j] := V[v,k] * v_weights[v] * ∇ᵥf0vV[v,j]
+
+    @einsum d1[k,j] := X[x,k] * x_weights[x] * (Ef[x] * X[x,j])
+    @einsum d2[k,j] := X[x,k] * x_weights[x] * ∇ₓX[x,j]
+
+    # update K and L
     K = X * S
-    @einsum ∂ₜK[x,k] := v_weights[v] * V[v,k] * ∂ₜf[x,v]
-    K = K  +  τ * ∂ₜK
+    L = W * b'b
 
-    @einsum b1[k,v] := x_weights[x] * X[x,k] * ∂ₜf[x,v]
-    @einsum b2[k,l] := x_weights[x] * v_weights[v] * X[x,k] * V[v,l] * ∂ₜf[x,v]
-    b3 = @view S[:, m+1:r]
+    @einsum ∂ₜS[k,l] := ( - (d2[k,i] ⋅ c1[l,j]) + (d1[k,i] ⋅ c2[l,j]) ) * S[i,j]
+    @einsum ∂ₜK[x,k] := ( - (c1[k,j] ⋅ ∇ₓX[x,i]) + (c2[k,j] ⋅ Ef[x]) * X[x,i] ) * S[i,j]
 
-    L = b3'b3 * W'
-    ∂ₜL = b3' * ( b1 ./ f0v'  -  b2*V' )
-    L = L  +  τ * ∂ₜL
+    #=
+    RHSf = RHS(f)
+    @einsum ∂ₜS2[k,l] := X[x,k] * x_weights[x] * V[v,l] * v_weights[v] * RHSf[x,v]
+    @einsum ∂ₜK2[x,k] := V[v,k] * v_weights[v] * RHSf[x,v]
+    @einsum ∂ₜL2[v,q] := ( b[i,q] * (X[x,i] * x_weights[x] * RHSf[x,v]) / f0v[v] )  -  b[i,q] * ∂ₜS[i,l] * V[v,l]
+    @einsum p1[v,q] := b[i,q] * (X[x,i] * x_weights[x] * RHSf[x,v]) / f0v[v]
+    =#
+    
+    @einsum g1[v,i] := d1[i,k] ⋅ ( S[k,l] * ∇ᵥV[v,l] + ∇ᵥlogf0v[v] * S[k,l] * V[v,l] )
+    @einsum g2[v,i] := (v_grid[v] ⋅ d2[i,k]) * S[k,l] * V[v,l]
+    #@einsum ∂ₜL[v,q] := b[i,q] * (g1[v,i] - g2[v,i])  -  b[i,q] * ∂ₜS[i,l] * V[v,l]
+    @einsum p2[v,q] := b[i,q] * (g1[v,i] - g2[v,i])
+    @einsum p3[v,q] := b[i,q] * ∂ₜS[i,l] * V[v,l]
+    
+    ∂ₜL = p2 - p3
 
-    X̃ = [X;; ∇ₓ(X);; K]
-    X̃, _ = gram_schmidt(X̃, sqrt_x_gram)
+    K += τ * ∂ₜK
+    L += τ * ∂ₜL
 
-    Ṽ = [U;; L';; W]
-    Ṽ, _ = gram_schmidt(Ṽ, sqrt_v_gram)
+    # extend basis
+    X̃ = [X;; ∇ₓX;; K]
+    X̃, _R = gram_schmidt(X̃, sqrt_x_gram)
+
+    Ṽ = [U;; L;; W]
+    Ṽ, _R = gram_schmidt(Ṽ, sqrt_v_gram)
 
     W̃ = @view Ṽ[:, m+1:end]
 
@@ -192,34 +222,47 @@ function step(X, S, V, τ)
     S̃ = M' * S * N
     f̂ = X̃ * S̃ * Ṽ' .* f0v'
 
-    ∂ₜf̂ = RHS(f̂)
+    # compute RHS with updated basis
+    ∇ₓX = ∇ₓ(X̃)
+    ∇ᵥV = ∇ᵥ(Ṽ')'
+    Ef = E(f̂)
+    vV = v_grid .* Ṽ
+    ∇ᵥf0vV = ∇ᵥ((f0v .* Ṽ)')'
 
-    @einsum ∂ₜS̃[k,l] := x_weights[x] * v_weights[v] * X̃[x,k] * Ṽ[v,l] * ∂ₜf̂[x,v]
-    S̃ = S̃  +  τ * ∂ₜS̃
+    @einsum c1[k,j] := Ṽ[v,k] * v_weights[v] * f0v[v] * vV[v,j]
+    @einsum c2[k,j] := Ṽ[v,k] * v_weights[v] * ∇ᵥf0vV[v,j]
 
+    @einsum d1[k,j] := X̃[x,k] * x_weights[x] * (Ef[x] * X̃[x,j])
+    @einsum d2[k,j] := X̃[x,k] * x_weights[x] * ∇ₓX[x,j]
+
+    @einsum ∂ₜS[k,l] :=  ( - (d2[k,i] ⋅ c1[l,j]) + (d1[k,i] ⋅ c2[l,j]) ) * S̃[i,j]
+
+    # update S̃
+    S̃ += τ * ∂ₜS
+
+    # split extended K
     K̃ = X̃ * S̃
 
     K̃cons = @view K̃[:, 1:m]
     K̃rem = @view K̃[:, m+1:end]
 
+    # orthonormalize parts of X
     Xcons, Scons = gram_schmidt(K̃cons, sqrt_x_gram)
     X̃rem, S̃rem = gram_schmidt(K̃rem, sqrt_x_gram)
 
+    # truncate via svd
     svdSrem = svd(S̃rem)
     Û = svdSrem.U[:, 1:r-m]
     Ŝ = Diagonal(svdSrem.S[1:r-m])
     Ŵ = svdSrem.Vt[1:r-m, :]'
 
     Srem = Ŝ
-
     W = W̃ * Ŵ
-    V = [U;; W]     # V update step
-
     Xrem = X̃rem * Û
     X̂ = [Xcons;; Xrem]
 
     X, R = gram_schmidt(X̂, sqrt_x_gram)    # X update step
-
+    V = [U;; W]     # V update step
     S = R * BlockDiagonal([Scons, Srem])    # S update step
 
     #f = X * S * V' .* f0v'      # f update step
@@ -247,10 +290,9 @@ energy_evolution = [energy(f)...]
     catch err
         p1 = plot_density(f, t=t)
         p2 = plot_density(RHS(f), title="RHS", t=t)
-        p3 = plot(x_grid, [X[:,1], X[:,2], X[:,3], X[:,4], X[:,5]])
-        p4 = plot(v_grid, [V[:,1], V[:,2], V[:,3], V[:,4], V[:,5]])
-        display(plot(p1, p2))
-        display(plot(p3, p4))
+        p3 = plot(x_grid, [X[:,1], X[:,2], X[:,3], X[:,4]])
+        p4 = plot(v_grid, [V[:,1], V[:,2], V[:,3], V[:,4]])
+        display(plot(p1, p2, p3, p4, layout=(2,2)))
         rethrow(err)
     end
 
@@ -272,13 +314,12 @@ energy_evolution = [energy(f)...]
     end
     =#
 
-    if t in 0:0.1:t_end
+    if t in 0:0.05:t_end
         p1 = plot_density(f, t=t)
         p2 = plot_density(RHS(f), title="RHS", t=t)
-        p3 = plot(x_grid, [X[:,1], X[:,2], X[:,3], X[:,4], X[:,5]])
-        p4 = plot(v_grid, [V[:,1], V[:,2], V[:,3], V[:,4], V[:,5]])
-        display(plot(p1, p2))
-        display(plot(p3, p4))
+        p3 = plot(x_grid, [X[:,1], X[:,2], X[:,3], X[:,4]])
+        p4 = plot(v_grid, [V[:,1], V[:,2], V[:,3], V[:,4]])
+        display(plot(p1, p2, p3, p4, layout=(2,2)))
     end
 
 end
