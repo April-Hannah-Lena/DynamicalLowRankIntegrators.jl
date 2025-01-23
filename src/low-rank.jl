@@ -16,7 +16,7 @@ m = 3 # number of conserved v components
 r = 6 # rank
 m_x, m_v = 256, 128 # points in x and v 
 
-τ = 1e-2    # time step
+τ = 1e-3    # time step
 t_start = 0.
 t_end = 30.
 t_grid = t_start:τ:t_end
@@ -34,7 +34,7 @@ include("./quadrature.jl")
 X0 = x_basis[:, 1:r]
 V0 = v_basis[:, 1:r]
 
-α = 1e-1
+α = 0.5
 S0 = zeros(r, r)
 S0[1, 1] = 1 / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
 S0[3, 1] = -α / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
