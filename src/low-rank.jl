@@ -18,7 +18,7 @@ m_x, m_v = 256, 128 # points in x and v
 
 τ = 1e-2    # time step
 t_start = 0.
-t_end = 5.
+t_end = 30.
 t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
@@ -79,7 +79,7 @@ time_evolution = fill(t_start, 4)
 
 t = last_t = t_start
 done = false
-prog = ProgressThresh(eps())
+prog = Progress(round(Int, t_end, RoundDown))
 
 while !done
 
@@ -87,7 +87,7 @@ while !done
     X, S, V, t = try_step(X, S, V, t, τ)
     
     update!(
-        prog, max(t_end - t, 0), 
+        prog, round(Int, t, RoundDown), 
         showvalues=[
             ("time", t), 
             ("mass", mass(f)...), 
