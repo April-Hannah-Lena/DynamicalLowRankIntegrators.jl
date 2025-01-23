@@ -43,7 +43,19 @@ v_basis = chermite[v_grid,1:Mv]
 x_basis[:,1] /= √(2π)
 x_basis[:,2:end] /= √(π)
 
-v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
+#v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
+# small error in quarature because we cut off the domain
+function basic_gram_schmidt(f, sqrt_gram, pivot::Bool=true)
+    QR = qr(sqrt_gram * f, pivot ? ColumnNorm() : NoPivot())
+    Q = inv(sqrt_gram) * Matrix(QR.Q)
+    R = QR.R
+    E = Diagonal(ifelse.(diag(R) .< 0, -1, 1))   # want +1's on diagonal of R
+    rmul!(Q, E); lmul!(E, R)
+    pivot  &&  ( R *= QR.P' )
+    return Q, R
+end
+v_basis, _R = basic_gram_schmidt(v_basis, sqrt(Diagonal(f0v .* v_weights)), false)
+
 
 
 
@@ -57,29 +69,44 @@ v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) 
         i, _ = Tuple(index)
         return i
     end
+    cutoff = max(cutoff, size(f,2))
     coeff_matrix = full_coeff_matrix[1:cutoff,:]
     QR = qr(coeff_matrix, pivot ? ColumnNorm() : NoPivot())
-    Q = basis[:,1:cutoff] * QR.Q
-    R = QR.R
+    Q, R = QR
     pivot && ( R *= QR.P' )
-    return Q, R
+    return basis[:,1:cutoff] * Matrix(Q), R
 end
 
-@views function gram_schmidt(f, gram, basis, TOL=500*eps(), rank::Integer)
-    @assert rank < size(f, 2)
+@views function gram_schmidt(f, gram, basis, rank::Integer, TOL=500*eps(); pivot=true)
+    r = size(f, 2)
+    @assert rank < r
+
     full_coeff_matrix = basis' * gram * f
+    @assert full_coeff_matrix[1:rank, 1:rank] ≈ I(rank)
+    @assert all( abs.(full_coeff_matrix[rank+1:end, 1:rank]) .< 100*eps() )
+
     cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
         getindex(full_coeff_matrix, index) < TOL  &&  return 1
         i, _ = Tuple(index)
         return i
     end
+    cutoff = max(cutoff, r + rank + 1)
     coeff_matrix = full_coeff_matrix[1:cutoff,:]
-    
-    QR = qr(coeff_matrix, pivot ? ColumnNorm() : NoPivot())
-    Q = basis[:,1:cutoff] * QR.Q
-    R = QR.R
-    pivot && ( R *= QR.P' )
-    return Q, R
+
+    Q = zeros(cutoff, r)
+    R = zeros(r, r)
+
+    R[1:rank, :] .= coeff_matrix[1:rank, :]
+    for k in 1:rank
+        Q[k,k] = 1
+    end
+
+    QR = qr(coeff_matrix[rank+1:end, rank+1:end], pivot ? ColumnNorm() : NoPivot())
+    Q[rank+1:end, rank+1:end] .= Matrix(QR.Q)
+    R[rank+1:end, rank+1:end] .= QR.R
+    pivot  &&  ( R[rank+1:end, rank+1:end] *= QR.P' )
+
+    return basis[:,1:cutoff] * Matrix(Q), R
 end
 
 #=
@@ -123,3 +150,4 @@ function smooth_gram_schmidt(f, sqrt_gram, pad)
     return Q, R
 end
 =#
+ 

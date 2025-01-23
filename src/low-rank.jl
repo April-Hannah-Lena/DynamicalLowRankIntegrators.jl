@@ -6,7 +6,7 @@ import ClassicalOrthogonalPolynomials as cl
 #using ClassicalOrthogonalPolynomials: HermiteWeight
 #using ApproxFun.ApproxFunOrthogonalPolynomials: weight
 
-include("./src/plot.jl")
+include("./plot.jl")
 
 
 
@@ -25,7 +25,7 @@ t_grid = t_start:τ:t_end
 xlims = (-π, π)
 vlims = (-3, 3)
 
-include("./src/quadrature.jl")
+include("./quadrature.jl")
 
 
 
@@ -49,14 +49,14 @@ S0 /= 2π   # normalized e⁻ density
 
 f = X0 * S0 * V0' .* f0v'
 
-@assert f ≈ @. (1 - α * cos(x_grid)) * f0v' / sqrt(π)
+@assert f ≈ @. (1 - α * cos(x_grid)) * f0v' / (2π*sqrt(π))
 
 #@assert ∫dx(∫dv(f)) ≈ [1]
 
 
 
-include("./src/rhs.jl")
-include("./src/step.jl")
+include("./rhs.jl")
+include("./step.jl")
 
 
 plot_density(f, t=0)
@@ -83,6 +83,7 @@ prog = ProgressThresh(eps())
 
 while !done
 
+    global X, S, V, t, last_t, f, done
     X, S, V, t = try_step(X, S, V, t, τ)
     
     update!(
@@ -96,7 +97,8 @@ while !done
     )
 
     if t - last_t > 0.05
-        plot_step(x_grid, v_grid, f, X, S, V, t, mass_evolution, momentum_evolution, energy_evolution)
+        f = X * S * V' .* f0v'
+        plot_step(x_grid, v_grid, f, X, S, V, t)#, mass_evolution, momentum_evolution, energy_evolution)
         last_t = t
     end
 
@@ -106,4 +108,4 @@ while !done
 
 end
 
-plot([mass_evolution, momentum_evolution, energy_evolution], ylims=(-10, 10))
+#plot([mass_evolution, momentum_evolution, energy_evolution], ylims=(-10, 10))

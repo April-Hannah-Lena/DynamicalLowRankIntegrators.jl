@@ -67,10 +67,10 @@ function step(X, S, V, τ)
 
     # extend basis
     X̃ = [X;; ∇ₓ(X);; K]
-    X̃, _ = gram_schmidt(X̃, sqrt_x_gram, x_basis)
+    X̃, _R = gram_schmidt(X̃, x_gram, x_basis)
 
     Ṽ = [V;; L]
-    Ṽ, _ = gram_schmidt(Ṽ, sqrt_v_gram, r)
+    Ṽ, _R = gram_schmidt(Ṽ, v_gram, v_basis, m)
 
     W̃ = @view Ṽ[:, m+1:end]
 
@@ -91,8 +91,8 @@ function step(X, S, V, τ)
     K̃rem = @view K̃[:, m+1:end]
 
     # orthonormalize parts of X
-    Xcons, Scons = gram_schmidt(K̃cons, sqrt_x_gram, true)
-    X̃rem, S̃rem = gram_schmidt(K̃rem, sqrt_x_gram, true)
+    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis)
+    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis)
 
     # truncate via svd
     svdSrem = svd(S̃rem)
@@ -105,7 +105,7 @@ function step(X, S, V, τ)
     Xrem = X̃rem * Û
     X̂ = [Xcons;; Xrem]
 
-    X, R = gram_schmidt(X̂, sqrt_x_gram, true)    # X update step
+    X, R = gram_schmidt(X̂, x_gram, x_basis)    # X update step
     V = [U;; W]     # V update step
     S = R * BlockDiagonal([Scons, Srem])    # S update step
 
@@ -116,19 +116,21 @@ end
 
 function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
     
-    X_new, S_new, V_new = step(X, S, V, τ)
-
+    f = X * S * V' .* f0v'
     m, = mass(f)
     j, = momentum(f)
     e, = energy(f)
 
-    m_ref = mean(mass_evolution[end-3:end])
-    j_ref = mean(momentum_evolution[end-3:end])
-    e_ref = mean(energy_evolution[end-3:end])
+    X_new, S_new, V_new = step(X, S, V, τ)
+    f_new = X_new * S_new * V_new' .* f0v'
 
-    if ( abs(m - m_ref) > TOL || 
-         abs(j - j_ref) > TOL || 
-         abs(e - e_ref) > TOL )
+    m_new, = mass(f_new)
+    j_new, = momentum(f_new)
+    e_new, = energy(f_new)
+
+    if ( abs(m - m_new) > TOL || 
+         abs(j - j_new) > TOL || 
+         abs(e - e_new) > TOL )
 
         if τ > τ_min
             return try_step(X, S, V, t, τ / 2)
