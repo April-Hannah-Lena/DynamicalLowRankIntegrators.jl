@@ -45,6 +45,7 @@ function step_∂ₜ(X, S, V)
     ∂ₜL = p2 - p3
 
     return ∂ₜK, ∂ₜS, ∂ₜL
+
 end
 
 # step algorithm starts here
@@ -112,6 +113,7 @@ function step(X, S, V, τ)
     #f = X * S * V' .* f0v'      # f update step
 
     return X, S, V
+
 end
 
 function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
@@ -139,11 +141,6 @@ function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
         end
     end
 
-    #push!(mass_evolution, m)
-    #push!(momentum_evolution, j)
-    #push!(energy_evolution, e)
-    push!(time_evolution, t + τ)
-
     return X_new, S_new, V_new, t + τ
-
+    
 end

@@ -70,3 +70,5 @@ RHS(f) = E(f) .* ∇ᵥ(f)  -  v_grid' .* ∇ₓ(f)
 mass(f) = ∫dx(∫dv(f))
 momentum(f) = ∫dx(∫dv(f .* v_grid'))
 energy(f) = ∫dx( ∫dv( f .* (v_grid .^ 2)' )  +  E(f) .^ 2 ) / 2
+Lp(f, p) = ( ∫dx(∫dv( abs.(f) .^ p )) ) .^ (1/p)
+entropy(f) = -∫dx(∫dv( f .* log.(max.(f, eps())) ))
