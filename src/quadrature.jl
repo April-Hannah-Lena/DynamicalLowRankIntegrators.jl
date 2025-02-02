@@ -40,13 +40,13 @@ Mx = 2r
 cfourier = cl.Fourier()[_x_grid, 1:Mx]
 cfourier[:,1] /= √(2π)
 cfourier[:,2:end] /= √(π)
-_x_basis = Array(DoubleTensorProduct(cfourier, (f1,f2,f3)->f1*f2*f3, 3));
+_x_basis = Array(TensorProductBasis(cfourier, (f1,f2,f3)->f1*f2*f3, 3));
 x_basis = reshape(_x_basis, (m_x^3,Mx^3))
 
 Mv = 2r
 chermite = cl.Hermite()[_v_grid, 1:Mv]
 chermite ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
-_v_basis = Array(DoubleTensorProduct(chermite, (f1,f2,f3)->f1*f2*f3, 3));
+_v_basis = Array(TensorProductBasis(chermite, (f1,f2,f3)->f1*f2*f3, 3));
 v_basis = reshape(_v_basis, (m_v^3,Mv^3))
 
 perm = unique([1; 2; Mv + 1; Mv^2 + 1; 3; 2 * Mv + 1; 2 * Mv^2 + 1; axes(v_basis, 2);])

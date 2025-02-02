@@ -1,6 +1,6 @@
 module LazyTensorProduct
 
-export TensorProduct, DoubleTensorProduct
+export TensorProduct, TensorProductBasis
 
 import Base: size, eltype, similar, getindex, show
 
@@ -30,32 +30,32 @@ function show(io::IO, ::MIME"text/plain", A::TensorProduct)
 end
 
 
-struct DoubleTensorProduct{T,N,F,A<:AbstractArray{T,2}} <: AbstractArray{T,N}
+struct TensorProductBasis{T,N,F,A<:AbstractArray{T,2}} <: AbstractArray{T,N}
     basearray :: A
     reduction :: F
     twondims :: Val{N}
 end
 
-function DoubleTensorProduct(basearray, reduction, ndims)
-    DoubleTensorProduct(basearray, reduction, Val(2*ndims))
+function TensorProductBasis(basearray, reduction, ndims)
+    TensorProductBasis(basearray, reduction, Val(2*ndims))
 end
 
-size(A::DoubleTensorProduct{T,N}) where {T,N} = (ntuple(_->size(A.basearray, 1), N÷2)..., ntuple(_->size(A.basearray, 2), N÷2)...)
-eltype(A::DoubleTensorProduct{T,N,F}) where {T,N,F} = typeof(A[ones(Int, N)...])
-similar(A::DoubleTensorProduct{T,N,F}) where {T,N,F} = Array{eltype(A),N}(undef, size(A))
+size(A::TensorProductBasis{T,N}) where {T,N} = (ntuple(_->size(A.basearray, 1), N÷2)..., ntuple(_->size(A.basearray, 2), N÷2)...)
+eltype(A::TensorProductBasis{T,N,F}) where {T,N,F} = typeof(A[ones(Int, N)...])
+similar(A::TensorProductBasis{T,N,F}) where {T,N,F} = Array{eltype(A),N}(undef, size(A))
 
-function getindex(A::DoubleTensorProduct{T,N,F}, I::Vararg{Int,N}) where {T,N,F}
+function getindex(A::TensorProductBasis{T,N,F}, I::Vararg{Int,N}) where {T,N,F}
     base_ind = Tuple(I)[1 : N÷2]
     ext_ind = Tuple(I)[N÷2 + 1 : N]
     base = (A.basearray[i, j] for (i,j) in zip(base_ind, ext_ind))
     return A.reduction(base...)
 end
 
-function show(io::IO, A::DoubleTensorProduct)
+function show(io::IO, A::TensorProductBasis)
     print(io, join(size(A), " × "), " - element ", typeof(A), " with eltype ", eltype(A))
 end
 
-function show(io::IO, ::MIME"text/plain", A::DoubleTensorProduct)
+function show(io::IO, ::MIME"text/plain", A::TensorProductBasis)
     print(io, join(size(A), " × "), " - element ", typeof(A), " with eltype ", eltype(A))
 end
 
