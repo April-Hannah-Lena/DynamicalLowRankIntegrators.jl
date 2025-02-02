@@ -2,13 +2,21 @@ using Plots
 
 
 
-function plot_density(f; title="e⁻ density", t=0)
-    heatmap(
-        x_grid, v_grid, f', 
-        title="$title, time = $(round(t, digits=3))", 
-        xlabel="x",
-        ylabel="v",
-        xticks=([-π, -π/2, 0, π/2, π], ["-π", "-π/2", "0", "π/2", "π"])
+function plot_density(XSV; title="e⁻ density", t=0)
+    ∫dvf = ∫dv(XSV)
+    x1 = [x[1] for x in x_grid]
+    x2 = [x[2] for x in x_grid]
+    x3 = [x[3] for x in x_grid]
+    scatter(
+        x1, x2, x3,
+        marker_z=∫dvf,
+        markeralpha=0.5,
+        markerstrokealpha=0.,
+        title="$title, time = $(round(t, digits=3))",
+        xlabel="x₁", ylabel="x₂", zlabel="x₃",
+        xticks=([-π, -π/2, 0, π/2, π], ["-π", "-π/2", "0", "π/2", "π"]),
+        yticks=([-π, -π/2, 0, π/2, π], ["-π", "-π/2", "0", "π/2", "π"]),
+        zticks=([-π, -π/2, 0, π/2, π], ["-π", "-π/2", "0", "π/2", "π"])
     )
 end
 

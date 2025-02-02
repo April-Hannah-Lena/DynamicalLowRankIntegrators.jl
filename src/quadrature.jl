@@ -1,4 +1,5 @@
-using LinearAlgebra
+using LinearAlgebra, FillArrays, StaticArrays
+using .LazyTensorProduct
 using LinearAlgebra: NoPivot, ColumnNorm
 using ApproxFun, FastGaussQuadrature
 import ClassicalOrthogonalPolynomials as cl
@@ -7,44 +8,60 @@ import ClassicalOrthogonalPolynomials as cl
 
 # set up quadrature
 
-x_grid, x_weights = [-1:2/m_x:1-2/m_x;], ones(m_x)/m_x
-v_grid, v_weights = gausslegendre(m_v)
+_x_grid = [-1:2/m_x:1-2/m_x;]
+_x_grid .= (xlims[2]-xlims[1])/2 .* _x_grid# .+ (xlims[2]+xlims[1])/2
 
-x_grid .= (xlims[2]-xlims[1])/2 .* x_grid# .+ (xlims[2]+xlims[1])/2
-v_grid .= (vlims[2]-vlims[1])/2 .* v_grid# .+ (vlims[2]+vlims[1])/2
+x_grid = vec(TensorProduct(_x_grid, (x1,x2,x3)->SVector{3,Float64}(x1,x2,x3), 3))
+x_weights = Fill( ( (xlims[2]-xlims[1]) / m_x )^3, size(x_grid) )
 
-x_weights .*= (xlims[2]-xlims[1])
-v_weights .*= (vlims[2]-vlims[1])/2
+_v_grid, _v_weights = gausshermite(m_v)
+#_v_grid .= (vlims[2]-vlims[1])/2 .* _v_grid# .+ (vlims[2]+vlims[1])/2
+#_v_weights *= (vlims[2]-vlims[1])/2
 
-@assert sum(x_weights) ≈ xlims[2] - xlims[1]
-@assert sum(v_weights) ≈ vlims[2] - vlims[1]
+v_grid = vec(TensorProduct(_v_grid, (x1,x2,x3)->SVector{3,Float64}(x1,x2,x3), 3))
+v_weights = vec(TensorProduct(_v_weights, (w1,w2,w3)->w1*w2*w3, 3))
 
-f0v = @. exp(-v_grid^2)
+#@assert sum(x_weights) ≈ xlims[2] - xlims[1]
+#@assert sum(v_weights) ≈ vlims[2] - vlims[1]
+
+f0v = @. exp(-norm(v_grid)^2)
 
 x_gram = Diagonal(x_weights)
 sqrt_x_gram = sqrt(x_gram)
 
-v_gram = Diagonal(f0v .* v_weights)
+v_gram = Diagonal(v_weights)
 sqrt_v_gram = sqrt(v_gram)
 
 
 
 # large basis
 
-Mx = 10r
-cfourier = cl.Fourier()
-x_basis = cfourier[x_grid,1:Mx]
+Mx = 2r
+cfourier = cl.Fourier()[_x_grid, 1:Mx]
+cfourier[:,1] /= √(2π)
+cfourier[:,2:end] /= √(π)
+_x_basis = Array(DoubleTensorProduct(cfourier, (f1,f2,f3)->f1*f2*f3, 3));
+x_basis = reshape(_x_basis, (m_x^3,Mx^3))
 
-Mv = 5r
-chermite = cl.Hermite()
-v_basis = chermite[v_grid,1:Mv]
+Mv = 2r
+chermite = cl.Hermite()[_v_grid, 1:Mv]
+chermite ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
+_v_basis = Array(DoubleTensorProduct(chermite, (f1,f2,f3)->f1*f2*f3, 3));
+v_basis = reshape(_v_basis, (m_v^3,Mv^3))
 
-# normalize basis functions
-x_basis[:,1] /= √(2π)
-x_basis[:,2:end] /= √(π)
+perm = unique([1; 2; Mv + 1; Mv^2 + 1; 3; 2 * Mv + 1; 2 * Mv^2 + 1; axes(v_basis, 2);])
+v_basis = v_basis[:,perm]
 
-#v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
-# small error in quarature because we cut off the domain
+# v -> v₁  ==  v_basis[:,:,:,2,1,1]  =^=  v_basis[:, 2]
+# v -> v₂  ==  v_basis[:,:,:,1,2,1]  =^=  v_basis[:, Mv + 1]
+# v -> v₃  ==  v_basis[:,:,:,1,1,2]  =^=  v_basis[:, Mv^2 + 1]
+# v -> |v|²  ==  v_basis[:,:,:,3,1,1] + v_basis[:,:,:,1,3,1] + v_basis[:,:,:,1,1,3]
+# v -> v₁²  ==  v_basis[:,:,:,3,1,1]  =^=  v_basis[:, 3]
+# v -> v₂²  ==  v_basis[:,:,:,1,3,1]  =^=  v_basis[:, 2 * Mv + 1]
+# v -> v₃²  ==  v_basis[:,:,:,1,1,3]  =^=  v_basis[:, 2 * Mv^2 + 1]
+
+
+
 function basic_gram_schmidt(f, sqrt_gram, pivot::Bool=true)
     QR = qr(sqrt_gram * f, pivot ? ColumnNorm() : NoPivot())
     Q = inv(sqrt_gram) * Matrix(QR.Q)
@@ -54,7 +71,7 @@ function basic_gram_schmidt(f, sqrt_gram, pivot::Bool=true)
     pivot  &&  ( R *= QR.P' )
     return Q, R
 end
-v_basis, _R = basic_gram_schmidt(v_basis, sqrt(Diagonal(f0v .* v_weights)), false)
+#v_basis, _R = basic_gram_schmidt(v_basis, sqrt(Diagonal(f0v .* v_weights)), false)
 
 
 
@@ -62,6 +79,10 @@ v_basis, _R = basic_gram_schmidt(v_basis, sqrt(Diagonal(f0v .* v_weights)), fals
 # orthonormalization
 # not efficient but easy to implement
 
+"""
+Gram Schmidt process using a (large) basis as 
+seed from which orthogonal functions are created. 
+"""
 @views function gram_schmidt(f, gram, basis, TOL=500*eps(); pivot=true)
     full_coeff_matrix = basis' * gram * f
     cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
@@ -77,6 +98,9 @@ v_basis, _R = basic_gram_schmidt(v_basis, sqrt(Diagonal(f0v .* v_weights)), fals
     return basis[:,1:cutoff] * Matrix(Q), R
 end
 
+"""
+Gram Schmidt, maintaining the first `rank` columns. 
+"""
 @views function gram_schmidt(f, gram, basis, rank::Integer, TOL=500*eps(); pivot=true)
     r = size(f, 2)
     @assert rank < r
