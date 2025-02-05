@@ -3,7 +3,8 @@ using Einsum, PaddedViews, BlockDiagonals
 
 
 
-∇ᵥlogf0v = ∇ᵥ(log.(f0v'))'
+∇ᵥlogf0v = -2 .* v_grid
+∇ᵥf0v = ∇ᵥlogf0v .* f0v
 
 function step_∂ₜ(X, S, V)
 
@@ -17,7 +18,8 @@ function step_∂ₜ(X, S, V)
     ∇ᵥV = ∇ᵥ(V')'
     Ef = E(f)
     vV = v_grid .* V
-    ∇ᵥf0vV = ∇ᵥ((f0v .* V)')'
+    ∇ᵥf0vV = ∇ᵥf0v .* V  +  f0v .* ∇ᵥV
+    #∇ᵥf0vV = ∇ᵥ((f0v .* V)')'
 
     @vielsimd c1[k,j] := V[v,k] * v_weights[v] * f0v[v] * vV[v,j]
     @vielsimd c2[k,j] := V[v,k] * v_weights[v] * ∇ᵥf0vV[v,j]
@@ -48,7 +50,8 @@ function step_∂ₜ(X, S, V)
 
 end
 
-# step algorithm starts here
+#=
+# Augmented BUG integrator
 function step(X, S, V, τ)
         
     #f = X * S * V' .* f0v'
@@ -115,6 +118,93 @@ function step(X, S, V, τ)
     return X, S, V
 
 end
+=#
+
+# midpoint rule augmented BUG integrator
+function step(X, S, V, τ)
+        
+    #f = X * S * V' .* f0v'
+
+    U = @view V[:, 1:m]
+    W = @view V[:, m+1:r]
+    b = @view S[:, m+1:r]
+
+    K = X * S
+    L = W * b'b
+
+    # midpoint step
+    ∂ₜK, _, ∂ₜL = step_∂ₜ(X, S, V)
+
+    K += τ/2 * ∂ₜK
+    L += τ/2 * ∂ₜL
+
+    # extend basis
+    X̃ = [X;; ∇ₓ(X);; K]
+    X̃, _ = gram_schmidt(X̃, x_gram, x_basis)
+
+    Ṽ = [V;; L]
+    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m)
+    
+    @vielsimd M[k,l] := x_weights[x] * X[x,k] * X̃[x,l]
+    @vielsimd N[k,l] := v_weights[v] * f0v[v] * V[v,k] * Ṽ[v,l]
+    
+    S̃ = M' * S * N
+
+    _, ∂ₜS, _ = step_∂ₜ(X̃, S̃, Ṽ)
+    
+    S̃ += τ/2 * ∂ₜS
+
+    # full step
+    ∂ₜK, _, ∂ₜL = step_∂ₜ(X̃, S̃, Ṽ)
+
+    # extend basis
+    X̃ = [X̃;; τ*∂ₜK]
+    Ṽ = [Ṽ;; τ*∂ₜL]
+
+    X̃, _ = gram_schmidt(X̃, x_gram, x_basis)
+    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m)
+
+    @vielsimd M[k,l] := x_weights[x] * X[x,k] * X̃[x,l]
+    @vielsimd N[k,l] := v_weights[v] * f0v[v] * V[v,k] * Ṽ[v,l]
+
+    S̃ = M' * S * N
+
+    _, ∂ₜS, _ = step_∂ₜ(X̃, S̃, Ṽ)
+    
+    S̃ += τ * ∂ₜS
+    
+    # split extended K
+    K̃ = X̃ * S̃
+    
+    K̃cons = @view K̃[:, 1:m]
+    K̃rem = @view K̃[:, m+1:end]
+    
+    # orthonormalize parts of X
+    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis)
+    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis)
+    
+    W̃ = @view Ṽ[:, m+1:end]
+
+    # truncate via svd
+    svdSrem = svd(S̃rem)
+    Û = svdSrem.U[:, 1:r-m]
+    Ŝ = Diagonal(svdSrem.S[1:r-m])
+    Ŵ = svdSrem.Vt[1:r-m, :]'
+
+    Srem = Ŝ
+    W = W̃ * Ŵ
+    Xrem = X̃rem * Û
+    X̂ = [Xcons;; Xrem]
+
+    X, R = gram_schmidt(X̂, x_gram, x_basis)    # X update step
+    V = [U;; W]     # V update step
+    S = R * BlockDiagonal([Scons, Srem])    # S update step
+
+    #f = X * S * V' .* f0v'      # f update step
+
+    return X, S, V
+
+end
 
 function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
     
@@ -122,6 +212,9 @@ function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
     m, = mass(f)
     j, = momentum(f)
     e, = energy(f)
+    L1, = Lp(f, 1)
+    L2, = Lp(f, 2)
+    h, = entropy(f)
 
     X_new, S_new, V_new = step(X, S, V, τ)
     f_new = X_new * S_new * V_new' .* f0v'
@@ -129,15 +222,21 @@ function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
     m_new, = mass(f_new)
     j_new, = momentum(f_new)
     e_new, = energy(f_new)
+    L1_new, = Lp(f_new, 1)
+    L2_new, = Lp(f_new, 2)
+    h_new, = entropy(f_new)
 
     if ( abs(m - m_new) > TOL || 
          abs(j - j_new) > TOL || 
-         abs(e - e_new) > TOL )
+         abs(e - e_new) > TOL || 
+         abs(L1 - L1_new) > sqrt(TOL) || 
+         abs(L2 - L2_new) > sqrt(TOL) || 
+         abs(h - h_new) > sqrt(TOL) )
 
-        if τ > τ_min
-            return try_step(X, S, V, t, τ / 2)
+        if τ ≤ τ_min
+            @warn "state too unstable"
         else
-            throw(ErrorException("state too unstable"))
+            return try_step(X, S, V, t, τ / 2)
         end
     end
 
