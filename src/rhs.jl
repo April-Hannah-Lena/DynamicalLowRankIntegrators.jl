@@ -77,9 +77,13 @@ _v_domain = domain(hermspace)
 ∂x1 = construct_∂i(_x_basis, ∂_fourier, 1)
 ∂x2 = construct_∂i(_x_basis, ∂_fourier, 2)
 ∂x3 = construct_∂i(_x_basis, ∂_fourier, 3)
+
 ∂v1 = construct_∂i(_v_basis, ∂_hermite, 1)
 ∂v2 = construct_∂i(_v_basis, ∂_hermite, 2)
 ∂v3 = construct_∂i(_v_basis, ∂_hermite, 3)
+∂v1 = ∂v1[:,perm]
+∂v2 = ∂v2[:,perm]
+∂v3 = ∂v3[:,perm]
 
 Δx = construct_∂i(_x_basis, ∂²_fourier, 1)
 Δx += construct_∂i(_x_basis, ∂²_fourier, 2)
