@@ -12,6 +12,12 @@ x_domain = PeriodicSegment(xlims...)
 fourierspace = Fourier(x_domain)
 chebspace = Chebyshev(Segment(xlims...))
 
+∂_fourier = Tridiagonal(
+    [iseven(k) ? k÷2 : 0 for k in 1:Mx-1],
+    zeros(Mx),
+    -[iseven(k) ? k÷2 : 0 for k in 1:Mx-1]
+)
+
 v_domain = Segment(vlims...)
 legendrespace = Legendre(v_domain)
 
@@ -23,18 +29,8 @@ for k in axes(legendre_vandermonde, 2)
 end
 
 function ∇ₓ(f)  # 1-dimensional circle domain
-    ∂ = Derivative(fourierspace)
-
-    ∇ₓf = similar(f)
-    #= @threads =# for (k, fk) in enumerate(eachcol(f))
-        fit = Fun(fourierspace, transform(fourierspace, fk))
-        ∂fit = ∂ * fit
-        #= @simd =# for j in 1:size(f,1)
-            ∇ₓf[j, k] = ∂fit( x_grid[j] )
-        end
-    end
-
-    return ∇ₓf
+    coeffs = x_basis' * x_gram * f
+    return x_basis * ∂_fourier * coeffs
 end
 
 function ∇ᵥ(f)  # 1-dimensional real domain
