@@ -31,7 +31,7 @@ sqrt_v_gram = sqrt(v_gram)
 
 # large basis
 
-Mx = 10r + (isodd(10r) ? 0 : 1)
+Mx = 10r + iseven(10r)
 cfourier = cl.Fourier()
 x_basis = cfourier[x_grid,1:Mx]
 
