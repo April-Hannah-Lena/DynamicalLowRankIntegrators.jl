@@ -1,4 +1,4 @@
-using LinearAlgebra
+using LinearAlgebra, FillArrays
 using LinearAlgebra: NoPivot, ColumnNorm
 using ApproxFun, FastGaussQuadrature
 import ClassicalOrthogonalPolynomials as cl
@@ -7,14 +7,14 @@ import ClassicalOrthogonalPolynomials as cl
 
 # set up quadrature
 
-x_grid, x_weights = [-1:2/m_x:1-2/m_x;], ones(m_x)/m_x
+x_grid, x_weights = -1:2/m_x:1-2/m_x, Fill(1/m_x, m_x)
 v_grid, v_weights = gausslegendre(m_v)
 
-x_grid .= (xlims[2]-xlims[1])/2 .* x_grid# .+ (xlims[2]+xlims[1])/2
+x_grid = (xlims[2]-xlims[1])/2 .* x_grid# .+ (xlims[2]+xlims[1])/2
 v_grid .= (vlims[2]-vlims[1])/2 .* v_grid# .+ (vlims[2]+vlims[1])/2
 
-x_weights .*= (xlims[2]-xlims[1])
-v_weights .*= (vlims[2]-vlims[1])/2
+x_weights *= (xlims[2]-xlims[1])
+v_weights *= (vlims[2]-vlims[1])/2
 
 @assert sum(x_weights) ≈ xlims[2] - xlims[1]
 @assert sum(v_weights) ≈ vlims[2] - vlims[1]
@@ -24,6 +24,7 @@ f0v = @. exp(-v_grid^2)
 x_gram = Diagonal(x_weights)
 sqrt_x_gram = sqrt(x_gram)
 
+v_gram_unweighted = Diagonal(v_weights)
 v_gram = Diagonal(f0v .* v_weights)
 sqrt_v_gram = sqrt(v_gram)
 
@@ -43,7 +44,7 @@ v_basis = chermite[v_grid,1:Mv]
 x_basis[:,1] /= √(2π)
 x_basis[:,2:end] /= √(π)
 
-#v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
+v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
 # small error in quarature because we cut off the domain
 function basic_gram_schmidt(f, sqrt_gram, pivot::Bool=true)
     QR = qr(sqrt_gram * f, pivot ? ColumnNorm() : NoPivot())
@@ -54,7 +55,7 @@ function basic_gram_schmidt(f, sqrt_gram, pivot::Bool=true)
     pivot  &&  ( R *= QR.P' )
     return Q, R
 end
-v_basis, _R = basic_gram_schmidt(v_basis, sqrt(Diagonal(f0v .* v_weights)), false)
+v_basis, _R = basic_gram_schmidt(v_basis, sqrt_v_gram, false)
 
 
 

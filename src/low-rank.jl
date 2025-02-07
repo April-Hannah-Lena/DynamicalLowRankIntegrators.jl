@@ -16,7 +16,7 @@ include("./plot.jl")
 
 m = 3 # number of conserved v components
 r = 6 # rank
-m_x, m_v = 200, 100 # points in x and v 
+m_x, m_v = 200, 150 # points in x and v 
 
 τ = 5e-3    # time step
 t_start = 0.

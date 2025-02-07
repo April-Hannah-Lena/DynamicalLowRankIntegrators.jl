@@ -17,16 +17,23 @@ chebspace = Chebyshev(Segment(xlims...))
     zeros(Mx),
     -[iseven(k) ? k÷2 : 0 for k in 1:Mx-1]
 )
+∂²_fourier = Diagonal(-[(iseven(k) ? k : k+1) / 2 for k in 0:Mx-1].^2)
 
 v_domain = Segment(vlims...)
 legendrespace = Legendre(v_domain)
 
-n_v = m_v ÷ 2  -  1
-legendre_vandermonde = zeros(m_v, n_v)
-for k in axes(legendre_vandermonde, 2)
-    legendre_vandermonde[:, k] .= Fun(legendrespace, [zeros(k-1);1]).(v_grid)
-    #legendre_vandermonde[:, k] ./= sqrt( 12 * 2 / (2*(k-1) + 1) )
+n_v = (m_v - 1) ÷ 2  -  1
+
+∂_legendre = Derivative(legendrespace)[1:n_v,1:n_v]
+im_space = rangespace(Derivative(legendrespace))
+
+legendre_basis = zeros(m_v, n_v)
+∂v_basis = zeros(m_v, n_v)
+for k in axes(legendre_basis, 2)
+    legendre_basis[:, k] .= Fun(legendrespace, [zeros(k-1);1]).(v_grid)
+    ∂v_basis[:, k] .= Fun(im_space, [zeros(k-1);1]).(v_grid)
 end
+
 
 function ∇ₓ(f)  # 1-dimensional circle domain
     coeffs = x_basis' * x_gram * f
@@ -34,30 +41,20 @@ function ∇ₓ(f)  # 1-dimensional circle domain
 end
 
 function ∇ᵥ(f)  # 1-dimensional real domain
-    ∂ = Derivative(legendrespace)
-    
-    ∇ᵥf = similar(f)
-    #= @threads =# for (j, fj) in enumerate(eachrow(f))
-        fit = Fun(legendrespace, legendre_vandermonde \ fj)
-        ∂fit = ∂ * fit
-        #= @simd =# for k in 1:size(f,2)
-            ∇ᵥf[j, k] = ∂fit( v_grid[k] )
-        end
-    end
-
-    return ∇ᵥf
+    coeffs = legendre_basis \ f'
+    (∂v_basis * ∂_legendre * coeffs)'
 end
 
 function E(f)
-    h = Fun(fourierspace, transform(fourierspace, 1/(2π) .- ∫dv(f)))
-
-    ∇ = Derivative(fourierspace)
-    Δ = ∇^2#Laplacian(fr)
+    m, = mass(f)
+    ∫dvf = vec(∫dv(f))
+    coeffs = x_basis' * x_gram * (m .- ∫dvf)
     
-    ϕ = -Δ \ h
-    coefficients(ϕ)[1] = 0  # will be NaN if h is not periodic
+    # we know coeffs[1] == 0 but julia still throws SingularException when using stock "\"
+    coeffs = -∂²_fourier.diag .\ coeffs
+    coeffs[1] = 0
 
-    return (-∇*ϕ).(x_grid)
+    x_basis * (-∂_fourier) * coeffs
 end
 
 # 1 x dimension,  1 v dimension

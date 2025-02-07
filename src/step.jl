@@ -10,22 +10,28 @@ function step_∂ₜ(X, S, V)
 
     f = X * S * V' .* f0v'
 
-    U = @view V[:, 1:m]
-    W = @view V[:, m+1:r]
+    #U = @view V[:, 1:m]
+    #W = @view V[:, m+1:r]
     b = @view S[:, m+1:r]
 
     ∇ₓX = ∇ₓ(X)
     ∇ᵥV = ∇ᵥ(V')'
     Ef = E(f)
-    vV = v_grid .* V
-    ∇ᵥf0vV = ∇ᵥf0v .* V  +  f0v .* ∇ᵥV
+    #vV = v_grid .* V
+    #∇ᵥf0vV = ∇ᵥf0v .* V  +  f0v .* ∇ᵥV
     #∇ᵥf0vV = ∇ᵥ((f0v .* V)')'
 
-    @vielsimd c1[k,j] := V[v,k] * v_weights[v] * f0v[v] * vV[v,j]
-    @vielsimd c2[k,j] := V[v,k] * v_weights[v] * ∇ᵥf0vV[v,j]
+    #@vielsimd c1[k,j] := V[v,k] * v_weights[v] * f0v[v] * vV[v,j]
+    #@vielsimd c2[k,j] := V[v,k] * v_weights[v] * ∇ᵥf0vV[v,j]
 
-    @vielsimd d1[k,j] := X[x,k] * x_weights[x] * (Ef[x] * X[x,j])
-    @vielsimd d2[k,j] := X[x,k] * x_weights[x] * ∇ₓX[x,j]
+    c1 = V' * v_gram * (v_grid .* V)
+    c2 = V' * v_gram * (∇ᵥlogf0v .* V  +  ∇ᵥV)
+
+    #@vielsimd d1[k,j] := X[x,k] * x_weights[x] * (Ef[x] * X[x,j])
+    #@vielsimd d2[k,j] := X[x,k] * x_weights[x] * ∇ₓX[x,j]
+
+    d1 = X' * x_gram * (Ef .* X)
+    d2 = X' * x_gram * ∇ₓX
 
     @vielsimd ∂ₜS[k,l] := ( - (d2[k,i] ⋅ c1[l,j]) + (d1[k,i] ⋅ c2[l,j]) ) * S[i,j]
     @vielsimd ∂ₜK[x,k] := ( - (c1[k,j] ⋅ ∇ₓX[x,i]) + (c2[k,j] ⋅ Ef[x]) * X[x,i] ) * S[i,j]
@@ -145,8 +151,11 @@ function step(X, S, V, τ)
     Ṽ = [V;; L]
     Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m)
     
-    @vielsimd M[k,l] := x_weights[x] * X[x,k] * X̃[x,l]
-    @vielsimd N[k,l] := v_weights[v] * f0v[v] * V[v,k] * Ṽ[v,l]
+    #@vielsimd M[k,l] := x_weights[x] * X[x,k] * X̃[x,l]
+    #@vielsimd N[k,l] := v_weights[v] * f0v[v] * V[v,k] * Ṽ[v,l]
+
+    M = X' * x_gram * X̃
+    N = V' * v_gram * Ṽ
     
     S̃ = M' * S * N
 
@@ -164,8 +173,11 @@ function step(X, S, V, τ)
     X̃, _ = gram_schmidt(X̃, x_gram, x_basis)
     Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m)
 
-    @vielsimd M[k,l] := x_weights[x] * X[x,k] * X̃[x,l]
-    @vielsimd N[k,l] := v_weights[v] * f0v[v] * V[v,k] * Ṽ[v,l]
+    #@vielsimd M[k,l] := x_weights[x] * X[x,k] * X̃[x,l]
+    #@vielsimd N[k,l] := v_weights[v] * f0v[v] * V[v,k] * Ṽ[v,l]
+
+    M = X' * x_gram * X̃
+    N = V' * v_gram * Ṽ
 
     S̃ = M' * S * N
 
