@@ -14,18 +14,18 @@ include("./plot.jl")
 
 # parameters 
 
-m = 3 # number of conserved v components
-r = 6 # rank
-m_x, m_v = 200, 150 # points in x and v 
+const m = 3 # number of conserved v components
+const r = 6 # rank
+const m_x, m_v = 200, 100 # points in x and v 
 
-τ = 5e-3    # time step
-t_start = 0.
-t_end = 20.
-t_grid = t_start:τ:t_end
+const τ = 1e-3    # time step
+const t_start = 0.
+const t_end = 20.
+const t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
-xlims = (-π, π)
-vlims = (-3.5, 3.5)
+const xlims = (-π, π)
+const vlims = (-5, 5)
 
 include("./quadrature.jl")
 
@@ -33,11 +33,11 @@ include("./quadrature.jl")
 
 # initial conditions
 
-X0 = x_basis[:, 1:r]
-V0 = v_basis[:, 1:r]
+const X0 = x_basis[:, 1:r]
+const V0 = v_basis[:, 1:r]
 
-α = 0.5
-S0 = zeros(r, r)
+const α = 0.5
+const S0 = zeros(r, r)
 
 # Landau damping
 S0[1, 1] = 1 / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )

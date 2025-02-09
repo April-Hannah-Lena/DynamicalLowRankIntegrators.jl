@@ -7,64 +7,75 @@ import ClassicalOrthogonalPolynomials as cl
 
 # set up quadrature
 
-x_grid, x_weights = -1:2/m_x:1-2/m_x, Fill(1/m_x, m_x)
-v_grid, v_weights = gausslegendre(m_v)
+_x_grid, _x_weights = -1:2/m_x:1-2/m_x, Fill(1/m_x, m_x)
+const v_grid, v_weights = gausslegendre(m_v)
 
-x_grid = (xlims[2]-xlims[1])/2 .* x_grid# .+ (xlims[2]+xlims[1])/2
+const x_grid = (xlims[2]-xlims[1])/2 .* _x_grid# .+ (xlims[2]+xlims[1])/2
 v_grid .= (vlims[2]-vlims[1])/2 .* v_grid# .+ (vlims[2]+vlims[1])/2
 
-x_weights *= (xlims[2]-xlims[1])
-v_weights *= (vlims[2]-vlims[1])/2
+const x_weights = _x_weights * (xlims[2]-xlims[1])
+v_weights .*= (vlims[2]-vlims[1])/2
 
 @assert sum(x_weights) ≈ xlims[2] - xlims[1]
 @assert sum(v_weights) ≈ vlims[2] - vlims[1]
 
-f0v = @. exp(-v_grid^2)
+const f0v = @. exp(-v_grid^2)
 
-x_gram = Diagonal(x_weights)
-sqrt_x_gram = sqrt(x_gram)
+const x_gram = Diagonal(x_weights)
+const sqrt_x_gram = sqrt(x_gram)
 
-v_gram_unweighted = Diagonal(v_weights)
-v_gram = Diagonal(f0v .* v_weights)
-sqrt_v_gram = sqrt(v_gram)
+const v_gram_unweighted = Diagonal(v_weights)
+const v_gram = Diagonal(f0v .* v_weights)
+const sqrt_v_gram = sqrt(v_gram)
 
 
 
 # large basis
 
-Mx = 10r + iseven(10r)
+const Mx = 10r + iseven(10r)
 cfourier = cl.Fourier()
-x_basis = cfourier[x_grid,1:Mx]
+const x_basis = cfourier[x_grid,1:Mx]
 
-Mv = 5r
+const Mv = 5r
 chermite = cl.Hermite()
-v_basis = chermite[v_grid,1:Mv]
+const v_basis = chermite[v_grid,1:Mv]
 
 # normalize basis functions
-x_basis[:,1] /= √(2π)
-x_basis[:,2:end] /= √(π)
+x_basis[:,1] ./= √(2π)
+x_basis[:,2:end] ./= √(π)
 
 v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
-# small error in quarature because we cut off the domain
-function basic_gram_schmidt(f, sqrt_gram, pivot::Bool=true)
-    QR = qr(sqrt_gram * f, pivot ? ColumnNorm() : NoPivot())
-    Q = inv(sqrt_gram) * Matrix(QR.Q)
-    R = QR.R
-    E = Diagonal(ifelse.(diag(R) .< 0, -1, 1))   # want +1's on diagonal of R
-    rmul!(Q, E); lmul!(E, R)
-    pivot  &&  ( R *= QR.P' )
-    return Q, R
-end
-v_basis, _R = basic_gram_schmidt(v_basis, sqrt_v_gram, false)
-
 
 
 
 # orthonormalization
 # not efficient but easy to implement
 
+function basic_gram_schmidt!(f, gram)
+    R = zeros(eltype(f), size(f,2), size(f,2))
+    for j in axes(f, 2)
+        for k in axes(f, 2)
+            R[k,j] = f[:,k]' * gram * f[:,j]
+            if k < j 
+                f[:,j] .-= R[k,j] * f[:,k]
+            elseif k == j
+                R[k,j] = sqrt(R[k,j])
+                f[:,j] ./= R[k,j]
+            end
+        end
+    end
+    return f, R
+end
+
+# small error in quadrature because we cut off the domain
+basic_gram_schmidt!(v_basis, v_gram)
+
+
+
+
 @views function gram_schmidt(f, gram, basis, TOL=500*eps(); pivot=true)
     full_coeff_matrix = basis' * gram * f
+
     cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
         getindex(full_coeff_matrix, index) < TOL  &&  return 1
         i, _ = Tuple(index)
@@ -72,6 +83,8 @@ v_basis, _R = basic_gram_schmidt(v_basis, sqrt_v_gram, false)
     end
     cutoff = max(cutoff, size(f,2))
     coeff_matrix = full_coeff_matrix[1:cutoff,:]
+    #coeff_matrix[coeff_matrix .< TOL] .= 0
+
     QR = qr(coeff_matrix, pivot ? ColumnNorm() : NoPivot())
     Q, R = QR
     pivot && ( R *= QR.P' )
@@ -83,8 +96,11 @@ end
     @assert rank < r
 
     full_coeff_matrix = basis' * gram * f
-    @assert full_coeff_matrix[1:rank, 1:rank] ≈ I(rank)
-    @assert all( abs.(full_coeff_matrix[rank+1:end, 1:rank]) .< 100*eps() )
+
+    @assert all( abs.(full_coeff_matrix[1:rank, 1:rank] - I(rank)) .< sqrt(TOL) )
+    @assert all( abs.(full_coeff_matrix[rank+1:end, 1:rank]) .< sqrt(TOL) )
+    full_coeff_matrix[1:rank, 1:rank] .= I(rank)
+    full_coeff_matrix[rank+1:end, 1:rank] .= 0
 
     cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
         getindex(full_coeff_matrix, index) < TOL  &&  return 1
@@ -93,6 +109,7 @@ end
     end
     cutoff = max(cutoff, r + rank + 1)
     coeff_matrix = full_coeff_matrix[1:cutoff,:]
+    #coeff_matrix[coeff_matrix .< TOL] .= 0
 
     Q = zeros(cutoff, r)
     R = zeros(r, r)

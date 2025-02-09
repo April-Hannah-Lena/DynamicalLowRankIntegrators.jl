@@ -12,23 +12,23 @@ x_domain = PeriodicSegment(xlims...)
 fourierspace = Fourier(x_domain)
 chebspace = Chebyshev(Segment(xlims...))
 
-∂_fourier = Tridiagonal(
+const ∂_fourier = Tridiagonal(
     [iseven(k) ? k÷2 : 0 for k in 1:Mx-1],
     zeros(Mx),
     -[iseven(k) ? k÷2 : 0 for k in 1:Mx-1]
 )
-∂²_fourier = Diagonal(-[(iseven(k) ? k : k+1) / 2 for k in 0:Mx-1].^2)
+const ∂²_fourier = Diagonal(-[(iseven(k) ? k : k+1) / 2 for k in 0:Mx-1].^2)
 
 v_domain = Segment(vlims...)
 legendrespace = Legendre(v_domain)
 
-n_v = (m_v - 1) ÷ 2  -  1
+const n_v = (m_v - 1) ÷ 2  -  1
 
-∂_legendre = Derivative(legendrespace)[1:n_v,1:n_v]
+const ∂_legendre = Derivative(legendrespace)[1:n_v,1:n_v]
 im_space = rangespace(Derivative(legendrespace))
 
-legendre_basis = zeros(m_v, n_v)
-∂v_basis = zeros(m_v, n_v)
+const legendre_basis = zeros(m_v, n_v)
+const ∂v_basis = zeros(m_v, n_v)
 for k in axes(legendre_basis, 2)
     legendre_basis[:, k] .= Fun(legendrespace, [zeros(k-1);1]).(v_grid)
     ∂v_basis[:, k] .= Fun(im_space, [zeros(k-1);1]).(v_grid)
