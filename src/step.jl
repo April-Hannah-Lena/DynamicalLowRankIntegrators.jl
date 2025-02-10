@@ -203,9 +203,6 @@ function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
     m, = mass(f)
     j, = momentum(f)
     e, = energy(f)
-    L1, = Lp(f, 1)
-    L2, = Lp(f, 2)
-    h, = entropy(f)
 
     X_new, S_new, V_new = step(X, S, V, τ)
     f_new = X_new * S_new * V_new' .* f0v'
@@ -213,16 +210,10 @@ function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
     m_new, = mass(f_new)
     j_new, = momentum(f_new)
     e_new, = energy(f_new)
-    L1_new, = Lp(f_new, 1)
-    L2_new, = Lp(f_new, 2)
-    h_new, = entropy(f_new)
 
     if ( abs(m - m_new) > TOL || 
          abs(j - j_new) > TOL || 
-         abs(e - e_new) > TOL || 
-         abs(L1 - L1_new) > sqrt(TOL) || 
-         abs(L2 - L2_new) > sqrt(TOL) || 
-         abs(h - h_new) > sqrt(TOL) )
+         abs(e - e_new) > TOL  )
 
         if τ ≤ τ_min
             @warn "state too unstable"

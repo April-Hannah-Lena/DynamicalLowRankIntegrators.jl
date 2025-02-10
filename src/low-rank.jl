@@ -1,6 +1,6 @@
 using Plots, ProgressMeter
 using Serialization, DataFrames, CSV
-using Statistics, LinearAlgebra, Einsum, PaddedViews, BlockDiagonals
+using Statistics, LinearAlgebra, Einsum
 using ApproxFun, FastGaussQuadrature
 const transform = ApproxFun.transform
 using LinearAlgebra: NoPivot, ColumnNorm
@@ -79,14 +79,20 @@ V = copy(V0)
 
 f = X * S * V' .* f0v'
 
-time_evolution = [t_start]
-mass_evolution = [mass(f)...]
-momentum_evolution = [momentum(f)...]
-energy_evolution = [energy(f)...]
-L1_evolution = [Lp(f, 1)...]
-L2_evolution = [Lp(f, 2)...]
-entropy_evolution = [entropy(f)...]
-minimum_evolution = [minimum(f)]
+df = DataFrame(
+    "time" => [t_start],
+    "mass" => mass(f),
+    "momentum" => momentum(f),
+    "energy" => energy(f),
+    "entropy" => entropy(f),
+    "temperature" => temperature(f),
+    "heat flux" => heat_flux(f),
+    "L1 norm" => Lp(f, 1),
+    "L2 norm" => Lp(f, 2),
+    "L3 norm" => Lp(f, 3),
+    "Linfinity norm" => [maximum(abs.(f))],
+    "minimum" => [minimum(f)]
+)
 
 record_step = 0.01
 t = last_t = last_t_low_res = t_start
@@ -98,7 +104,7 @@ while !done
 
     global X, S, V, f, t, last_t, last_t_low_res, done
 
-    X, S, V, t = try_step(X, S, V, t, τ)    # adaptive step size
+    X, S, V, t = try_step(X, S, V, t, τ, 1e-6, 1e-10)    # adaptive step size
     #X, S, V = step(X, S, V, τ)      # static step size
     #t += τ
 
@@ -109,28 +115,26 @@ while !done
     if t - last_t ≥ record_step   # used for the adaptive step alg
         
         f = X * S * V' .* f0v'
+
+        push!(df, [
+            t;
+            mass(f)...;
+            momentum(f)...;
+            energy(f)...;
+            entropy(f)...;
+            temperature(f)...;
+            heat_flux(f)...;
+            Lp(f, 1)...;
+            Lp(f, 2)...;
+            Lp(f, 3)...;
+            maximum(abs.(f));
+            minimum(f);
+        ])
+
         next!(
             prog,
-            showvalues=[
-                ("time", t), 
-                ("mass", mass(f)...), 
-                ("momentum", momentum(f)...), 
-                ("energy", energy(f)...),
-                ("L¹ norm", Lp(f, 1)...),
-                ("L² norm", Lp(f, 2)...),
-                ("entropy", entropy(f)...),
-                ("minimum", minimum(f))
-            ]
+            showvalues=[zip(names(df), df[end,:])...]
         )
-
-        push!(time_evolution, t)
-        push!(mass_evolution, mass(f)...)
-        push!(momentum_evolution, momentum(f)...)
-        push!(energy_evolution, energy(f)...)
-        push!(L1_evolution, Lp(f, 1)...)
-        push!(L2_evolution, Lp(f, 2)...)
-        push!(entropy_evolution, entropy(f)...)
-        push!(minimum_evolution, minimum(f))
 
         last_t = t
 
@@ -147,24 +151,14 @@ end
 
 
 begin
-    p1 = plot(time_evolution, mass_evolution, lab="mass", ylims=(0.95, 1.05))
-    p2 = plot(time_evolution, momentum_evolution, lab="momentum", ylims=(-0.05, 0.05))
-    p3 = plot(time_evolution, energy_evolution, lab="energy", ylims=(0.2, 0.3))
-    p4 = plot(time_evolution, L1_evolution, lab="L¹ norm", ylims=(0.95, 1.05))
-    p5 = plot(time_evolution, L2_evolution, lab="L² norm", ylims=(0.2, 0.3))
-    p6 = plot(time_evolution, entropy_evolution, lab="entropy", ylims=(2.6,3.0))
+    p1 = plot(df[!,"time"], df[!,"L1 norm"], lab="L¹ norm", ylims=(minimum(df[!,"L1 norm"]) - 0.1, maximum(df[!,"L1 norm"]) + 0.1))
+    p2 = plot(df[!,"time"], df[!,"L2 norm"], lab="L² norm", ylims=(minimum(df[!,"L2 norm"]) - 0.1, maximum(df[!,"L2 norm"]) + 0.1))
+    p3 = plot(df[!,"time"], df[!,"L3 norm"], lab="L³ norm", ylims=(minimum(df[!,"L3 norm"]) - 0.1, maximum(df[!,"L3 norm"]) + 0.1))
+    p4 = plot(df[!,"time"], df[!,"entropy"], lab="Entropy", ylims=(minimum(df[!,"entropy"]) - 0.1, maximum(df[!,"entropy"]) + 0.1))
+    p5 = plot(df[!,"time"], df[!,"temperature"], lab="Temperature", ylims=(minimum(df[!,"temperature"]) - 0.1, maximum(df[!,"temperature"]) + 0.1))
+    p6 = plot(df[!,"time"], df[!,"heat flux"], lab="Heat flux", ylims=(minimum(df[!,"heat flux"]) - 0.1, maximum(df[!,"heat flux"]) + 0.1))
     plot(p1, p2, p3, p4, p5, p6, layout=(2, 3))
 end
 
-df = DataFrame(
-    "time" => time_evolution, 
-    "mass" => mass_evolution, 
-    "momentum" => momentum_evolution, 
-    "energy" => energy_evolution,
-    "L1 norm" => L1_evolution,
-    "L2 norm" => L2_evolution,
-    "entropy" => entropy_evolution,
-    "minimum" => minimum_evolution
-)
 
 CSV.write("evolution_data.csv", df)
