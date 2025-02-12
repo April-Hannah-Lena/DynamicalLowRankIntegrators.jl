@@ -1,0 +1,70 @@
+\documentclass[a4paper]{article}
+\usepackage{import}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{float}
+
+\usepackage{hyperref}
+%\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{parskip}
+
+%\usepackage{algorithm}
+%\usepackage{algpseudocodex}
+
+%\usepackage{afterpage}
+%\usepackage[section]{placeins}
+%\usepackage{setspace}
+
+\usepackage{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{fontspec}
+
+\usepackage{todonotes}
+
+\usepackage{biblatex}
+
+\usepackage{sectionformat}
+
+
+\graphicspath{ {../plots/} }
+\addbibresource{report.bib}
+
+
+\title{
+    Observable Error in 
+    Mass, Momentum, and Energy Conservative 
+    Dynamical Low-rank Integration Schemes 
+    for the Vlasov-Poisson Equation
+}
+
+\author{April Herwig}
+
+
+\begin{document}
+
+
+\maketitle
+
+\import{sections/}{abstract.tex}
+
+\tableofcontents
+
+\import{sections/}{introduction.tex}
+\import{sections/}{vlasov.tex}
+\import{sections/}{lowrank.tex}
+\import{sections/}{landau.tex}
+\import{sections/}{conclusion.tex}
+
+%\nocite{*}
+\printbibliography
+
+\end{document}

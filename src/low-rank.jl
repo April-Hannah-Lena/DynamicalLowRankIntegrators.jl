@@ -87,6 +87,10 @@ df = DataFrame(
     "entropy" => entropy(f),
     "temperature" => temperature(f),
     "heat flux" => heat_flux(f),
+    "4th moment" => v_moment(f, 4),
+    "5th moment" => v_moment(f, 5),
+    "6th moment" => v_moment(f, 6),
+    "7th moment" => v_moment(f, 7),
     "L1 norm" => Lp(f, 1),
     "L2 norm" => Lp(f, 2),
     "L3 norm" => Lp(f, 3),
@@ -124,6 +128,10 @@ while !done
             entropy(f)...;
             temperature(f)...;
             heat_flux(f)...;
+            v_moment(f, 4)...;
+            v_moment(f, 5)...;
+            v_moment(f, 6)...;
+            v_moment(f, 7)...;
             Lp(f, 1)...;
             Lp(f, 2)...;
             Lp(f, 3)...;
@@ -169,11 +177,6 @@ for col in names(df)[2:end]
     p = plot!(p, df_accurate[!,"time"], df_accurate[!,col], lab="accurate $col")
     push!(pl, p)
 end
-
-plot(pl[1:4]...)
-plot(pl[5:8]...)
-plot(pl[9:11]...)
-
 
 
 pl = []
