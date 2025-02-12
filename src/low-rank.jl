@@ -1,7 +1,7 @@
 using Plots, ProgressMeter
 using Serialization, DataFrames, CSV
 using Statistics, LinearAlgebra, Einsum
-using ApproxFun, FastGaussQuadrature
+using ApproxFun, FastGaussQuadrature, Interpolations
 const transform = ApproxFun.transform
 using LinearAlgebra: NoPivot, ColumnNorm
 import ClassicalOrthogonalPolynomials as cl
@@ -16,7 +16,7 @@ include("./plot.jl")
 
 const m = 3 # number of conserved v components
 const r = 6 # rank
-const m_x, m_v = 200, 100 # points in x and v 
+const m_x, m_v = 200, 150 # points in x and v 
 
 const τ = 1e-3    # time step
 const t_start = 0.
@@ -104,9 +104,9 @@ while !done
 
     global X, S, V, f, t, last_t, last_t_low_res, done
 
-    X, S, V, t = try_step(X, S, V, t, τ, 1e-6, 1e-10)    # adaptive step size
-    #X, S, V = step(X, S, V, τ)      # static step size
-    #t += τ
+    #X, S, V, t = try_step(X, S, V, t, τ, 1e-6, 1e-10)    # adaptive step size
+    X, S, V = step(X, S, V, τ)      # static step size
+    t += τ
 
     if t ≥ t_end
         done = true
@@ -161,4 +161,41 @@ begin
 end
 
 
-CSV.write("evolution_data.csv", df)
+df_accurate = CSV.read("./evolution_data.csv", DataFrame)
+pl = []
+
+for col in names(df)[2:end]
+    p = plot(df[!,"time"], df[!,col], lab=col, ylims=(minimum(df[!,col]) - 0.01, maximum(df[!,col]) + 0.01))
+    p = plot!(p, df_accurate[!,"time"], df_accurate[!,col], lab="accurate $col")
+    push!(pl, p)
+end
+
+plot(pl[1:4]...)
+plot(pl[5:8]...)
+plot(pl[9:11]...)
+
+
+
+pl = []
+
+for col in names(df)[2:end]
+    interp = linear_interpolation(
+        df_accurate[!,"time"], df_accurate[!,col], 
+        extrapolation_bc=Interpolations.Line()
+    )
+    p = plot(
+        df[!,"time"], abs.(df[!,col] - map(interp, df[!,"time"])), 
+        lab="Error in $col",
+        leg=:bottomright,
+        yscale=:log10, ylims=(1e-16, 5e-1)
+    )
+    push!(pl, p)
+end
+
+p1 = plot(pl[1:4]...)
+p2 = plot(pl[5:8]...)
+p3 = plot(pl[9:11]...)
+
+savefig(p1, "errors1.pdf")
+savefig(p2, "errors2.pdf")
+savefig(p3, "errors3.pdf")

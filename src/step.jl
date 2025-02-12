@@ -197,7 +197,7 @@ function step(X, S, V, τ)
 
 end
 
-function try_step(X, S, V, t, τ, τ_min=1e-5, TOL=sqrt(eps()))
+function try_step(X, S, V, t, τ, τ_min=1e-7, TOL=1e-12)
     
     f = X * S * V' .* f0v'
     m, = mass(f)
