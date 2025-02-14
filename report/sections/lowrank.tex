@@ -2,6 +2,260 @@
 
 \section{A Low-rank Tensor Approximation Scheme}\label{sec:lowrank}
 
+The density function $f(x, v, t) \in L^2 (\Omega_x \times \Omega_v)$ is approximated by a 
+tensor product of functions in $x$ and in $v$:
 
+\begin{equation}
+    f(x, v, t) = f_0 (v) \sum_{i, j = 1}^{r} X_i (x, t)\ S_{i j} (t)\ V_j (v, t)
+    \eqdef f_0 (v)\ X (x, t)^T \,S (t) \,V (v, t)
+\end{equation}
+
+where $r$ is the approximation rank and $f_0 (v) = \exp ( - v^2 )$ is a Gaussian weight. 
+
+Let 
+
+\begin{equation}
+    \left\langle g, h \right\rangle_x = \int_{\Omega_x} f\,g\ dx, \quad 
+    (g, h)_v = \int_{\Omega_v} g\,h\ dv \quad 
+    \left\langle g, h \right\rangle_v = \int_{\Omega_v} g\, h\, f_0\ dv . 
+\end{equation}
+
+We require that $X$ and $V$ satisfy the orthonormality conditions 
+
+\begin{equation}\label{eq:orthonormal}
+    \left\langle X_i,\, X_j \right\rangle_x = \delta_{i j}, \quad 
+    \left\langle V_i,\, V_j \right\rangle_v = \delta_{i j}, \quad 
+    1 \leq i, j \leq r 
+\end{equation}
+
+where $\delta_{i j}$ refers the the Kronecker delta, as well as the gauge conditions 
+
+\begin{equation}\label{eq:gauge}
+    \left\langle \partial_t X_i,\, X_j \right\rangle_x = 0, \quad 
+    \left\langle \partial_t V_i,\, V_j \right\rangle_v = 0, \quad 
+    1 \leq i, j \leq r . 
+\end{equation}
+
+Let further $\bar{X} = \spn \left\{ X_1, \ldots, X_r \right\}$, 
+$\bar{V} = \spn \left\{ V_1, \ldots, V_r \right\}$. The Galerkin condition yields the 
+equation \cite{einkemmer2018}:
+
+\begin{equation}\label{eq:galerkin}
+    \partial_t f = \Pi \left(\, RHS (f) \,\right) 
+    \quad \text{where} \quad 
+    \Pi\, g = \Pi_{\bar{V}}\, g - \Pi_{\bar{X}}\Pi_{\bar{V}}\, g + \Pi_{\bar{X}}\, g
+\end{equation}
+
+and $\Pi_{\bar{X}}$, $\Pi_{\bar{V}}$ are the orthogonal projections onto $\bar{X}$ and 
+$\bar{V}$, respectively. A first-order Lie-Trotter splitting based on the three terms in 
+equation \ref{eq:galerkin} yields equations of motion for the components of $X$, $S$, 
+and $V$. 
+
+The key insight of \cite{einkemmer2021}
+is that if the functions $v \mapsto 1$, $v \mapsto v_1, \ldots, v \mapsto v_d$, and 
+$v \mapsto v^2$ lie in $\bar{V}$, then discrete versions of equations 
+\ref{eq:mass_continuity}, \ref{eq:momentum_continuity}, and \ref{eq:energy_continuity} 
+hold. Hence the integration scheme is altered to guarantee this condition. We split 
+$V (v, t) \in \bbR^r$ into two blocks $U(v, t) \in \bbR^m$ and $W \in \bbR^{r-m}$: 
+
+\begin{equation}
+    V = \begin{bmatrix}
+        U \\
+        W
+    \end{bmatrix}
+\end{equation}
+
+where $U$ is fixed throughout the integration and contains the desired functions
+
+\begin{equation}
+    U(v, t) = U(v) = \begin{bmatrix}
+        1 \\
+        v_1 \\
+        \vdots \\
+        v_d \\
+        v^2
+    \end{bmatrix} . 
+\end{equation}
+
+Performing the analogous calculations as in \cite{einkemmer2018}
+for the altered basis functions yields \cite{einkemmer2021}
+
+\begin{align}
+    \sum_i \partial_t X_i\, S_{i k} &= 
+        (\,V_k,\, RHS(f)\,)_v - \sum_i X_i\, \partial_t S_{i k} ,
+        \quad\quad 1 \leq k \leq r \label{eq:X_galerkin}\\
+    \sum_{i p} S_{i\, q+m}\, S_{i p}\, \partial_t W_p &= 
+        \frac{1}{f_0} \sum_i S_{i\, q+m} \left\langle\, X_i,\, RHS(f) \,\right\rangle_x 
+        - \sum_{i l} S_{i\, q+m}\, \partial_t S_{i l}\, V_l ,
+        \quad\quad 1 \leq q \leq r - m \label{eq:V_galerkin}\\
+    \partial_t S_{k l} &= \left( \,X_k,\, ( V_l,\, RHS(f) )_v\, \right)_x 
+        \quad\quad 1 \leq k, l \leq r . \label{eq:S_galerkin}
+\end{align}
+
+Concrete equations for computing the above inner products are given in 
+\cite{robustlowrank}. It should be reemphasized that the orthonormality and guage 
+conditions \ref{eq:orthonormal}, \ref{eq:gauge} must still hold, so the components of $U$ 
+must be appropriately scaled. 
+
+To solve equations \ref{eq:X_galerkin}, \ref{eq:V_galerkin} directly, the matrix $S$ must 
+be inverted. However, as the approximation rank $r$ increases, $S$ has progressively 
+smaller singular values. Hence the scheme becomes increasingly ill-conditioned as the 
+accuracy increases. We therefore need to alter the low-rank scheme again to address this 
+issue. 
+
+Notice that the low-rank approximation $f = X^T S V$ can be written as $f = K^T V$ for 
+some $K = K(x, t) \in \bbR^r$. $X^T$ and $S$ are then (up to a unitary basis 
+transformation) the result of a (semidiscrete\footnote{
+    The standard Gram-Schmidt process to construct a QR decomposition can just as easily 
+    be viewed in a semidiscrete setting: each "column" of $K^T$ is a function of $x$ 
+    evaluated across $\Omega_x$, instead of each column being a discrete vector. The 
+    algorithm does not need to be changed at all. 
+}) QR factorization of $K^T$. Analogously, $f$ can be written as $f = X^T L$ and the 
+elements $W$ can also be reconstructed by a QR factorization. We may therefore rewrite 
+equations \ref{eq:X_galerkin} and \ref{eq:V_galerkin} as 
+
+\begin{align}
+    \partial_t K_k &= (\,V_k,\, RHS(f)\,)_v, \quad\quad 1 \leq k \leq r \label{eq:K_galerkin}\\
+    \partial_t L_q &= 
+        \frac{1}{f_0} \sum_i S_{i\, q+m} \left\langle\, X_i,\, RHS(f) \,\right\rangle_x 
+        - \sum_{i l} S_{i\, q+m}\, \partial_t S_{i l}\, V_l ,
+        \quad\quad 1 \leq q \leq r - m \label{eq:L_galerkin} 
+\end{align}\todo{mMn sollte die Ableitung im letzten Term eigentlich aud das erste S sein, 
+aber so haben die es im Einkemmer Paper gemacht und es functioniert}
+
+with 
+
+\begin{equation}
+    K_k = \sum_i X_i\, S_{i k}, \quad\quad L_q = \sum_{i l}\, S_{i\, q+m}\, S_{i l} W_l . 
+\end{equation}
+
+Using a stepping scheme
+
+\begin{equation}
+    K (t + \tau) = K (t) + \tau \partial_t K (t), \quad\quad
+    L (t + \tau) = L (t) + \tau \partial_t L (t)
+\end{equation}
+
+we may obtain $X(t + \tau)$, $V(t + \tau)$ 
+via QR factorization
+
+\begin{equation}
+    K_k (t + \tau) = \sum_i X_i (t + \tau)\, R^1_{i k}, \quad\quad
+    L_q (t + \tau) = \sum_i W_i (t + \tau)\, R^2_{i q} . 
+\end{equation}
+
+Finally, we compute $S(t + \tau)$ using equation \ref{eq:S_galerkin} and a 
+best-approximation of $f$:
+
+\begin{equation}
+    f \approx \widetilde{ f } \defeq f_0\, X(t + \tau)^T\, (M^T S N)\, V(t + \tau), 
+\end{equation}
+
+\begin{equation}\label{eq:S_step}
+    S_{k l} (t + \tau) = \sum_{i j} M^T_{k i}\, S_{i j}\, N_{j l} 
+        + \tau \left( X_k,\, \left( V_l,\, 
+            RHS( \widetilde{ f } )\, 
+        \right)_v \right)_x
+\end{equation}
+
+where 
+
+\begin{equation}\label{eq:projection}
+    M_{k i} = \left\langle X_k (t),\, X_i (t + \tau) \right\rangle_x, \quad\quad
+    N_{j l} = \left\langle V_j (t),\, V_l (t + \tau) \right\rangle_v . 
+\end{equation}
+
+Crucially, the approximation $f \approx \widetilde{ f }$ doe \emph{not} conserve any of 
+the invariants since the projections in \ref{eq:projection} are not conservative. 
+Therefore we need to expand the basis onto which we project. Specifically, let 
+$(\widetilde{ X }_j)_j$ be an orthonormal basis of 
+$\spn \left\{ X_i (t), \nabla X_i (t), K_i (t + \tau) \right\}_i$ and 
+$(\widetilde{ V }_j)_j$ an orthonormal basis of 
+$\spn \left\{ V_i (t), L_q (t + \tau) \right\}_{i q}$. Then, the projections 
+
+\begin{equation}\label{eq:conservative_projection}
+    M_{k i} = \left\langle \widetilde{ X }_k,\, X_i (t + \tau) \right\rangle_x, \quad\quad
+    N_{j l} = \left\langle \widetilde{ V }_j,\, V_l (t + \tau) \right\rangle_v 
+\end{equation}
+
+are mass, momentum, and energy conservative \cite{robustlowrank}. However, this has 
+increased the rank of the approximation $f$. Thus, we need to truncate the approximation 
+in a way which ensures that the fixed basis functions of $U$ remain unchanged. For 
+convenience write 
+
+\begin{equation}
+    \widetilde{ S } = M^T S(t + \tau) N
+\end{equation}
+
+where $M$ and $N$ are as in equation \ref{eq:conservative_projection}. Letting 
+$\widetilde{ K }^T = \widetilde{ X }^T \widetilde{ S }$ and using the structure of 
+$\widetilde{ V }$, 
+
+\begin{equation}\label{eq:K_L_step}
+    f (t + \tau) \approx \widetilde{ K }^T \widetilde{ V }
+    = \begin{bmatrix}
+        (\widetilde{ K }^{cons})^T & (\widetilde{ K }^{rem})^T
+    \end{bmatrix}
+    \begin{bmatrix}
+        U \\ 
+        \widetilde{ W }
+    \end{bmatrix}
+\end{equation}
+
+where $\widetilde{ K }^{cons}$ is the first $m$ components of $\widetilde{ K }$, and 
+$\widetilde{ K }^{rem}$, $\widetilde{ W }$ are the last components of 
+$\widetilde{ K }$, $\widetilde{ V }$ respectively. 
+
+Hence, by truncating $\widetilde{ K }^{rem}$ and $\widetilde{ W }$, the desired 
+components of $U$ remain unaffected. We perform the truncation as follows: QR 
+factorizations of $\widetilde{ K }^{cons}$, $\widetilde{ K }^{rem}$ yield 
+
+\begin{equation}
+    \widetilde{ K }^{cons}_k = \sum_i X^{cons}_i\, S^{cons}_{ i k} , \quad\quad
+    \widetilde{ K }^{rem}_q = \sum_j \widetilde{ X }^{rem}_j\, \widetilde{ S }^{rem}_{j q} . 
+\end{equation}
+
+By a truncated singular value decomposition of $\widetilde{ S }^{rem}$, keeping only the 
+largest $r - m$ singular values, we have 
+
+\begin{equation}
+    \widetilde{ S }^{rem} \approx \widehat{ U } \widehat{ S } \widehat{ W } . 
+\end{equation}
+
+Now set $S^{rem} = \widehat{ S }$ and 
+
+\begin{equation}
+    X^{rem}_q = \sum_i \widetilde{ X }^{rem}_i\, \widehat{ U }_{i q} , \quad\quad 
+    \widecheck{ W }_q = \sum_j \widetilde{ W }_j\, \widehat{ W }_{j q} , 
+    \quad\quad 1 \leq q \leq r - m . 
+\end{equation}
+
+Combining $\widehat{ X } = \begin{bmatrix} X^{cons} \\ X^{rem} \end{bmatrix}$ and 
+performing a final QR factorization
+
+\begin{equation}
+    \widehat{ X }_k = \sum_i \widecheck{ X }_i\, R_{i k}
+\end{equation}
+
+finishes the truncation, as we set
+
+\begin{equation}
+    X (t + \tau) = \widecheck{ X }, \quad\quad 
+    S (t + \tau) = R \begin{bmatrix}
+        S^{cons} & \\
+        & S^{rem}
+    \end{bmatrix}, \quad\quad
+    V (t + \tau) = \begin{bmatrix}
+        U \\[0.5em] 
+        \widecheck{ W }
+    \end{bmatrix} . 
+\end{equation}
+
+While in this case we have performed the time-stepping in equations \ref{eq:K_L_step}, 
+\ref{eq:S_step} via a simple explicit Euler scheme, the extension to time steps of higher 
+order is immediate. Indeed, we refer to \cite{ceruti2024} for an extension of the robust 
+integrator using the midpoint rule. Pseudocode for the presented algorithm can be found 
+in \cite{robustlowrank} and implementation of the algorithm (as well as the midpoint-rule 
+extension) in \cite{BUGimplementation}. 
 
 % -------------------------------------------------------------------------------------- %

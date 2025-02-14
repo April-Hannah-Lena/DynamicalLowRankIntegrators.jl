@@ -2,6 +2,80 @@
 
 \section{The Vlasov-Poisson Equation and Conservation Properties}\label{sec:vlasov}
 
+The Vlasov-Poisson equation models the evolution of the electron density $f = f(x, v, t)$ 
+in plasma. It is assumed that $(1)$ slow movement of heavy positive ions, $(2)$ pair 
+collisions between electrons, $(3)$ variations in magnetic field, and $(4)$ relativistic 
+effects are all negligible. The resultant (non-dimensionalized) evolution equation reads
+
+\begin{equation}\label{eq:vlasov}
+    \partial_t f (x, v, t) 
+    + v \cdot \nabla_x f (x, v, t) 
+    + E (x, t) \cdot \nabla_v f (x, v, t) = 0
+\end{equation}
+
+where $E = E(f)$ is the self-consistent electric field. The mass 
+
+\begin{equation}
+    \scrM_0 (t) = \int_{\Omega_x} \int_{\Omega_v} f(x, v, t)\ dv\, dx
+\end{equation}
+
+is wlog. assumed to be initially equal to $1$. Moreover $E$ is written as a potential 
+$E = - \nabla \phi$ where 
+
+\begin{equation}
+    - \Delta \phi\,(x) = 1 - \int_{\Omega_v} f(x, v, t)\ dv . 
+\end{equation}
+
+Equation \ref{eq:vlasov} contains infinitely many invariants. Indeed, all $L^p$ norms 
+$\left\| f \right\|_p$ as well as entropy 
+
+\begin{equation}
+    \mathcal{S} (t) = \iint_{\Omega_x \times \Omega_v} f(x, v, t)\ \log f(x, v, t)\ dv\,dx
+\end{equation}
+
+are conserved \cite{}\todo{cite entropy conservation}. Additionally it can be shown \cite{}
+\todo[color=green]{cite moment equations} that all moments of the velocity distrbution
+
+\begin{equation}
+    M_k (x, t) = \int_{\Omega_v} v v \ldots v f(x, v, t)\ dv 
+\end{equation}
+
+(wich are $k$-tensors) satisfy continuity equations and correspondingly their 
+space-integrals $\scrM_k = \int_{\Omega_x} M_k\, dx$ are also conserved. Notable are 
+the first few moments and their continuity equations
+
+\begin{align}
+    &\partial_t M_0 + \nabla_x \cdot M_1 = 0, \label{eq:mass_continuity}\\
+    &\partial_t M_1 + \nabla_x \cdot M_2 = - E\, M_0, \label{eq:momentum_continuity}\\
+    &\partial_t M_2 + \nabla_x \cdot M_3 = - 2 E \otimes M_1
+\end{align}
+
+which imply conservation of mass $\scrM_0$, momentum $\scrM_1$, and (kinetic) energy 
+$\trace \scrM_2$ 
+\todo{this is trace of a tensor as in diffgeo definition - should maybe simplify?} 
+after integrating over $\Omega_x$. The continuity equation for (total) energy density is 
+then 
+
+\begin{equation}\label{eq:energy_continuity}
+    \partial_t e + \frac{1}{2} \nabla_x \cdot (\trace M_3) = (\partial_t E - M_1) \cdot E
+\end{equation}
+
+where 
+
+\begin{equation}
+    e(x, t) = \frac{1}{2} \trace M_2 (x, t) + \frac{1}{2} E(x, t)^2
+    = \frac{1}{2} \int_{\Omega_v} v^2 f(x, v, t)\ dv + \frac{1}{2} E(x, t)^2  
+\end{equation}
+
+and 
+
+\begin{equation}
+    \trace M_3 (x, t) = \int_{\Omega_v} v^2\ v f(x, v, t)\ dv . 
+\end{equation}
+
+The dynamical low-rank integrator presented in the following section is designed to 
+satisfy equations \ref{eq:mass_continuity}, \ref{eq:momentum_continuity}, and 
+\ref{eq:energy_continuity}. 
 
 
 % -------------------------------------------------------------------------------------- %

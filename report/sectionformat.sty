@@ -47,11 +47,18 @@
 \newtheorem{example}[definition]{Example}
 \def\exampleautorefname{Ex.}
 
+\DeclareFontFamily{U}{mathx}{}
+\DeclareFontShape{U}{mathx}{m}{n}{<-> mathx10}{}
+\DeclareSymbolFont{mathx}{U}{mathx}{m}{n}
+\DeclareMathAccent{\widehat}{0}{mathx}{"70}
+\DeclareMathAccent{\widecheck}{0}{mathx}{"71}
+
 \newcommand*{\defeq}{\mathrel{\vcenter{\baselineskip0.5ex \lineskiplimit0pt
                      \hbox{\scriptsize.}\hbox{\scriptsize.}}}=}
 \newcommand*{\eqdef}{=\mathrel{\vcenter{\baselineskip0.5ex \lineskiplimit0pt
                      \hbox{\scriptsize.}\hbox{\scriptsize.}}}}
-                     
+
+\newcommand{\scrM}{\mathcal{M}}
 \newcommand{\scrK}{\mathcal{K}}
 \newcommand{\scrL}{\mathcal{L}}
 \newcommand{\scrH}{\mathcal{H}}
@@ -74,3 +81,6 @@
 \newcommand{\bbA}{\mathbb{A}}
 \newcommand{\bbJ}{\mathbb{J}}
 \newcommand{\bbone}{\mathbbm{1}}
+
+\newcommand{\trace}{\text{tr}}
+\newcommand{\spn}{\text{span}}

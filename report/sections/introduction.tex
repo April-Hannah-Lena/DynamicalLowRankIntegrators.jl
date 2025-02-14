@@ -5,10 +5,11 @@
 Efficient numerical solutions to kinetic equations is the basis for many fields in 
 physics and has applications such as fusion energy generation in magnetically confined 
 chambers, or dosage calculation in radiation therapy. Kinetic models are dependent on 
-both physical space coordinates $x \in \Omega \subset \bbR^3$ and velocity coordinates 
-$v \in \bbR^3$. A grid-based discretization with $n$ grid points in each dimension 
-therefore incurs a computational cost of order $O(n^6)$. Hence, direct solutions for the 
-(kinetic) density function are prohibitively expensive. 
+both physical space coordinates $x \in \Omega_x \subset \bbR^d$, $d = 1, 2, 3$ and 
+velocity coordinates 
+$v \in \Omega_v \subset \bbR^d$. A grid-based discretization with $n$ grid points in each 
+dimension therefore incurs a computational cost of order $O(n^{2 d})$. Hence, direct 
+solutions for the (kinetic) density function are prohibitively expensive. 
 
 Recently, dynamical low-rank solvers for kinetic equations such as the Vlasov-Poisson 
 equation have been proposed \cite{einkemmer2018}. These methods are based on 
