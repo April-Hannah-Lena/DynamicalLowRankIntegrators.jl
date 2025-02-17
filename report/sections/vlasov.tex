@@ -49,12 +49,11 @@ the first few moments and their continuity equations
     &\partial_t M_1 + \nabla_x \cdot M_2 = - E\, M_0, \label{eq:momentum_continuity}\\
     &\partial_t M_2 + \nabla_x \cdot M_3 = - 2 E \otimes M_1
 \end{align}
+\todo{Verify this}
 
 which imply conservation of mass $\scrM_0$, momentum $\scrM_1$, and (kinetic) energy 
-$\trace \scrM_2$ 
-\todo{this is trace of a tensor as in diffgeo definition - should maybe simplify?} 
-after integrating over $\Omega_x$. The continuity equation for (total) energy density is 
-then 
+$\trace \scrM_2$ after integrating over $\Omega_x$. The continuity equation for (total) 
+energy density is then 
 
 \begin{equation}\label{eq:energy_continuity}
     \partial_t e + \frac{1}{2} \nabla_x \cdot (\trace M_3) = (\partial_t E - M_1) \cdot E
@@ -72,6 +71,7 @@ and
 \begin{equation}
     \trace M_3 (x, t) = \int_{\Omega_v} v^2\ v f(x, v, t)\ dv . 
 \end{equation}
+\todo{this is trace of a 3-tensor ie. tensor contraction - should maybe simplify?} 
 
 The dynamical low-rank integrator presented in the following section is designed to 
 satisfy equations \ref{eq:mass_continuity}, \ref{eq:momentum_continuity}, and 
