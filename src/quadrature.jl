@@ -10,14 +10,17 @@ import ClassicalOrthogonalPolynomials as cl
 _x_grid, _x_weights = -1:2/m_x:1-2/m_x, Fill(1/m_x, m_x)
 const v_grid, v_weights = gausslegendre(m_v)
 
-const x_grid = (xlims[2]-xlims[1])/2 .* _x_grid# .+ (xlims[2]+xlims[1])/2
-v_grid .= (vlims[2]-vlims[1])/2 .* v_grid# .+ (vlims[2]+vlims[1])/2
+x_stretch = (xlims[2]-xlims[1])/2
+v_stretch = (vlims[2]-vlims[1])/2
 
-const x_weights = _x_weights * (xlims[2]-xlims[1])
-v_weights .*= (vlims[2]-vlims[1])/2
+const x_grid = x_stretch .* _x_grid# .+ (xlims[2]+xlims[1])/2
+v_grid .*= v_stretch# .+ (vlims[2]+vlims[1])/2
 
-@assert sum(x_weights) ≈ xlims[2] - xlims[1]
-@assert sum(v_weights) ≈ vlims[2] - vlims[1]
+const x_weights = _x_weights * 2x_stretch
+v_weights .*= v_stretch
+
+@assert sum(x_weights) ≈ 2x_stretch
+@assert sum(v_weights) ≈ 2v_stretch
 
 const f0v = @. exp(-v_grid^2)
 
@@ -41,12 +44,21 @@ const Mv = 6r_max + 1
 chermite = cl.Hermite()
 const v_basis = chermite[v_grid,1:Mv]
 
+const Mlegendre = min(2Mv, m_v÷2 + 1)
+clegendre = cl.Legendre()
+const legendre_basis = clegendre[v_grid ./ v_stretch, 1:Mlegendre]
+
+cjacobi = cl.jacobi(1, 1, vlims[1]..vlims[2])
+const ∂_legendre_basis = cjacobi[v_grid, 1:Mlegendre]
+
 # normalize basis functions
 x_basis[:,1] ./= √(2π)
 x_basis[:,2:end] ./= √(π)
 
 v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
 
+legendre_basis ./= sqrt.(2 .* v_stretch ./ (2 .* (0:Mlegendre-1) .+ 1))'
+# don't normalize basis of legendre derivatives
 
 
 # orthonormalization
@@ -80,7 +92,10 @@ function gram_schmidt!(f, sqrt_gram, pivot::Bool)
     return Q, R
 end
 
-# small error in quadrature because we cut off the domain
+# small error in quadrature because we cut off the domain. 
+# For some reason just doing `gram_schmidt!` makes the first quadr. point
+# for each function totally weird. But just doing basic gram schmidt 
+# doesn't make the basis orthogonal enough. So we do a cheeky double
 gram_schmidt!(basic_gram_schmidt!(v_basis, v_gram)[1], sqrt_v_gram, false)
 
 

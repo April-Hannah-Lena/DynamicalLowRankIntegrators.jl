@@ -18,21 +18,7 @@ const ∂_fourier = Tridiagonal(
     -[iseven(k) ? k÷2 : 0 for k in 1:Mx-1]
 )
 const ∂²_fourier = Diagonal(-[(iseven(k) ? k : k+1) / 2 for k in 0:Mx-1].^2)
-
-v_domain = Segment(vlims...)
-legendrespace = Legendre(v_domain)
-
-const n_v = (m_v - 1) ÷ 2  -  1
-
-const ∂_legendre = Derivative(legendrespace)[1:n_v,1:n_v]
-im_space = rangespace(Derivative(legendrespace))
-
-const legendre_basis = zeros(m_v, n_v)
-const ∂v_basis = zeros(m_v, n_v)
-for k in axes(legendre_basis, 2)
-    legendre_basis[:, k] .= Fun(legendrespace, [zeros(k-1);1]).(v_grid)
-    ∂v_basis[:, k] .= Fun(im_space, [zeros(k-1);1]).(v_grid)
-end
+const ∂_legendre = Bidiagonal(zeros(Mlegendre), [0.1k for k in 2:Mlegendre], :U)
 
 
 function ∇ₓ(f)  # 1-dimensional circle domain
@@ -41,8 +27,8 @@ function ∇ₓ(f)  # 1-dimensional circle domain
 end
 
 function ∇ᵥ(f)  # 1-dimensional real domain
-    coeffs = legendre_basis \ f'
-    (∂v_basis * ∂_legendre * coeffs)'
+    coeffs = legendre_basis' * v_gram_unweighted * f'
+    return (∂_legendre_basis * ∂_legendre * coeffs)'
 end
 
 function E(f)
@@ -54,7 +40,7 @@ function E(f)
     coeffs = -∂²_fourier.diag .\ coeffs
     coeffs[1] = 0
 
-    x_basis * (-∂_fourier) * coeffs
+    return x_basis * (-∂_fourier) * coeffs
 end
 
 # 1 x dimension,  1 v dimension

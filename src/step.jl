@@ -9,6 +9,8 @@ function BlockDiagonal(M1, M2)
     )
 end
 
+maybe_invsqrt(x, TOL) = x > TOL  ?  1/sqrt(x) : 1.
+
 
 function step_∂ₜ(X, S, V)
 
@@ -112,7 +114,7 @@ end
 =#
 
 # midpoint rule augmented BUG integrator
-function step(X, S, V, τ, TOL)
+function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
         
     #f = X * S * V' .* f0v'
 
@@ -131,10 +133,10 @@ function step(X, S, V, τ, TOL)
 
     # extend basis
     X̃ = [X;; ∇ₓ(X);; K]
-    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL)
+    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL_quadrature)
 
     Ṽ = [V;; L]
-    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL)
+    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL_quadrature)
 
     M = X' * x_gram * X̃
     N = V' * v_gram * Ṽ
@@ -148,12 +150,19 @@ function step(X, S, V, τ, TOL)
     # full step
     ∂ₜK, _, ∂ₜL = step_∂ₜ(X̃, S̃, Ṽ)
 
-    # extend basis
-    X̃ = [X̃;; τ*∂ₜK]
-    Ṽ = [Ṽ;; τ*∂ₜL]
+    # ∂ₜK and ∂ₜL only used to enrich the basis, their magnitude is not needed
+    norm∂ₜK = sum(∂ₜK.^2 .* x_weights, dims=1)
+    norm∂ₜL = sum(∂ₜL.^2 .* f0v .* v_weights, dims=1)
 
-    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL)
-    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL)
+    ∂ₜK .*= maybe_invsqrt.(norm∂ₜK, TOL)
+    ∂ₜL .*= maybe_invsqrt.(norm∂ₜL, TOL)
+
+    # extend basis
+    X̃ = [X̃;; ∂ₜK]
+    Ṽ = [Ṽ;; ∂ₜL]
+
+    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL_quadrature, pivot=false)
+    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL_quadrature, pivot=false)
 
     M = X' * x_gram * X̃
     N = V' * v_gram * Ṽ
@@ -171,8 +180,8 @@ function step(X, S, V, τ, TOL)
     K̃rem = @view K̃[:, m+1:end]
     
     # orthonormalize parts of X
-    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis, TOL)
-    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis, TOL)
+    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis, TOL_quadrature)
+    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis, TOL_quadrature)
     
     W̃ = @view Ṽ[:, m+1:end]
 
@@ -186,7 +195,7 @@ function step(X, S, V, τ, TOL)
     Ŝ = Diagonal(svdSrem.S[1:r_new])
     Ŵ = svdSrem.Vt[1:r_new, :]'
 
-    r_new = max(min(r_new, sum(Ŝ.diag .> TOL)), r_min) - 1
+    r_new = max(min(r_new, sum(Ŝ.diag .> TOL)), r_min)# - 1
     @debug "new rank based on error when truncating singular values" r_new
 
     Srem = Ŝ
@@ -194,7 +203,7 @@ function step(X, S, V, τ, TOL)
     Xrem = X̃rem * Û
     X̂ = [Xcons;; Xrem]
 
-    _X, R = gram_schmidt(X̂, x_gram, x_basis, TOL, pivot=false)    # X update step
+    _X, R = gram_schmidt(X̂, x_gram, x_basis, TOL_quadrature, pivot=false)    # X update step
     _V = [U;; W]     # V update step
     _S = R * BlockDiagonal(Scons, Srem)    # S update step
 
@@ -224,7 +233,7 @@ function step(X, S, V, τ, TOL)
 
     =#
 
-    r_new = r_new + 1
+    #r_new = r_new + 1
 
     X = _X[:, 1:r_new]
     S = _S[1:r_new, 1:r_new]
@@ -236,7 +245,7 @@ function step(X, S, V, τ, TOL)
 
 end
 
-function try_step(X, S, V, t, τ, τ_min=1e-7, TOL=1e-8)
+function try_step(X, S, V, t, τ, τ_min=1e-7, TOL=1e-12, TOL_conservation=1e-8)
     
     f = X * S * V' .* f0v'
     m, = mass(f)
@@ -244,6 +253,7 @@ function try_step(X, S, V, t, τ, τ_min=1e-7, TOL=1e-8)
     e, = energy(f)
     s, = entropy(f)
     mini = minimum(f)
+    Xmax = maximum(abs.(X))
 
     X_new, S_new, V_new = step(X, S, V, τ, TOL)
     f_new = X_new * S_new * V_new' .* f0v'
@@ -253,12 +263,14 @@ function try_step(X, S, V, t, τ, τ_min=1e-7, TOL=1e-8)
     e_new, = energy(f_new)
     s_new, = entropy(f_new)
     mini_new = minimum(f_new)
+    Xmax_new = maximum(abs.(X_new))
 
-    if ( abs(m - m_new) > TOL || 
-         abs(j - j_new) > TOL || 
-         abs(e - e_new) > TOL ||
-         abs(s_new - s) > 500TOL ||        # little bit more tolerance
-         abs(mini_new - mini) > 500TOL )
+    if ( abs(m - m_new) > TOL_conservation || 
+         abs(j - j_new) > TOL_conservation || 
+         abs(e - e_new) > TOL_conservation ||
+         abs(s_new - s) > 500TOL_conservation ||        # little bit more tolerance
+         abs(mini_new - mini) > 500TOL_conservation ||  # since these aren't provably conserved
+         abs(Xmax_new - Xmax) > 500TOL_conservation )
 
         if τ ≤ τ_min
             #@warn "state too unstable"

@@ -15,19 +15,19 @@ include("./plot.jl")
 # parameters 
 
 const m = 3 # number of conserved v components
-const r = 6 # starting rank
+const r = 5 # starting rank
 const r_min = 5
-const r_max = 14
-const m_x, m_v = 250, 400 # points in x and v 
+const r_max = 9
+const m_x, m_v = 350, 450 # points in x and v 
 
-const τ = 1e-4    # time step
+const τ = 1e-6    # time step
 const t_start = 0.
-const t_end = 12.
+const t_end = 20.
 const t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
 const xlims = (-π, π)
-const vlims = (-6, 6)
+const vlims = (-5, 5)
 
 include("./quadrature.jl")
 
@@ -41,9 +41,12 @@ const V0 = v_basis[:, 1:r]
 const α = 0.5
 const S0 = zeros(r, r)
 
+
 # Landau damping
+
 S0[1, 1] = 1 / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
 S0[3, 1] = -α / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+
 
 
 # two-stream instability
@@ -115,8 +118,8 @@ while !done
 
     global X, S, V, f, t, last_t, last_t_low_res, done
 
-    X, S, V, t, τ_used = try_step(X, S, V, t, τ, 1e-7, 1e-8)    # adaptive step size
-    #X, S, V = step(X, S, V, τ, 1e-9)      # static step size
+    X, S, V, t, τ_used = try_step(X, S, V, t, τ, 1e-7, 1e-11)    # adaptive step size
+    #X, S, V = step(X, S, V, τ, 1e-10, 1e-13)      # static step size
     #t += τ
 
     if t ≥ t_end
@@ -168,8 +171,9 @@ while !done
     end
 
 end
-CSV.write("./data/evolution_data_rank_min_$(r_min)_max_$(r_max).csv", df)
-#=
+
+#CSV.write("./data/evolution_data_rank_min_$(r_min)_max_$(r_max).csv", df)
+
 begin
     p1 = plot(df[!,"time"], df[!,"L1 norm"], lab="L¹ norm", ylims=(minimum(df[!,"L1 norm"]) - 0.1, maximum(df[!,"L1 norm"]) + 0.1))
     p2 = plot(df[!,"time"], df[!,"L2 norm"], lab="L² norm", ylims=(minimum(df[!,"L2 norm"]) - 0.1, maximum(df[!,"L2 norm"]) + 0.1))
@@ -233,4 +237,3 @@ savefig(p3, "errors3.pdf")
 for k in 2:7
     savefig(pl[k+3], "./plots/$(k)th_moment_error.pdf")
 end
-=#
