@@ -14,7 +14,7 @@ function step_∂ₜ(X, S, V)
 
     f = X * S * V' .* f0v'
 
-    b = @view S[:, m+1:r]
+    b = @view S[:, m+1:end]
 
     ∇ₓX = ∇ₓ(X)
     ∇ᵥV = ∇ᵥ(V')'
@@ -112,13 +112,13 @@ end
 =#
 
 # midpoint rule augmented BUG integrator
-function step(X, S, V, τ)
+function step(X, S, V, τ, TOL)
         
     #f = X * S * V' .* f0v'
 
     U = @view V[:, 1:m]
-    W = @view V[:, m+1:r]
-    b = @view S[:, m+1:r]
+    W = @view V[:, m+1:end]
+    b = @view S[:, m+1:end]
 
     K = X * S
     L = W * b'b
@@ -131,10 +131,10 @@ function step(X, S, V, τ)
 
     # extend basis
     X̃ = [X;; ∇ₓ(X);; K]
-    X̃, _ = gram_schmidt(X̃, x_gram, x_basis)
+    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL)
 
     Ṽ = [V;; L]
-    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m)
+    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL)
 
     M = X' * x_gram * X̃
     N = V' * v_gram * Ṽ
@@ -152,8 +152,8 @@ function step(X, S, V, τ)
     X̃ = [X̃;; τ*∂ₜK]
     Ṽ = [Ṽ;; τ*∂ₜL]
 
-    X̃, _ = gram_schmidt(X̃, x_gram, x_basis)
-    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m)
+    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL)
+    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL)
 
     M = X' * x_gram * X̃
     N = V' * v_gram * Ṽ
@@ -171,25 +171,64 @@ function step(X, S, V, τ)
     K̃rem = @view K̃[:, m+1:end]
     
     # orthonormalize parts of X
-    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis)
-    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis)
+    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis, TOL)
+    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis, TOL)
     
     W̃ = @view Ṽ[:, m+1:end]
 
     # truncate via svd
     svdSrem = svd(S̃rem)
-    Û = svdSrem.U[:, 1:r-m]
-    Ŝ = Diagonal(svdSrem.S[1:r-m])
-    Ŵ = svdSrem.Vt[1:r-m, :]'
+
+    r_new = max(min(size(S̃rem)..., r_max), r_min)
+    @debug "maximal new rank" r_new
+
+    Û = svdSrem.U[:, 1:r_new]
+    Ŝ = Diagonal(svdSrem.S[1:r_new])
+    Ŵ = svdSrem.Vt[1:r_new, :]'
+
+    r_new = max(min(r_new, sum(Ŝ.diag .> TOL)), r_min) - 1
+    @debug "new rank based on error when truncating singular values" r_new
 
     Srem = Ŝ
     W = W̃ * Ŵ
     Xrem = X̃rem * Û
     X̂ = [Xcons;; Xrem]
 
-    X, R = gram_schmidt(X̂, x_gram, x_basis)    # X update step
-    V = [U;; W]     # V update step
-    S = R * BlockDiagonal(Scons, Srem)    # S update step
+    _X, R = gram_schmidt(X̂, x_gram, x_basis, TOL, pivot=false)    # X update step
+    _V = [U;; W]     # V update step
+    _S = R * BlockDiagonal(Scons, Srem)    # S update step
+
+    #=
+    f = _X * _S * _V' .* f0v'
+    mas = mas_new = mass(f)[1]
+    momen = momen_new = momentum(f)[1]
+    el_energy = el_energy_new = electric_energy(f)[1]
+
+    while @show ( 
+            abs( el_energy_new - el_energy ) < TOL ||
+            abs( mas_new - mas ) < TOL ||
+            abs( momen_new - momen ) < TOL 
+          ) && 
+          r_new ≥ r_min
+        
+        X_new = @view _X[:, 1:r_new]
+        S_new = @view _S[1:r_new, 1:r_new]
+        V_new = @view _V[:, 1:r_new]
+
+        f = X_new * S_new * V_new' .* f0v'
+        mas_new, = mass(f)
+        momen_new, = momentum(f)
+        el_energy_new, = electric_energy(f)
+        r_new -= 1
+    end
+
+    =#
+
+    r_new = r_new + 1
+
+    X = _X[:, 1:r_new]
+    S = _S[1:r_new, 1:r_new]
+    V = _V[:, 1:r_new]
 
     #f = X * S * V' .* f0v'      # f update step
 
@@ -197,31 +236,37 @@ function step(X, S, V, τ)
 
 end
 
-function try_step(X, S, V, t, τ, τ_min=1e-7, TOL=1e-12)
+function try_step(X, S, V, t, τ, τ_min=1e-7, TOL=1e-8)
     
     f = X * S * V' .* f0v'
     m, = mass(f)
     j, = momentum(f)
     e, = energy(f)
+    s, = entropy(f)
+    mini = minimum(f)
 
-    X_new, S_new, V_new = step(X, S, V, τ)
+    X_new, S_new, V_new = step(X, S, V, τ, TOL)
     f_new = X_new * S_new * V_new' .* f0v'
 
     m_new, = mass(f_new)
     j_new, = momentum(f_new)
     e_new, = energy(f_new)
+    s_new, = entropy(f_new)
+    mini_new = minimum(f_new)
 
     if ( abs(m - m_new) > TOL || 
          abs(j - j_new) > TOL || 
-         abs(e - e_new) > TOL  )
+         abs(e - e_new) > TOL ||
+         abs(s_new - s) > 500TOL ||        # little bit more tolerance
+         abs(mini_new - mini) > 500TOL )
 
         if τ ≤ τ_min
-            @warn "state too unstable"
+            #@warn "state too unstable"
         else
             return try_step(X, S, V, t, τ / 2)
         end
     end
 
-    return X_new, S_new, V_new, t + τ
+    return X_new, S_new, V_new, t + τ, τ
     
 end

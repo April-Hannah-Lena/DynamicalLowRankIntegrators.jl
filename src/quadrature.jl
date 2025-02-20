@@ -31,12 +31,13 @@ const sqrt_v_gram = sqrt(v_gram)
 
 
 # large basis
+# Mx, Mv must be at least 5*r_max
 
-const Mx = 10r + iseven(10r)
+const Mx = 6r_max + 1 + iseven(5r_max+1)
 cfourier = cl.Fourier()
 const x_basis = cfourier[x_grid,1:Mx]
 
-const Mv = 5r
+const Mv = 6r_max + 1
 chermite = cl.Hermite()
 const v_basis = chermite[v_grid,1:Mv]
 
@@ -67,13 +68,26 @@ function basic_gram_schmidt!(f, gram)
     return f, R
 end
 
+function gram_schmidt!(f, sqrt_gram, pivot::Bool)
+    QR = qr(sqrt_gram * f, pivot ? ColumnNorm() : NoPivot())
+    Q = inv(sqrt_gram) * Matrix(QR.Q)
+    R = QR.R
+    E = Diagonal(ifelse.(diag(R) .< 0, -1, 1))   # want +1's on diagonal of R
+    rmul!(Q, E); lmul!(E, R)
+    pivot  &&  ( R *= QR.P' )
+    #return Q, R
+    f .= Q
+    return Q, R
+end
+
 # small error in quadrature because we cut off the domain
-basic_gram_schmidt!(v_basis, v_gram)
+gram_schmidt!(basic_gram_schmidt!(v_basis, v_gram)[1], sqrt_v_gram, false)
 
 
 
 
-@views function gram_schmidt(f, gram, basis, TOL=500*eps(); pivot=true)
+@views function gram_schmidt(f, gram, basis, TOL=50eps(); pivot=true)
+    @assert size(f,2) ≤ size(basis,2)
     full_coeff_matrix = basis' * gram * f
 
     cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
@@ -91,9 +105,9 @@ basic_gram_schmidt!(v_basis, v_gram)
     return basis[:,1:cutoff] * Matrix(Q), R
 end
 
-@views function gram_schmidt(f, gram, basis, rank::Integer, TOL=500*eps(); pivot=true)
+@views function gram_schmidt(f, gram, basis, rank::Integer, TOL=50eps(); pivot=true)
     r = size(f, 2)
-    @assert rank < r
+    @assert rank < r ≤ size(basis, 2)
 
     full_coeff_matrix = basis' * gram * f
 
@@ -129,7 +143,7 @@ end
 
 #=
 # other orthonormalization methods that were too unstable
-function gram_schmidt(f, sqrt_gram, pivot::Bool=true)
+function gram_schmidt(f, sqrt_gram, pivot::Bool)
     QR = qr(sqrt_gram * f, pivot ? ColumnNorm() : NoPivot())
     Q = inv(sqrt_gram) * Matrix(QR.Q)
     R = QR.R

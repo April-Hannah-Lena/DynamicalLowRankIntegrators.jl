@@ -15,17 +15,19 @@ include("./plot.jl")
 # parameters 
 
 const m = 3 # number of conserved v components
-const r = 6 # rank
-const m_x, m_v = 200, 150 # points in x and v 
+const r = 6 # starting rank
+const r_min = 5
+const r_max = 14
+const m_x, m_v = 250, 400 # points in x and v 
 
-const τ = 1e-3    # time step
+const τ = 1e-4    # time step
 const t_start = 0.
-const t_end = 20.
+const t_end = 12.
 const t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
 const xlims = (-π, π)
-const vlims = (-5, 5)
+const vlims = (-6, 6)
 
 include("./quadrature.jl")
 
@@ -95,25 +97,34 @@ df = DataFrame(
     "L2 norm" => Lp(f, 2),
     "L3 norm" => Lp(f, 3),
     "Linfinity norm" => [maximum(abs.(f))],
-    "minimum" => [minimum(f)]
+    "minimum" => [minimum(f)], 
+    "rank" => [size(X,2)]
 )
 
-record_step = 0.01
+record_step = 5e-3
 t = last_t = last_t_low_res = t_start
 done = false
 #prog = Progress(round(Int, t_end, RoundDown))
 prog = Progress(length(t_start:record_step:t_end)-1)
 
+
+# precompile
+try_step(X, S, V, t, τ, 1e-5, 1e-12)
+
 while !done
 
     global X, S, V, f, t, last_t, last_t_low_res, done
 
-    #X, S, V, t = try_step(X, S, V, t, τ, 1e-6, 1e-10)    # adaptive step size
-    X, S, V = step(X, S, V, τ)      # static step size
-    t += τ
+    X, S, V, t, τ_used = try_step(X, S, V, t, τ, 1e-7, 1e-8)    # adaptive step size
+    #X, S, V = step(X, S, V, τ, 1e-9)      # static step size
+    #t += τ
 
     if t ≥ t_end
         done = true
+        finish!(
+            prog,
+            showvalues=[zip(names(df), df[end,:])...; ("final step size", τ_used)]
+        )
     end
     
     if t - last_t ≥ record_step   # used for the adaptive step alg
@@ -137,18 +148,19 @@ while !done
             Lp(f, 3)...;
             maximum(abs.(f));
             minimum(f);
+            size(X,2)
         ])
 
         next!(
             prog,
-            showvalues=[zip(names(df), df[end,:])...]
+            showvalues=[zip(names(df), df[end,:])...; ("current step size", τ_used)]
         )
 
         last_t = t
 
     end
 
-    if t - last_t_low_res ≥ 0.05
+    if t - last_t_low_res ≥ 0.1
 
         plot_step(x_grid, v_grid, f, X, S, V, t)#, mass_evolution, momentum_evolution, energy_evolution)
         last_t_low_res = t
@@ -156,8 +168,8 @@ while !done
     end
 
 end
-
-
+CSV.write("./data/evolution_data_rank_min_$(r_min)_max_$(r_max).csv", df)
+#=
 begin
     p1 = plot(df[!,"time"], df[!,"L1 norm"], lab="L¹ norm", ylims=(minimum(df[!,"L1 norm"]) - 0.1, maximum(df[!,"L1 norm"]) + 0.1))
     p2 = plot(df[!,"time"], df[!,"L2 norm"], lab="L² norm", ylims=(minimum(df[!,"L2 norm"]) - 0.1, maximum(df[!,"L2 norm"]) + 0.1))
@@ -169,11 +181,11 @@ begin
 end
 
 
-df_accurate = CSV.read("./evolution_data.csv", DataFrame)
+df_accurate = CSV.read("./data/evolution_data.csv", DataFrame)
 pl = []
 
-for col in names(df)[2:end]
-    p = plot(df[!,"time"], df[!,col], lab=col, ylims=(minimum(df[!,col]) - 0.01, maximum(df[!,col]) + 0.01))
+for col in names(df_accurate)[2:end]
+    p = plot(df[!,"time"], df[!,col], lab=col)#, ylims=(minimum(df[!,col]) - 0.01, maximum(df[!,col]) + 0.01))
     p = plot!(p, df_accurate[!,"time"], df_accurate[!,col], lab="accurate $col")
     push!(pl, p)
 end
@@ -181,19 +193,34 @@ end
 
 pl = []
 
-for col in names(df)[2:end]
+for col in names(df_accurate)[2:end]
     interp = linear_interpolation(
         df_accurate[!,"time"], df_accurate[!,col], 
         extrapolation_bc=Interpolations.Line()
     )
     p = plot(
         df[!,"time"], abs.(df[!,col] - map(interp, df[!,"time"])), 
+        xlabel="time", ylabel="error",
         lab="Error in $col",
         leg=:bottomright,
         yscale=:log10, ylims=(1e-16, 5e-1)
     )
+    p = plot!(p,
+        df[!, "time"], 
+        [[x -> 1e-12x^k for k in [4, 6, 8, 10]]...; x -> 1e-12exp(x)],
+        lab=false,#permutedims([["O(x^$k)" for k in [4, 6, 8, 10]]...; "O(exp(x))"]),
+        style=:dash
+    )
     push!(pl, p)
 end
+
+plot!(pl[3], df[!,"time"], x -> 1e-5, lab="O(1)")
+plot!(pl[5], df[!, "time"], x -> 1e-5, lab="O(1)")
+plot!(pl[6], df[!, "time"], x -> 1e-12exp(0.5x), lab="O(exp(x/2))")
+plot!(pl[7], df[!, "time"], x -> 1e-5x^2, lab="O(x^2)")
+plot!(pl[8], df[!, "time"], x -> 1e-11exp(0.7x), lab="O(exp(3x/4))")
+plot!(pl[9], df[!, "time"], x -> 5e-6x^2, lab="O(x^2)")
+plot!(pl[10], df[!, "time"], x -> 1e-12exp(0.85x), lab="O(exp(3x/4))")
 
 p1 = plot(pl[1:4]...)
 p2 = plot(pl[5:8]...)
@@ -202,3 +229,8 @@ p3 = plot(pl[9:11]...)
 savefig(p1, "errors1.pdf")
 savefig(p2, "errors2.pdf")
 savefig(p3, "errors3.pdf")
+
+for k in 2:7
+    savefig(pl[k+3], "./plots/$(k)th_moment_error.pdf")
+end
+=#
