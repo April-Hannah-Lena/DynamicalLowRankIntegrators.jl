@@ -19,7 +19,7 @@ function step_∂ₜ(X, S, V)
     b = @view S[:, m+1:end]
 
     ∇ₓX = ∇ₓ(X)
-    ∇ᵥV = ∇ᵥ(V')'
+    ∇ᵥV = ∇ᵥ_hermite(V)
     Ef = E(f)
 
     c1 = V' * v_gram * (v_grid .* V)
@@ -133,10 +133,10 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
 
     # extend basis
     X̃ = [X;; ∇ₓ(X);; K]
-    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL_quadrature)
+    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL_quadrature, pivot=true)
 
     Ṽ = [V;; L]
-    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL_quadrature)
+    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL_quadrature, pivot=false)
 
     M = X' * x_gram * X̃
     N = V' * v_gram * Ṽ
@@ -180,8 +180,8 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     K̃rem = @view K̃[:, m+1:end]
     
     # orthonormalize parts of X
-    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis, TOL_quadrature)
-    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis, TOL_quadrature)
+    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis, TOL_quadrature, pivot=true)
+    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis, TOL_quadrature, pivot=true)
     
     W̃ = @view Ṽ[:, m+1:end]
 

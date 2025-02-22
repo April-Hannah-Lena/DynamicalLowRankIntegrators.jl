@@ -52,18 +52,18 @@ cjacobi = cl.jacobi(1, 1, vlims[1]..vlims[2])
 const ∂_legendre_basis = cjacobi[v_grid, 1:Mlegendre]
 
 # normalize basis functions
-x_basis[:,1] ./= √(2π)
-x_basis[:,2:end] ./= √(π)
+const x_basis_norms = √(π) * ones(Mx)
+x_basis_norms[1] *= √(2)
+x_basis ./= x_basis_norms'
 
-v_basis ./= Float64.(.√( √(π) .* 2.0.^(0:Mv-1) .* factorial.(big.(0:Mv-1)) ))'
-
-legendre_basis ./= sqrt.(2 .* v_stretch ./ (2 .* (0:Mlegendre-1) .+ 1))'
+legendre_basis_norms = sqrt.(2 .* v_stretch ./ (2 .* (0:Mlegendre-1) .+ 1))
+legendre_basis ./= legendre_basis_norms'
 # don't normalize basis of legendre derivatives
 
 
 # orthonormalization
 # not efficient but easy to implement
-
+#=
 function basic_gram_schmidt!(f, gram)
     R = zeros(eltype(f), size(f,2), size(f,2))
     for j in axes(f, 2)
@@ -79,7 +79,7 @@ function basic_gram_schmidt!(f, gram)
     end
     return f, R
 end
-
+=#
 function gram_schmidt!(f, sqrt_gram, pivot::Bool)
     QR = qr(sqrt_gram * f, pivot ? ColumnNorm() : NoPivot())
     Q = inv(sqrt_gram) * Matrix(QR.Q)
@@ -96,7 +96,8 @@ end
 # For some reason just doing `gram_schmidt!` makes the first quadr. point
 # for each function totally weird. But just doing basic gram schmidt 
 # doesn't make the basis orthogonal enough. So we do a cheeky double
-gram_schmidt!(basic_gram_schmidt!(v_basis, v_gram)[1], sqrt_v_gram, false)
+_, R = gram_schmidt!(v_basis, sqrt_v_gram, false)
+const v_basis_norms = diag(R)
 
 
 
@@ -120,6 +121,32 @@ gram_schmidt!(basic_gram_schmidt!(v_basis, v_gram)[1], sqrt_v_gram, false)
     return basis[:,1:cutoff] * Matrix(Q), R
 end
 
+@views function gram_schmidt(f, gram, basis, rank::Integer, TOL=50eps(); pivot=false)
+    @assert size(f,2) ≤ size(basis,2)
+    full_coeff_matrix = basis' * gram * f
+
+    @assert all( abs.(full_coeff_matrix[1:rank, 1:rank] - I(rank)) .< sqrt(TOL) )
+    @assert all( abs.(full_coeff_matrix[rank+1:end, 1:rank]) .< sqrt(TOL) )
+    full_coeff_matrix[1:rank, 1:rank] .= I(rank)
+    full_coeff_matrix[rank+1:end, 1:rank] .= 0
+
+    cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
+        getindex(full_coeff_matrix, index) < TOL  &&  return 1
+        i, _ = Tuple(index)
+        return i
+    end
+    cutoff = max(cutoff, size(f,2))
+    coeff_matrix = full_coeff_matrix[1:cutoff,:]
+    #coeff_matrix[coeff_matrix .< TOL] .= 0
+
+    QR = qr(coeff_matrix, pivot ? ColumnNorm() : NoPivot())
+    Q, R = QR
+    pivot && ( R *= QR.P' )
+    return basis[:,1:cutoff] * Matrix(Q), R
+end
+
+
+#=
 @views function gram_schmidt(f, gram, basis, rank::Integer, TOL=50eps(); pivot=true)
     r = size(f, 2)
     @assert rank < r ≤ size(basis, 2)
@@ -155,7 +182,7 @@ end
 
     return basis[:,1:cutoff] * Matrix(Q), R
 end
-
+=#
 #=
 # other orthonormalization methods that were too unstable
 function gram_schmidt(f, sqrt_gram, pivot::Bool)

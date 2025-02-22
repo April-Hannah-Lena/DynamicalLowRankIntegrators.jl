@@ -1,4 +1,4 @@
-using LinearAlgebra, Einsum
+using LinearAlgebra, Einsum, BandedMatrices
 using ApproxFun
 
 
@@ -8,9 +8,6 @@ using ApproxFun
 ∫dx(f) = vec(sum(f .* x_weights, dims=1))
 ∫dv(f) = vec(sum(f .* v_weights', dims=2))
 
-x_domain = PeriodicSegment(xlims...)
-fourierspace = Fourier(x_domain)
-chebspace = Chebyshev(Segment(xlims...))
 
 const ∂_fourier = Tridiagonal(
     [iseven(k) ? k÷2 : 0 for k in 1:Mx-1],
@@ -18,7 +15,15 @@ const ∂_fourier = Tridiagonal(
     -[iseven(k) ? k÷2 : 0 for k in 1:Mx-1]
 )
 const ∂²_fourier = Diagonal(-[(iseven(k) ? k : k+1) / 2 for k in 0:Mx-1].^2)
-const ∂_legendre = Bidiagonal(zeros(Mlegendre), [0.1k for k in 2:Mlegendre], :U)
+
+const ∂_legendre = BandedMatrix(1 => [0.1k for k in 2:Mlegendre])
+∂_legendre .*= legendre_basis_norms
+∂_legendre ./= legendre_basis_norms'
+
+const ∂_hermite = BandedMatrix(1 => [2.0*k for k in 1:Mv-1])
+∂_hermite .*= v_basis_norms    # ∂( Hⱼ / || Hⱼ|| ) = ( || Hⱼ₋₁ || / || Hⱼ || )  ∂Hⱼ / || Hⱼ₋₁ ||
+∂_hermite ./= v_basis_norms'   #                   = ( || Hⱼ₋₁ || / || Hⱼ || )  2(j-1) Hⱼ₋₁ / || Hⱼ₋₁ ||
+
 
 
 function ∇ₓ(f)  # 1-dimensional circle domain
@@ -27,8 +32,13 @@ function ∇ₓ(f)  # 1-dimensional circle domain
 end
 
 function ∇ᵥ(f)  # 1-dimensional real domain
-    coeffs = legendre_basis' * v_gram_unweighted * f'
-    return (∂_legendre_basis * ∂_legendre * coeffs)'
+    coeffs = legendre_basis' * v_gram_unweighted * f
+    return ∂_legendre_basis * ∂_legendre * coeffs
+end
+
+function ∇ᵥ_hermite(f)  # 1-dimensional real domain
+    coeffs = v_basis' * v_gram * f
+    return v_basis * ∂_hermite * coeffs
 end
 
 function E(f)
@@ -44,7 +54,7 @@ function E(f)
 end
 
 # 1 x dimension,  1 v dimension
-RHS(f) = E(f) .* ∇ᵥ(f)  -  v_grid' .* ∇ₓ(f)
+RHS(f) = E(f) .* ∇ᵥ(f')'  -  v_grid' .* ∇ₓ(f)
 
 mass(f) = ∫dx(∫dv(f))
 particle_flux_density(f) = ∫dv(f .* v_grid')
