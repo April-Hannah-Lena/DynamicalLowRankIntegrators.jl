@@ -15,14 +15,14 @@ include("./plot.jl")
 # parameters 
 
 const m = 3 # number of conserved v components
-const r = 5 # starting rank
-const r_min = 5
-const r_max = 9
-const m_x, m_v = 350, 450 # points in x and v 
+const r = 7 # starting rank
+const r_min = 7
+const r_max = 7
+const m_x, m_v = 250, 350 # points in x and v 
 
-const τ = 1e-6    # time step
+const τ = 1e-3    # time step
 const t_start = 0.
-const t_end = 20.
+const t_end = 30.
 const t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
@@ -42,20 +42,18 @@ const α = 0.5
 const S0 = zeros(r, r)
 
 
-# Landau damping
-
-S0[1, 1] = 1 / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
-S0[3, 1] = -α / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
-
-
-
-# two-stream instability
-#=
-v̄ = sqrt(2.4^2 / 2)
-γ = exp(-2 * v̄^2) * ( (2v̄) .^ (0:r-1) + (-2v̄) .^ (0:r-1) ) ./ (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
-S0[1, :] .= γ / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
-S0[3, :] .= -α*γ / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
-=#
+const landau = false
+if landau
+    # Landau damping
+    S0[1, 1] = 1 / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
+    S0[3, 1] = -α / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+else
+    # two-stream instability
+    v̄ = sqrt(2.4^2 / 2)
+    γ = exp(-2 * v̄^2) * ( (2v̄) .^ (0:r-1) + (-2v̄) .^ (0:r-1) ) ./ (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
+    S0[1, :] .= γ / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
+    S0[3, :] .= -α*γ / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+end
 
 
 #=
@@ -118,15 +116,15 @@ while !done
 
     global X, S, V, f, t, last_t, last_t_low_res, done
 
-    X, S, V, t, τ_used = try_step(X, S, V, t, τ, 1e-7, 1e-11)    # adaptive step size
-    #X, S, V = step(X, S, V, τ, 1e-10, 1e-13)      # static step size
-    #t += τ
+    #X, S, V, t, τ_used = try_step(X, S, V, t, τ, 1e-7, 1e-11)    # adaptive step size
+    X, S, V = step(X, S, V, τ, 1e-10, 1e-13)      # static step size
+    t += τ
 
     if t ≥ t_end
         done = true
         finish!(
             prog,
-            showvalues=[zip(names(df), df[end,:])...; ("final step size", τ_used)]
+            showvalues=[zip(names(df), df[end,:])...]#; ("final step size", τ_used)]
         )
     end
     
@@ -156,7 +154,7 @@ while !done
 
         next!(
             prog,
-            showvalues=[zip(names(df), df[end,:])...; ("current step size", τ_used)]
+            showvalues=[zip(names(df), df[end,:])...]#; ("current step size", τ_used)]
         )
 
         last_t = t
@@ -172,68 +170,40 @@ while !done
 
 end
 
-#CSV.write("./data/evolution_data_rank_min_$(r_min)_max_$(r_max).csv", df)
-
-begin
-    p1 = plot(df[!,"time"], df[!,"L1 norm"], lab="L¹ norm", ylims=(minimum(df[!,"L1 norm"]) - 0.1, maximum(df[!,"L1 norm"]) + 0.1))
-    p2 = plot(df[!,"time"], df[!,"L2 norm"], lab="L² norm", ylims=(minimum(df[!,"L2 norm"]) - 0.1, maximum(df[!,"L2 norm"]) + 0.1))
-    p3 = plot(df[!,"time"], df[!,"L3 norm"], lab="L³ norm", ylims=(minimum(df[!,"L3 norm"]) - 0.1, maximum(df[!,"L3 norm"]) + 0.1))
-    p4 = plot(df[!,"time"], df[!,"entropy"], lab="Entropy", ylims=(minimum(df[!,"entropy"]) - 0.1, maximum(df[!,"entropy"]) + 0.1))
-    p5 = plot(df[!,"time"], df[!,"temperature"], lab="Temperature", ylims=(minimum(df[!,"temperature"]) - 0.1, maximum(df[!,"temperature"]) + 0.1))
-    p6 = plot(df[!,"time"], df[!,"heat flux"], lab="Heat flux", ylims=(minimum(df[!,"heat flux"]) - 0.1, maximum(df[!,"heat flux"]) + 0.1))
-    plot(p1, p2, p3, p4, p5, p6, layout=(2, 3))
-end
-
-
-df_accurate = CSV.read("./data/evolution_data.csv", DataFrame)
-pl = []
-
-for col in names(df_accurate)[2:end]
-    p = plot(df[!,"time"], df[!,col], lab=col)#, ylims=(minimum(df[!,col]) - 0.01, maximum(df[!,col]) + 0.01))
-    p = plot!(p, df_accurate[!,"time"], df_accurate[!,col], lab="accurate $col")
-    push!(pl, p)
-end
-
 
 pl = []
 
-for col in names(df_accurate)[2:end]
-    interp = linear_interpolation(
-        df_accurate[!,"time"], df_accurate[!,col], 
-        extrapolation_bc=Interpolations.Line()
-    )
+for col in names(df)[2:end-1]
     p = plot(
-        df[!,"time"], abs.(df[!,col] - map(interp, df[!,"time"])), 
-        xlabel="time", ylabel="error",
-        lab="Error in $col",
-        leg=:bottomright,
-        yscale=:log10, ylims=(1e-16, 5e-1)
+        df[!, "time"], df[!, col],
+        ylims=(minimum(df[!,col]) - 1e-3, maximum(df[!,col]) + 1e-3),
+        xlabel="time, step = $τ", ylabel=col
+    )
+    push!(pl, p)
+    #savefig(p, "./data/$(landau ? "landau" : "two_stream")/evolution_$(col)_rank_$(r).pdf")
+end
+
+
+pl2 = []
+
+for col in names(df)[2:end-1]
+    p = plot(
+        df[!, "time"], 
+        abs.(df[!, col] .- df[1, col]) .+ 1e-30,
+        yscale=:log10,
+        ylims=(eps(), 1), yticks=([1e-15, 1e-10, 1e-5, 1e-1, 1e0], ["10⁻¹⁵", "10⁻¹⁰", "10⁻⁵", "10⁻¹", "10⁰"]),
+        lab=false,
+        xlabel="time, step = $τ", ylabel="error in $col"
     )
     p = plot!(p,
         df[!, "time"], 
-        [[x -> 1e-12x^k for k in [4, 6, 8, 10]]...; x -> 1e-12exp(x)],
+        [[x -> 1e-12x^k + 1e-30 for k in [4, 6, 8, 10]]...; x -> 1e-12exp(x)],
         lab=false,#permutedims([["O(x^$k)" for k in [4, 6, 8, 10]]...; "O(exp(x))"]),
         style=:dash
     )
-    push!(pl, p)
+    push!(pl2, p)
+    #savefig(p, "./data/$(landau ? "landau" : "two_stream")/error_$(col)_rank_$(r).pdf")
 end
 
-plot!(pl[3], df[!,"time"], x -> 1e-5, lab="O(1)")
-plot!(pl[5], df[!, "time"], x -> 1e-5, lab="O(1)")
-plot!(pl[6], df[!, "time"], x -> 1e-12exp(0.5x), lab="O(exp(x/2))")
-plot!(pl[7], df[!, "time"], x -> 1e-5x^2, lab="O(x^2)")
-plot!(pl[8], df[!, "time"], x -> 1e-11exp(0.7x), lab="O(exp(3x/4))")
-plot!(pl[9], df[!, "time"], x -> 5e-6x^2, lab="O(x^2)")
-plot!(pl[10], df[!, "time"], x -> 1e-12exp(0.85x), lab="O(exp(3x/4))")
 
-p1 = plot(pl[1:4]...)
-p2 = plot(pl[5:8]...)
-p3 = plot(pl[9:11]...)
-
-savefig(p1, "errors1.pdf")
-savefig(p2, "errors2.pdf")
-savefig(p3, "errors3.pdf")
-
-for k in 2:7
-    savefig(pl[k+3], "./plots/$(k)th_moment_error.pdf")
-end
+#CSV.write("./data/evolution_data_rank_min_$(r_min)_max_$(r_max).csv", df)
