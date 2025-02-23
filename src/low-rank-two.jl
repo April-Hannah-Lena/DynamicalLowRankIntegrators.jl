@@ -42,7 +42,7 @@ const α = 0.5
 const S0 = zeros(r, r)
 
 
-const landau = true
+const landau = false
 if landau
     # Landau damping
     S0[1, 1] = 1 / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
