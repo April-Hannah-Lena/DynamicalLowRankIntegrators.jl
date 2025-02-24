@@ -15,9 +15,9 @@ import ClassicalOrthogonalPolynomials as cl
 # parameters 
 
 const m = 3 # number of conserved v components
-const r = 11 # starting rank
-const r_min = 11
-const r_max = 11
+const r = 5 # starting rank
+const r_min = 5
+const r_max = 5
 const m_x, m_v = 250, 350 # points in x and v 
 
 const τ = 5e-4    # time step
