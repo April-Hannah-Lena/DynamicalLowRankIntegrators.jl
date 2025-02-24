@@ -170,41 +170,6 @@ while !done
 
 end
 
-#=
-pl = []
-
-for col in names(df)[2:end-1]
-    p = plot(
-        df[!, "time"], df[!, col],
-        ylims=(minimum(df[!,col]) - 1e-3, maximum(df[!,col]) + 1e-3),
-        xlabel="time, step = $τ", ylabel=col
-    )
-    push!(pl, p)
-    #savefig(p, "./data/$(landau ? "landau" : "two_stream")/evolution_$(col)_rank_$(r).pdf")
-end
-
-
-pl2 = []
-
-for col in names(df)[2:end-1]
-    p = plot(
-        df[!, "time"], 
-        abs.(df[!, col] .- df[1, col]) .+ 1e-30,
-        yscale=:log10,
-        ylims=(eps(), 1), yticks=([1e-15, 1e-10, 1e-5, 1e-1, 1e0], ["10⁻¹⁵", "10⁻¹⁰", "10⁻⁵", "10⁻¹", "10⁰"]),
-        lab=false,
-        xlabel="time, step = $τ", ylabel="error in $col"
-    )
-    p = plot!(p,
-        df[!, "time"], 
-        [[x -> 1e-12x^k + 1e-30 for k in [4, 6, 8, 10]]...; x -> 1e-12exp(x)],
-        lab=false,#permutedims([["O(x^$k)" for k in [4, 6, 8, 10]]...; "O(exp(x))"]),
-        style=:dash
-    )
-    push!(pl2, p)
-    #savefig(p, "./data/$(landau ? "landau" : "two_stream")/error_$(col)_rank_$(r).pdf")
-end
-=#
 
 CSV.write(
     "../data/evolution_$(landau ? "landau" : "two_stream")_rank_min_$(r_min)_max_$(r_max)_step_" * replace("$τ", "." => "d") * ".csv", 
