@@ -1,4 +1,4 @@
-using #=Plots,=# ProgressMeter
+using Plots, ProgressMeter
 using Serialization, DataFrames, CSV
 using Statistics, LinearAlgebra, Einsum
 using ApproxFun, FastGaussQuadrature, Interpolations
@@ -8,17 +8,17 @@ import ClassicalOrthogonalPolynomials as cl
 #using ClassicalOrthogonalPolynomials: HermiteWeight
 #using ApproxFun.ApproxFunOrthogonalPolynomials: weight
 
-#include("./plot.jl")
+include("./plot.jl")
 
 
 
 # parameters 
 
 const m = 3 # number of conserved v components
-const r = 5 # starting rank
-const r_min = 5
-const r_max = 5
-const m_x, m_v = 250, 350 # points in x and v 
+const r = 10 # starting rank
+const r_min = 10
+const r_max = 10
+const m_x, m_v = 512, 512 # points in x and v 
 
 const τ = 5e-4    # time step
 const t_start = 0.
@@ -38,21 +38,36 @@ include("./quadrature.jl")
 const X0 = x_basis[:, 1:r]
 const V0 = v_basis[:, 1:r]
 
-const α = 0.5
 const S0 = zeros(r, r)
 
 
-const landau = true
-if landau
+conditions = :nonsymmetric
+if conditions == :landau
     # Landau damping
+    α = 0.5
     S0[1, 1] = 1 / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
     S0[3, 1] = -α / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
-else
+
+elseif conditions == :twostream
     # two-stream instability
-    v̄ = sqrt(2.4^2 / 2)
-    γ = exp(-2 * v̄^2) * ( (2v̄) .^ (0:r-1) + (-2v̄) .^ (0:r-1) ) ./ (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
+    α = 0.3
+    v̄ = 2.6
+    γ = exp(v̄^2) * ( v̄ .^ (0:r-1) + (-v̄) .^ (0:r-1) ) ./ (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
     S0[1, :] .= γ / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
     S0[3, :] .= -α*γ / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+
+elseif conditions == :nonsymmetric
+    α = 0.3
+    β = 0.2
+    v̄ = 2.6
+    
+    γ1 = exp(v̄^2)  *  (v̄) .^ (0:r-1)  ./  (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
+    S0[1, :] .= γ1 / ( 2 * sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
+    S0[3, :] .= α * γ1 / ( 2 * sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+
+    γ2 = exp(v̄^2)  *  (-v̄) .^ (0:r-1)  ./  (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
+    S0[1, :] .+= γ2 / ( 2 * sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
+    S0[2, :] .= β * γ2 / ( 2 * sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
 end
 
 
@@ -67,10 +82,11 @@ include("./step.jl")
 
 f = X0 * S0 * V0' .* f0v'
 S0 ./= mass(f)   # normalized e⁻ density
+f = X0 * S0 * V0' .* f0v'
 
 
-#plot_density(f, t=0)
-#plot_density(RHS(f), title="RHS")
+plot_density(f, t=0)
+plot_density(RHS(f), title="RHS")
 
 
 
@@ -80,6 +96,10 @@ X = copy(X0)
 S = copy(S0)
 V = copy(V0)
 
+X_last = copy(X)
+S_last = copy(S)
+V_last = copy(V)
+
 f = X * S * V' .* f0v'
 
 df = DataFrame(
@@ -87,13 +107,16 @@ df = DataFrame(
     "mass" => mass(f),
     "momentum" => momentum(f),
     "energy" => energy(f),
-    "entropy" => entropy(f),
-    "temperature" => temperature(f),
+    #"temperature" => temperature(f),
     "heat flux" => heat_flux(f),
     "4th moment" => v_moment(f, 4),
     "5th moment" => v_moment(f, 5),
     "6th moment" => v_moment(f, 6),
     "7th moment" => v_moment(f, 7),
+    ["moment $p continuity error" => directional_continuity_error(X, S, V, X, S, V, τ, p) for p in 0:7]...,
+    ["moment $p norm error" => norm_continuity_error(X, S, V, X, S, V, τ, p) for p in 0:7]...,
+    ["representability error in v^$p" => v_norm(orthogonal_complement(v_grid .^ p, V, v_gram)) for p in 0:7]...,
+    "entropy" => entropy(f),
     "L1 norm" => Lp(f, 1),
     "L2 norm" => Lp(f, 2),
     "L3 norm" => Lp(f, 3),
@@ -106,7 +129,7 @@ record_step = 1e-2
 t = last_t = last_t_low_res = t_start
 done = false
 #prog = Progress(round(Int, t_end, RoundDown))
-prog = Progress(length(t_start:record_step:t_end)-1)
+prog = Progress(length(t_start:record_step:t_end)-1, showspeed=true)
 
 
 # precompile
@@ -117,7 +140,8 @@ while !done
     global X, S, V, f, t, last_t, last_t_low_res, done
 
     #X, S, V, t, τ_used = try_step(X, S, V, t, τ, 1e-7, 1e-11)    # adaptive step size
-    X, S, V = step(X, S, V, τ, 1e-10, 1e-13)      # static step size
+    X_last, S_last, V_last = copy(X), copy(S), copy(V)
+    X, S, V = step(X, S, V, τ, 1e-9)      # static step size
     t += τ
 
     if t ≥ t_end
@@ -137,13 +161,16 @@ while !done
             mass(f)...;
             momentum(f)...;
             energy(f)...;
-            entropy(f)...;
-            temperature(f)...;
+            #temperature(f)...;
             heat_flux(f)...;
             v_moment(f, 4)...;
             v_moment(f, 5)...;
             v_moment(f, 6)...;
             v_moment(f, 7)...;
+            [directional_continuity_error(X, S, V, X_last, S_last, V_last, τ, p) for p in 0:7]...;
+            [norm_continuity_error(X, S, V, X_last, S_last, V_last, τ, p) for p in 0:7]...;
+            [v_norm(orthogonal_complement(v_grid .^ p, V, v_gram)) for p in 0:7]...;
+            entropy(f)...;
             Lp(f, 1)...;
             Lp(f, 2)...;
             Lp(f, 3)...;
@@ -154,7 +181,7 @@ while !done
 
         next!(
             prog,
-            showvalues=[zip(names(df), df[end,:])...]#; ("current step size", τ_used)]
+            showvalues=[zip(names(df)[1:4], df[end,1:4])...]#; ("current step size", τ_used)]
         )
 
         last_t = t
@@ -163,7 +190,7 @@ while !done
 
     if t - last_t_low_res ≥ 0.1
 
-        #plot_step(x_grid, v_grid, f, X, S, V, t)#, mass_evolution, momentum_evolution, energy_evolution)
+        plot_step(x_grid, v_grid, f, X, S, V, t)#, mass_evolution, momentum_evolution, energy_evolution)
         last_t_low_res = t
     
     end

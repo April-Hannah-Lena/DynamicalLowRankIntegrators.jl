@@ -2,6 +2,8 @@
 
 \section{A Low-rank Tensor Approximation Scheme}\label{sec:lowrank}
 
+\subsection{Presentation of the Integrator}
+
 The density function $f(x, v, t) \in L^2 (\Omega_x \times \Omega_v)$ is approximated by a 
 tensor product of functions in $x$ and in $v$:
 
@@ -65,15 +67,16 @@ $V (v, t) \in \bbR^r$ into two blocks $U(v, t) \in \bbR^m$ and $W \in \bbR^{r-m}
     \end{bmatrix}
 \end{equation}
 
-where $U$ is fixed throughout the integration and contains the desired functions
+where $U$ is fixed throughout the integration and contains the desired functions. To 
+satisfy the orthonormality condition \ref{eq:orthonormal} we use Hermite polynomials
 
 \begin{equation}
-    U(v, t) = U(v) = \begin{bmatrix}
+    U(v, t) = U(v) \propto \begin{bmatrix}
         1 \\
-        v_1 \\
+        2v_1 \\
         \vdots \\
-        v_d \\
-        v^2
+        2v_d \\
+        4v^2 - 2
     \end{bmatrix} . 
 \end{equation}
 
@@ -168,15 +171,22 @@ where
 
 Crucially, the approximation $f \approx \widetilde{ f }$ doe \emph{not} conserve any of 
 the invariants since the projections in \ref{eq:projection} are not conservative. 
-Therefore we need to expand the basis onto which we project. Specifically, let 
+Therefore we need to expand the basis onto which we project. 
+
+Specifically, let 
 $(\widetilde{ X }_j)_j$ be an orthonormal basis of 
-$\spn \left\{ X_i (t), \nabla X_i (t), K_i (t + \tau) \right\}_i$ and 
+$\spn \left\{ X_i (t), \nabla X_i (t), E(t)X_i (t), K_i (t + \tau) \right\}_i$ and 
 $(\widetilde{ V }_j)_j$ an orthonormal basis of 
-$\spn \left\{ V_i (t), L_q (t + \tau) \right\}_{i q}$. Then, the projections 
+$\spn \left\{ V_i (t), L_q (t + \tau) \right\}_{i q}$. 
+\emph{We emphasize that this definition of $\widetilde{ X }$ differs slightly from 
+previous works due to the addition of $E X$}. This drastically reduces the complexity of 
+future proofs, while only increasing the basis size linearly. 
+
+The projections 
 
 \begin{equation}\label{eq:conservative_projection}
-    M_{k i} = \left\langle \widetilde{ X }_k,\, X_i (t + \tau) \right\rangle_x, \quad\quad
-    N_{j l} = \left\langle \widetilde{ V }_j,\, V_l (t + \tau) \right\rangle_v 
+    \widetilde{ M }_{k i} = \left\langle \widetilde{ X }_k,\, X_i (t) \right\rangle_x, \quad\quad
+    \widetilde{ N }_{j l} = \left\langle \widetilde{ V }_j,\, V_l (t) \right\rangle_v 
 \end{equation}
 
 are mass, momentum, and energy conservative \cite{robustlowrank}. However, this has 
@@ -185,11 +195,14 @@ in a way which ensures that the fixed basis functions of $U$ remain unchanged. F
 convenience write 
 
 \begin{equation}
-    \widetilde{ S } = M^T S(t + \tau) N
+    \widetilde{ S } (t) = \widetilde{ M }^T S(t) \widetilde{ N }
 \end{equation}
 
-where $M$ and $N$ are as in equation \ref{eq:conservative_projection}. Letting 
-$\widetilde{ K }^T = \widetilde{ X }^T \widetilde{ S }$ and using the structure of 
+where $M$ and $N$ are as in equation \ref{eq:conservative_projection}, and write 
+$\widetilde{ S } (t + \tau)$ as the result of applying equation \ref{eq:S_step} with 
+$\widetilde{ M }$, $\widetilde{ S }(t)$, $\widetilde{ N }$, $\widetilde{ X }$, and $\widetilde{ V }$. 
+Letting 
+$\widetilde{ K }^T = \widetilde{ X }^T \widetilde{ S } (t + \tau)$ and using the structure of 
 $\widetilde{ V }$, 
 
 \begin{equation}\label{eq:K_L_step}
@@ -258,5 +271,517 @@ order is immediate. Indeed, we refer to \cite{ceruti2024} for an extension of th
 integrator using the midpoint rule. Pseudocode for the presented algorithm can be found 
 in \cite{robustlowrank} and implementation of the algorithm (as well as the midpoint-rule 
 extension) in \cite{BUGimplementation}. 
+
+\subsection{Discrete Conservation Equations}
+
+We show that the integrator proposed satisfies the moment continuity equations 
+\ref{eq:mass_continuity} - \ref{eq:energy_continuity} as well as preserves the 
+electric energy up to first oder. 
+
+\iffalse
+\begin{lemma}\label{lem:conservation}
+    Consider the $P$-th order moment $M_P^\iota$ with corresponding 
+    multiindex $\varrho$ as in equation \ref{eq:multiindex}.
+    Let $U : \Omega_v \to \bbR^m$ be chosen such that 
+
+    \begin{equation}
+        v \mapsto v^\varrho \in \spn \left\{ U_1, \ldots, U_m \right\} . 
+    \end{equation}
+ 
+    Let further $\widetilde{ X }$ be constructed for the time step $t$ as in equation 
+    \ref{eq:conservative_projection}.  Then 
+
+    \begin{equation}
+        E(t) \cdot \int_{\Omega_v} \varrho v^{\varrho - 1} f(t) \,dv 
+        \in \spn \left\{ \widetilde{ X }_k \right\}_k . 
+    \end{equation}
+\end{lemma}
+
+\begin{proof}
+    Let $\xi = \left( \xi_1, \ldots, \xi_m \right)$ be the coefficients of $v^\varrho$ 
+    in the $U$ basis,
+
+    \begin{equation}
+        v^\varrho = \sum_\ell \xi_\ell\, U_\ell (v) . 
+    \end{equation}
+
+    By observing the Euler step equation for $K_P$ from equation 
+    \ref{eq:K_galerkin} we notice
+
+    \begin{equation}
+        \begin{split}
+            \underbrace{
+                \sum_\ell \xi_\ell\, K_\ell (t + \tau)
+            }_{
+                \in \spn \left\{ \widetilde{ X }_k \right\}_k
+            } 
+            &= \sum_\ell \xi_\ell\, \left( 
+                K_\ell (t) + \tau \left( V_\ell (t),\ RHS \right)_v 
+            \right) \\
+            &= \underbrace{
+                    \sum_\ell \xi_\ell\, K_\ell (t) 
+                    - \tau \sum_{j l} \xi_\ell\, c^1_{\ell j} \cdot \nabla_x K_j (t)
+                }_{
+                    \in \spn \left\{ \widetilde{ X }_k \right\}_k
+                } 
+                + \tau \sum_{\ell j} \xi_\ell\, c^2_{\ell j} \cdot E(t) K_j (t) 
+        \end{split}
+    \end{equation}
+
+    for $c^1_{\ell j} = \left\langle V_\ell (t),\ vV_j (t) \right\rangle_v$, 
+    $c^2_{\ell j} = \left(\, V_\ell (t),\ \nabla_v \left[ f_0 V_j (t) \right] \,\right)_v$. It follows 
+    that 
+
+    \begin{equation}
+        \sum_{\ell j} \xi_\ell\, c^2_{\ell j} \cdot E(t) K_j (t) 
+        = E(t) \cdot \left( \sum_{\ell j} \xi_\ell\, c^2_{\ell j} K_j (t) \right) 
+        \in \spn \left\{ \widetilde{ X }_k \right\}_k . 
+    \end{equation}
+
+    But this can be rewritten as 
+
+    \begin{equation}
+        \begin{split}
+            \sum_{\ell j} \xi_\ell\, c^2_{\ell j} K_j (t) 
+            &= \sum_j \left( 
+                \sum_\ell \xi_\ell\, U_\ell,\ 
+                \nabla_v \left[ f_0 V_j (t) \right] 
+            \right)_v \\
+            &= \sum_j \left(\, v^\varrho,\ \nabla_v \left[ f_0 V_j (t) \right] \,\right)_v \\
+            &= \sum_j \int_{\Omega_v} 
+                v^\varrho\, 
+                \nabla_v \left[ f_0 V_j (t) \right] \,dv\ 
+                K_j (t) \\
+            &= - \int_{\Omega_v} \varrho v^{\varrho - 1} \sum_j f_0 K_j (t) V_j (t) \,dv \\
+            &= - \int_{\Omega_v} \varrho v^{\varrho - 1} f (t) \,dv . 
+        \end{split}
+    \end{equation}
+\end{proof}
+\fi
+
+\begin{lemma}\label{lem:conservation}
+    Let $\left( \widetilde{ X }_k \right)_k$ be constructed as in 
+    \ref{eq:conservative_projection}. Then
+    $\left( \widetilde{ X }_k \right)_k$ spans $RHS(\widetilde{ f })$, 
+    that is, 
+
+    \begin{equation}
+        \sum_k \widetilde{ X }_k \left\langle 
+            \widetilde{ X }_k,\ RHS(\widetilde{ f }) 
+        \right\rangle_x
+        = RHS(\widetilde{ f }) . 
+    \end{equation}
+\end{lemma}
+
+\begin{proof}
+    We note first that due to the augmentation of the basis, 
+    $\widetilde{ f } = f = f_0 X^T S V$. 
+    The claim now follows from a direct calculation using the fact that 
+    $\widetilde{ X }$ spans a basis of $\nabla_x X$ and $E X$
+
+    \begin{equation}
+        \begin{split}
+            \sum_k \widetilde{ X }_k \left\langle 
+                \widetilde{ X }_k,\ 
+                RHS(\widetilde{ f })
+             \right\rangle_x
+            &= \sum_{i j} S_{i j} \left( \sum_k \widetilde{ X }_k \left\langle 
+                \widetilde{ X }_k,\ 
+                \nabla_x X_i
+             \right\rangle_x \right) \cdot v V_j \\ 
+            &\quad\quad\quad\quad\quad\quad\quad\quad
+             + \sum_{i j} S_{i j} \left( \sum_k \widetilde{ X }_k \left\langle 
+                \widetilde{ X }_k,\ 
+                E X_i
+              \right\rangle_x \right) \cdot \nabla_v \left[ f_0 V_j \right] \\ 
+            &= \sum_{i j} S_{i j} \nabla_x X_i \cdot v V_j 
+                + \sum_{i j} S_{i j} E X_i \cdot \nabla_v \left[ f_0 V_j \right]
+            = RHS(f) . 
+        \end{split}
+    \end{equation}
+\end{proof}
+
+\begin{lemma}
+    Let $\widetilde{ K }$ be constructed as in \ref{eq:K_L_step}. Then 
+    for $\ell \leq m$, 
+
+    \begin{equation}
+        \left( U_\ell, f (t + \tau) \right)_v
+        = X(t + \tau)^T S(t + \tau) \left\langle U_\ell, V(t + \tau) \right\rangle_v
+        = \widetilde{ K }_\ell . 
+    \end{equation}
+\end{lemma}
+
+The above lemma effectively states that the truncation step is indeed 
+conservative. This is crucial in the proceeding theorem. 
+
+\begin{proof}
+    Calculate
+
+    \begin{equation}
+        \begin{split}
+            \left( U_\ell,\ f(t + \tau) \right)_v 
+            &= \sum_{i j} X_i (t + \tau) S_{i j} (t + \tau) 
+                \left\langle U_\ell,\ V_j \right\rangle_v \\ 
+            &= \sum_i X_i (t + \tau) S_{i \ell} (t + \tau) \\
+            &= \sum_i X_i (t + \tau) \sum_j R_{i j} \begin{bmatrix}
+                S^{cons} & \\ 
+                & S^{rem} 
+            \end{bmatrix}_{j \ell}
+        \end{split} . 
+    \end{equation}
+
+    Since $\ell \leq m$ (recall $V_\ell$ for $\ell > m$ was denoted $W_{\ell - m}$) 
+    and $S^{cons} \in \bbR^{m \times m}$, 
+
+    \begin{equation}
+        \begin{split}
+            \sum_i X_i (t + \tau) \sum_j R_{i j} \begin{bmatrix}
+                S^{cons} & \\ 
+                & S^{rem} 
+            \end{bmatrix}_{j \ell}
+            &= \sum_{j=1}^m \sum_i X_i (t + \tau) R_{i j} S^{cons}_{j \ell} \\ 
+            &= \sum_{j=1}^m \widehat{ X }_j S^{cons}_{j \ell} \\ 
+            &= \sum_i X^{cons}_i S^{cons}_{i \ell} \\ 
+            &= \widetilde{ K }_\ell . 
+        \end{split} 
+    \end{equation}
+\end{proof}
+
+\begin{theorem}\label{thm:conservation}
+    Consider the $P$-th order moment $M_P^\iota$ with corresponding 
+    multiindex $\varrho$ as in equation \ref{eq:multiindex}. $M_P^\iota$ 
+    satisfies the time-discrete continuity equation 
+
+    \begin{multline}\label{eq:conservation_higher_order}
+        \frac{M_{P+1}^\iota (t + \tau) - M_{P+1}^\iota (t)}{\tau} 
+        + \nabla_x \cdot \int_{\Omega_v} v^{\varrho + 1} f(t) \,dv 
+        + E(t) \cdot \int_{\Omega_v} \varrho v^{\varrho - 1} f(t) \,dv \\[2ex] 
+        = \left( 
+            \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+            \frac{f(t + \tau) - f(t)}{\tau} - RHS (f(t))
+        \right)_v 
+    \end{multline}
+
+    where 
+
+    \begin{equation}
+        \Pi_{(\spn U)^\perp} \left[ g \right] 
+        = g - \sum_\ell U_\ell \left\langle U_\ell,\ g \right\rangle_v . 
+    \end{equation}
+\end{theorem}
+
+\begin{remark}
+    \begin{enumerate}
+        \item In particular, when $U : \Omega_v \to \bbR^m$ is such that 
+
+            \begin{equation}\label{eq:U_multiindex}
+                v \mapsto v^\varrho \in \spn \left\{ U_1, \ldots, U_m \right\} 
+            \end{equation}
+            
+            then the right hand side of equation \ref{eq:conservation_higher_order} 
+            is zero. Hence, when equation \ref{eq:U_multiindex} holds for all 
+            multiindices with $\left| \varrho \right| = P$, then the continuity 
+            equation for the tensor $M_P$ holds. 
+        \item The error representation in the form of an inner product is much 
+            smaller than the norm-based error bounds typically given in numerical 
+            analysis. Indeed, consider the scalar-valued error estimate
+
+            \begin{equation}\label{eq:pessimistic_error}
+                \begin{split}
+                    &\left\| 
+                        \frac{M_{P+1}^\iota (t + \tau) - M_{P+1}^\iota (t)}{\tau} 
+                        + \nabla_x \cdot \int_{\Omega_v} v^{\varrho + 1} f(t) \,dv 
+                        + E(t) \cdot \int_{\Omega_v} \varrho v^{\varrho - 1} f(t) \,dv
+                    \right\|_x^2 \\ 
+                    &= \left\| 
+                        \left\langle 
+                        \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+                        \frac{f(t + \tau) - f(t)}{f_0 \tau} - \frac{1}{f_0} RHS (f(t))
+                        \right\rangle_v 
+                     \right\|_x^2 \\ 
+                    &\leq \left\| \Pi_{(\spn U)^\perp} \left[ v^\varrho \right] \right\|_v \ 
+                    \int_{\Omega_x} \left\| \frac{f(t + \tau) - f(t)}{f_0 \tau} - \frac{1}{f_0} RHS (f(t)) \right\|_v \,dx . 
+                \end{split}
+            \end{equation}
+
+            where for the inequality we used the Cauchy-Schwarz inequality. 
+            Indeed, the inequality is highly pessimistic, the latter term is 
+            often multiple orders of magnitude larger than the former, see 
+            section \ref{sec:landau}. 
+    \end{enumerate}
+\end{remark}
+
+\begin{proof}
+    We first note that the discrete continuity equation can be written as 
+
+    \begin{equation}\label{eq:continuity_as_inner_product}
+        \left( v^\varrho,\ \frac{f(t+\tau) - f(t)}{\tau} - RHS (f(t)) \right)_v . 
+    \end{equation}
+
+    Hence, the claim of the theorem is that when 
+    $v \mapsto v^\varrho \in \spn \left\{ U_1, \ldots, U_m \right\}$, 
+    the expression \ref{eq:continuity_as_inner_product} is zero. To that end, 
+    split $v^\varrho$ into two components
+    
+    \begin{equation}\label{eq:split_v_varrho}
+        v^\varrho = \sum_\ell \xi_\ell U_\ell (v) 
+            + \left( \Pi_{(\spn U)^\perp} \left[ v^\varrho \right] \right) (v) . 
+    \end{equation}
+    
+    We begin by giving a representation of \ref{eq:continuity_as_inner_product} 
+    for the component of $v^\varrho$ in the span of $U$. 
+    Recalling that 
+    $\widetilde{ K }_\ell = \sum_k \widetilde{ X }_k \widetilde{ S }_{k \ell} (t + \tau)$ 
+    and 
+    $\widetilde{ S }_{k \ell} (t + \tau) 
+    = \widetilde{ S }_{k \ell} + \tau \left( \widetilde{ X }_k U_\ell,\ RHS (\widetilde{ f }) \right)_{x v}$, 
+    we may write 
+
+    \begin{equation}\label{eq:K_tilde_ell}
+        \begin{split}
+            \widetilde{ K }_\ell &= 
+            \sum_k \widetilde{ X }_k \left[ 
+                \sum_{i j} \left\langle \widetilde{ X }_k,\ X_i (t) \right\rangle_x
+                    S_{i j} (t) \left\langle V_\ell (t),\ \widetilde{ V }_j \right\rangle_v
+                + \tau \left( \widetilde{ X }_k U_\ell,\ RHS (\widetilde{ f }) \right)_{x v}
+             \right] \\
+            &= \sum_i S_{i \ell} (t) \sum_k 
+                \widetilde{ X }_k \left\langle \widetilde{ X }_k,\ X_i (t) \right\rangle_x
+                + \tau \sum_k \widetilde{ X }_k 
+                    \left( \widetilde{ X }_k U_\ell,\ RHS (\widetilde{ f }) \right)_{x v} . 
+        \end{split}
+    \end{equation}
+
+    The first term in equation \ref{eq:K_tilde_ell} is equal to 
+
+    \begin{equation}
+        \sum_i S_{i \ell} (t) \sum_k 
+            \widetilde{ X }_k \left\langle \widetilde{ X }_k,\ X_i (t) \right\rangle_x
+        = \sum_i S_{i \ell} (t) X_i (t) 
+        = K_\ell (t) 
+        = \left( U_\ell,\ f(t) \right)_v . 
+    \end{equation}
+
+    Hence, 
+
+    \begin{equation}
+        \left( U_\ell,\ \frac{f(t + \tau) - f(t)}{\tau} \right)_v
+        = \sum_k \widetilde{ X }_k 
+        \left( \widetilde{ X }_k U_\ell,\ RHS (\widetilde{ f }) \right)_{x v} . 
+    \end{equation}
+
+    Using the splitting in equation \ref{eq:split_v_varrho}, 
+
+    \begin{equation}\label{eq:continuity_finite_diff_part}
+        \left( v^\varrho,\ \frac{f(t + \tau) - f(t)}{\tau} \right)_v
+        = \left( \sum_\ell \xi_\ell U_\ell,\ \frac{f(t + \tau) - f(t)}{\tau} \right)_v
+            + \left( \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+            \frac{f(t + \tau) - f(t)}{\tau} \right)_v . 
+    \end{equation}
+
+    The first term is rewritten to 
+
+    \begin{equation}\label{eq:continuity_U_part}
+        \begin{split}
+            \left( \sum_\ell \xi_\ell U_\ell,\ \frac{f(t + \tau) - f(t)}{\tau} \right)_v
+            &= \sum_k \widetilde{ X }_k \left( 
+                \widetilde{ X }_k \sum_\ell \xi_\ell U_\ell,\ 
+                RHS(\widetilde{ f }) 
+            \right)_{x v} \\ 
+            &= \sum_k \widetilde{ X }_k 
+                \left( \widetilde{ X }_k v^\varrho,\ RHS (\widetilde{ f }) \right)_{x v} \\
+                &\quad\quad\quad\quad
+                - \sum_k \widetilde{ X }_k \left( \widetilde{ X }_k \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+                RHS( \widetilde{ f } ) \right)_{x v} \\ 
+            &= \left( 
+                v^\varrho - \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+                \sum_k \widetilde{ X }_k \left\langle \widetilde{ X }_k,\ RHS(\widetilde{ f }) \right\rangle_x
+             \right)_v \\ 
+            &= \left( v^\varrho - \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ RHS(f) \right)_v 
+        \end{split}
+    \end{equation}
+
+    where for the last equality we have used lemma \ref{lem:conservation}. Inserting 
+    equation \ref{eq:continuity_U_part} into equation \ref{eq:continuity_finite_diff_part} 
+    and rearranging yields the claim. 
+
+    \iffalse
+    Due to the augmentation of the basis $\widetilde{ X }$, the projection on the right side 
+    of this inner product acts as an identity. Therefore 
+
+    \begin{equation}
+        \left( \sum_\ell \xi_\ell U_\ell,\ \frac{f(t + \tau) - f(t)}{\tau} \right)_v
+        = 
+    \end{equation}
+
+    \begin{equation}
+        \begin{split}
+            \left( v^\varrho,\ \frac{f(t + \tau) - f(t)}{\tau} \right)_v
+            &= \left( \sum_\ell \xi_\ell U_\ell,\ \frac{f(t + \tau) - f(t)}{\tau} \right)_v
+                + \left( \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+                \frac{f(t + \tau) - f(t)}{\tau} \right)_v \\ 
+            &= \sum_k \widetilde{ X }_k 
+            \left( \widetilde{ X }_k v^\varrho,\ RHS (\widetilde{ f }) \right)_{x v}
+            + \left( \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+                \frac{f(t + \tau) - f(t)}{\tau} \right)_v
+            - \sum_k \widetilde{ X }_k \left( \widetilde{ X }_k \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+            RHS( \widetilde{ f } ) \right)
+            %= \sum_k \widetilde{ X }_k 
+            %\left( \widetilde{ X }_k v^\varrho,\ RHS (\widetilde{ f }) \right)_{x v} 
+        \end{split}
+    \end{equation}
+
+    Thanks to the augmentation of the bases, this can be written as 
+
+    \begin{equation}\label{eq:varPsi}
+        \begin{split}
+            \sum_k \widetilde{ X }_k &
+                \left( \widetilde{ X }_k v^\varrho,\ RHS (\widetilde{ f }) \right)_{x v} \\
+            &= \sum_k \widetilde{ X }_k 
+            \left( \widetilde{ X }_k v^\varrho,\ 
+                RHS (
+                    f = f_0 
+                        \widetilde{ X }^T 
+                        \widetilde{ M }^T 
+                        S (t) 
+                        \widetilde{ N }
+                        \widetilde{ V }
+                ) 
+            \right)_{x v} \\
+            &= \sum_k \widetilde{ X }_k 
+            \left( \widetilde{ X }_k v^\varrho,\ 
+                RHS ( f = f_0 X(t)^T S (t) V(t) ) \right)_{x v} . 
+        \end{split}
+    \end{equation}
+
+    We have 
+
+    \begin{equation}\label{eq:X_k_v_rho}
+        \begin{split}
+            &\left( 
+                \widetilde{ X }_k \,v^\varrho,\ RHS ( f = f_0 X(t)^T S(t) V(t) )
+            \right)_{x v} 
+            = \left( 
+                \widetilde{ X }_k \,v^\varrho,\ RHS ( f(t) )
+            \right)_{x v} \\
+            &= \sum_{i j} S_{i j} 
+                \left\langle \widetilde{ X }_k,\ \nabla_x X_i (t) \right\rangle_x \cdot 
+                \left( v^{\varrho + 1},\ f_0 V_j (t) \right)_v \\ 
+                &\quad\quad\quad\quad\quad\quad\quad%\quad\quad 
+                + \sum_{i j} S_{i j} 
+                \left\langle \widetilde{ X }_k,\ E(t) X_i (t) \right\rangle_x \cdot 
+                \left( v^\varrho,\ \nabla_v \left[ f_0 V_j (t) \right] \right)_v \\ 
+            &= \sum_{i j} S_{i j} 
+                \left\langle \widetilde{ X }_k,\ \nabla_x X_i (t) \right\rangle_x \cdot 
+                \left\langle v^{\varrho + 1},\ V_j (t) \right\rangle_v \\ 
+                &\quad\quad\quad\quad\quad\quad\quad%\quad\quad 
+                + \sum_{i j} S_{i j} 
+                \left\langle \widetilde{ X }_k,\ E(t) X_i (t) \right\rangle_x \cdot 
+                \left\langle \varrho v^{\varrho - 1},\ V_j (t) \right\rangle_v . 
+        \end{split}
+    \end{equation}
+
+    where for the last equality we used integration by parts. 
+    Inserting \ref{eq:X_k_v_rho} into \ref{eq:varPsi} and noting that $\widetilde{ X }$ 
+    forms a basis of $\left\{ X_i (t) \right\}_i$ and $\left\{ \nabla X_i (t) \right\}_i$ 
+    and using lemma \ref{lem:conservation} yields 
+
+    \begin{equation}
+        \begin{split}
+            \sum_k \widetilde{ X }_k &
+            \left( \widetilde{ X }_k v^\varrho,\ 
+                RHS ( f(t) ) \right)_{x v} \\
+            &= \int_{\Omega_v} \sum_{i j} 
+                f_0\, V_j (t) S_{i j} (t) \nabla_x X_i (t) \cdot v^{\varrho + 1} \,dv \\ 
+                &\quad\quad\quad\quad\quad\quad\quad%\quad\quad 
+                + \int_{\Omega_v} \sum_{i j} 
+                f_0\, V_j (t) S_{i j} (t) X_i (t) E(t) \cdot \varrho v^{\varrho - 1} \,dv \\ 
+            &= \nabla_x \cdot \int_{\Omega_v} v^{\varrho + 1} 
+                \sum_{i j} f_0\, V_j (t) S_{i j} (t) X_i (t) \,dv \\ 
+                &\quad\quad\quad\quad\quad\quad\quad%\quad\quad 
+                + E(t) \cdot \int_{\Omega_v} \varrho v^{\varrho - 1} 
+                \sum_{i j} f_0\, V_j (t) S_{i j} (t) X_i (t) \,dv \\ 
+            &= \nabla_x \cdot \int_{\Omega_v} v^{\varrho + 1} f(t) \,dv
+                + E(t) \cdot \int_{\Omega_v} \varrho v^{\varrho - 1} f(t) \,dv \\ 
+            &= \left( v^\varrho,\ RHS(f(t)) \right)_v
+        \end{split}
+    \end{equation}
+
+    which was to be shown. 
+    \fi
+\end{proof}
+
+Due to the orthonormality condition on $U$, the most reasonable choice to satisfy theorem 
+\ref{thm:conservation} is given by Hermite polynomials, that is, we choose tensor 
+products of Hermite polynomials up to degree $P$. Setting $P = 0$ implies conservation of 
+mass and $P = 1$ implies conservation of momentum. To see conservation of total energy, 
+a final calculation must be made. 
+
+\begin{corollary}\label{thm:electric_energy}
+    Let $U : \Omega_v \to \bbR^m$ be chosen such that 
+
+    \begin{equation}
+        v \mapsto v^2 \in \spn \left\{ U_1, \ldots, U_m \right\} 
+    \end{equation}
+
+    Assume that the numerically computed electric field satisfies 
+
+    \begin{equation}
+        \left\| E(t + \tau) - E(t) \right\| = \mathcal{O} (\tau^\mu)
+    \end{equation}
+    
+    for some $\mu \geq 1$. Then the time-discrete 
+    continuity equation for total energy is satisfied to order $2\mu - 1$, that is,
+
+    \begin{equation}
+        \frac{e(t + \tau) - e(t)}{\tau}
+        + \frac{1}{2} \nabla_x \cdot (\trace M_3 (t)) 
+        + (M_1 (t) - \frac{E(t + \tau) - E(t)}{\tau}) \cdot E (t)
+        = \mathcal{O} (\tau^{2\mu - 1}) . 
+    \end{equation}
+
+\end{corollary}
+
+\begin{proof}
+    Note that 
+
+    \begin{equation}\label{eq:discrete_1}
+        \frac{e(t + \tau) - e(t)}{\tau} 
+        = \frac{1}{2} \frac{\trace M_2 (t + \tau) - \trace M_2 (t)}{\tau} 
+            + \frac{1}{2} \frac{E(t + \tau)^2 - E(t)^2}{\tau} ,
+    \end{equation}
+
+    the first term of which is equal to 
+    
+    \begin{equation}\label{eq:discrete_2}
+        \frac{\trace M_2 (t + \tau) - \trace M_2 (t)}{\tau} 
+        = - \nabla_x \cdot ( \trace M_3 (t) ) - 2 M_1 (t) \cdot E (t)
+    \end{equation}
+
+    by theorem 
+    \ref{thm:conservation}. The second term can be rewritten as 
+
+    \begin{equation}\label{eq:discrete_3}
+        \begin{split}
+            \frac{E(t + \tau)^2 - E(t)^2}{\tau} 
+            &= \frac{(E(t + \tau) - E(t))^2 + 2 E(t + \tau) \cdot E(t) - 2 E(t)^2}{\tau} \\ 
+            &= 2 E(t) \cdot \frac{E(t +\tau) - E(t)}{\tau} 
+                + \frac{(E(t + \tau) - E(t))^2}{\tau} . 
+        \end{split}
+    \end{equation}
+
+    Since $E(t + \tau)$ is always an $\mathcal{O} (\tau^\mu)$ away from $E(t)$, the second 
+    term is an $\mathcal{O} (\tau^{2\mu - 1})$. Inserting the expressions 
+    \ref{eq:discrete_2} and \ref{eq:discrete_3} into equation \ref{eq:discrete_1} now 
+    yields the claim. 
+\end{proof}
+
+Theorem \ref{thm:conservation} states that when all monomials up to order $P$ are held 
+constant in $U$, then the corresponding continuity equations up to order $P$ are 
+satisfied. For higher order continuity equations, we can similarly guarantee a worst-case 
+bound on the error, dependent on how well the discrete differential 
+$\frac{1}{\tau} (f(t + \tau) - f(t))$ matches $RHS(f)$ in the direction of some monomial 
+$v \mapsto v^\varrho$. 
 
 % -------------------------------------------------------------------------------------- %

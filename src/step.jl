@@ -116,7 +116,8 @@ end
 # midpoint rule augmented BUG integrator
 function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
         
-    #f = X * S * V' .* f0v'
+    f = X * S * V' .* f0v'
+    Ef = E(f)
 
     U = @view V[:, 1:m]
     W = @view V[:, m+1:end]
@@ -132,7 +133,7 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     L += τ/2 * ∂ₜL
 
     # extend basis
-    X̃ = [X;; ∇ₓ(X);; K]
+    X̃ = [X;; ∇ₓ(X);; Ef .* X;; K]
     X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL_quadrature, pivot=true)
 
     Ṽ = [V;; L]

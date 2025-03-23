@@ -1,6 +1,29 @@
 % -------------------------------------------------------------------------------------- %
 
-\section{Numerical Example: Landau Damping}\label{sec:landau}
+\section{Numerical Examples}
+
+We demonstrate the error in observables for multiple initial conditions. We show that 
+the proposed methods indeed satisfy conservation laws as stated in theorem 
+\ref{thm:conservation}, as well as showing that the error representation is significantly 
+smaller than the worst-case estimate given in equation \ref{eq:pessimistic_error}. 
+
+\subsection{(Non-)Linear Landau Damping}\label{sec:landau}
+
+A key qualitative difference in the Vlasov equation compared to fluid models is the 
+ability for dissipative behavior to occur without the loss of energy. We are able to 
+see this empirically, as was verified analytically in \cite{landau} using asymptotic 
+methods for small parameter values. We consider a perturbation of the trivial steady 
+state distribution 
+
+\begin{equation}
+    f(x, v, 0) = \frac{1}{2 \pi}(1 + \alpha \cos (x)) \exp (-v^2)
+\end{equation}
+
+for $\alpha \in \left[ 0, 1/2 \right]$, computed over the domain 
+$\Omega_x = \left[ -\pi, \pi \right)_{\text{periodic}}$, 
+$\Omega_v = \left[ -6, 6 \right]$. We use a grid of $512$ equally spaced points in 
+$\Omega_x$, $512$ Gauß-Legendre grid points transplanted to $\Omega_v$. Furthermore we 
+fix a rank $r = 10$ and a time step $\tau = 5 \cdot 10^{-4}$. 
 
 \begin{figure}
     \centering
@@ -8,13 +31,7 @@
         \includegraphics[width=\textwidth]{e_density_t0.pdf}
     \end{subfigure}
     \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{rhs_t0.pdf}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
         \includegraphics[width=\textwidth]{e_density_t10.pdf}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{rhs_t10.pdf}
     \end{subfigure}
     \caption{
         Landau damping. Density \ref{eq:initial_conditions} and RHS for various times. 
@@ -25,39 +42,92 @@
 \begin{figure}
     \centering
     \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{2th_moment_error.pdf}
+        \missingfigure{$0$th moment (mass) for $m = 1, 2, 3, 5$}
     \end{subfigure}
     \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{3th_moment_error.pdf}
+        \missingfigure{$1$st moment (momentum) for $m = 1, 2, 3, 5$}
     \end{subfigure}
     \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{4th_moment_error.pdf}
+        \missingfigure{$2$nd moment (kinetic energy) for $m = 1, 2, 3, 5$}
     \end{subfigure}
     \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{5th_moment_error.pdf}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{6th_moment_error.pdf}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{7th_moment_error.pdf}
+        \missingfigure{$5$th moment for $m = 1, 2, 3, 5$}
     \end{subfigure}
     \caption{
-        Even- and odd-power moment errors based on one very exact numerical integration. 
-        Dashed overlay are various power laws: orange: $O(\tau^4)$, green: $O(\tau^6)$, pink: 
-        $O(\tau^4)$, yellow: $O(\tau^10)$, light blue: $O(exp(\tau))$. 
-    }\label{fig:moments}
+        Error in the continuity equations for the Landau damping scenario with 
+        $\alpha = 10^{-3}$. 
+    }\label{fig:moments_linear_landau}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$0$th moment (mass) for $m = 1, 2, 3, 5$}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$1$st moment (momentum) for $m = 1, 2, 3, 5$}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$2$nd moment (kinetic energy) for $m = 1, 2, 3, 5$}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$5$th moment for $m = 1, 2, 3, 5$}
+    \end{subfigure}
+    \caption{
+        Error in the continuity equations for the Landau damping scenario with 
+        $\alpha = 1/2$. 
+    }\label{fig:moments_nonlinear_landau}
+\end{figure}
+
+\subsection{Two-stream Instability}\label{sec:two_stream}
+
+The initial conditions in the Landau damping case can often show positive results 
+due to the high amount of symmetry in the system. For this reason, we consider a 
+nonsymmetric two-stream instabilility 
+
+\begin{equation}
+    f(x, v, 0) = \frac{1}{4 \pi} (1 + \alpha \cos(x)) \exp (-(v - \bar{v})^2)
+        + \frac{1}{4 \pi} (1 + \beta \sin(x)) \exp (-(v + \bar{v})^2)
+    %f(x, v, 0) = (1 + \alpha \cos (x)) \left( \exp(-(v - \bar{v})^2) + \exp(-(v + \bar{v})^2) \right) 
+\end{equation}
+
+for $\bar{v} \in \bbR$ and $\alpha, \beta \in \left[ 0, 1/2 \right]$, chosen such 
+that $f(0)$ is strictly positive. We use the same grid points, rank, and time step 
+as in the previous section. 
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$e^-$ density for $t = 0$}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$e^-$ density for $t = 10$}
+    \end{subfigure}
+    \caption{
+        Two-stream instability. density for various times. 
+    }\label{fig:density_two_stream}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$0$th moment (mass) for $m = 1, 2, 3, 5$}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$1$st moment (momentum) for $m = 1, 2, 3, 5$}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$2$nd moment (kinetic energy) for $m = 1, 2, 3, 5$}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \missingfigure{$5$th moment for $m = 1, 2, 3, 5$}
+    \end{subfigure}
+    \caption{
+        Error in the continuity equations for the two-stream instability. 
+    }\label{fig:moments_two_stream}
 \end{figure}
 
 \iffalse
-\begin{figure}
-    \missingfigure{}
-    \caption{
-        Conservation of observables until $f$ becomes negative
-    }\label{fig:positivity}
-\end{figure}
-\fi
-
 \begin{enumerate}
     \item Basic takeaway of Landau damping: dissipation can occur without loss of energy; 
           different than in fluid equations
@@ -87,5 +157,6 @@
           observables go haywire. Should a positivity-preserving method be considered? 
           How would this affect the conservation? 
 \end{enumerate}
+\fi
 
 % -------------------------------------------------------------------------------------- %
