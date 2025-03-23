@@ -199,6 +199,6 @@ end
 
 
 CSV.write(
-    "../data/evolution_$(landau ? "landau" : "two_stream")_rank_min_$(r_min)_max_$(r_max)_step_" * replace("$τ", "." => "d") * ".csv", 
+    "../data/evolution_$(string(conditions))_rank_min_$(r_min)_max_$(r_max)_step_" * replace("$τ", "." => "d") * ".csv", 
     df
 )
