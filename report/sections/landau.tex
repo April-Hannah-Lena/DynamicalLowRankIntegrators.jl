@@ -28,14 +28,23 @@ fix a rank $r = 10$ and a time step $\tau = 5 \cdot 10^{-4}$.
 \begin{figure}
     \centering
     \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{e_density_t0.pdf}
+        \includegraphics[width=\textwidth]{e_density_landau_t_0.pdf}
     \end{subfigure}
     \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{e_density_t10.pdf}
+        \includegraphics[width=\textwidth]{e_density_landau_t_10.pdf}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\textwidth]{rhs_landau_t_0.pdf}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\textwidth]{rhs_landau_t_10.pdf}
     \end{subfigure}
     \caption{
-        Landau damping. Density \ref{eq:initial_conditions} and RHS for various times. 
-        !! Note the differing color bar axes!
+        Landau damping. 
+        Top: $e^-$ density in $\Omega_x \times \Omega_v$. 
+        Bottom: $RHS(f)$ for $f$ on top. 
+        Left: Time $t = 0$. 
+        Right: Time $t = 10$. 
     }\label{fig:density}
 \end{figure}
 
@@ -86,14 +95,22 @@ due to the high amount of symmetry in the system. For this reason, we consider a
 nonsymmetric two-stream instabilility 
 
 \begin{equation}
-    f(x, v, 0) = \frac{1}{4 \pi} (1 + \alpha \cos(x)) \exp (-(v - \bar{v})^2)
-        + \frac{1}{4 \pi} (1 + \beta \sin(x)) \exp (-(v + \bar{v})^2)
+    f(x, v, 0) = \frac{1}{4 \pi} (1 + \alpha \cos(x)) \exp (-(v - \bar{v}/2)^2)
+        + \frac{1}{4 \pi} (1 + \beta \sin(x)) \exp (-(v + \bar{v}/2)^2)
     %f(x, v, 0) = (1 + \alpha \cos (x)) \left( \exp(-(v - \bar{v})^2) + \exp(-(v + \bar{v})^2) \right) 
 \end{equation}
 
-for $\bar{v} \in \bbR$ and $\alpha, \beta \in \left[ 0, 1/2 \right]$, chosen such 
-that $f(0)$ is strictly positive. We use the same grid points, rank, and time step 
-as in the previous section. 
+for $\bar{v} \in \bbR$ and $\alpha, \beta \in \left[ 0, 1/2 \right]$, chosen
+such that $f(0)$ is strictly positive. We use the same grid points, rank, and
+time step as in the previous section. We note the translated gaussians can be
+expanded as
+
+\begin{equation}
+    \exp(-(v - \bar{v}/2)^2) = \exp(-v^2) 
+    \sum_{k \geq 0} \frac{\exp(-\bar{v}^2) \bar{v}^k}{2^k k!} H_k (v)
+\end{equation}
+
+where $H_k$ is the $k$-th Hermite polynomial. 
 
 \begin{figure}
     \centering
