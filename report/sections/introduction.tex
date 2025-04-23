@@ -1,0 +1,33 @@
+% -------------------------------------------------------------------------------------- %
+
+\section{Introduction}\label{sec:intro}
+
+Efficient numerical solutions to kinetic equations is the basis for many fields in 
+physics and has applications such as fusion energy generation in magnetically confined 
+chambers, or dosage calculation in radiation therapy. Kinetic models are dependent on 
+both physical space coordinates $x \in \Omega_x \subset \bbR^d$, $d = 1, 2, 3$ and 
+velocity coordinates 
+$v \in \Omega_v \subset \bbR^d$. A grid-based discretization with $n$ grid points in each 
+dimension therefore incurs a computational cost of order $O(n^{2 d})$. Hence, direct 
+solutions for the (kinetic) density function are prohibitively expensive. 
+
+Recently, dynamical low-rank solvers for kinetic equations such as the Vlasov-Poisson 
+equation have been proposed \cite{einkemmer2018}. These methods are based on 
+\cite{lowrank}, in which matrix differential equations are approximated by low-rank 
+matrices using a Galerkin principle. These solvers have been shown to be successful 
+\cite{Cassini_2022}, but without additional care the projection to low-rank tensor 
+products destroys important physical structure in the system. This can be alleviated by 
+altering the approximation space such that some moments of the velocity coordinate always 
+lie in the space spanned by the low-rank matrices \cite{robustlowrank}. This is sufficient 
+to guarantee that continuity equations for mass, momentum, and energy are conserved up to 
+an error that is linear in the time step size. 
+
+In the following report we examine whether the conservative dynamical low-rank integrator 
+also preserves further observables and if so, to what order. The report is structured as 
+follows: in section \ref{sec:vlasov} the Vlasov-Poisson equation is introduced and 
+conservation properties are discussed; in section \ref{sec:lowrank} the conservative 
+dynamical low-rank integrator is shown; in section \ref{sec:landau} the integrator is 
+demonstrated on an analytically understood example system. 
+\todo{if some observable works, mention here}
+
+% -------------------------------------------------------------------------------------- %

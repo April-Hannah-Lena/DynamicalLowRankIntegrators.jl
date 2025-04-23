@@ -1,4 +1,4 @@
-using Plots, ProgressMeter
+using ProgressMeter#, Plots
 using Serialization, DataFrames, CSV
 using Statistics, LinearAlgebra, Einsum
 using ApproxFun, FastGaussQuadrature, Interpolations
@@ -8,21 +8,23 @@ import ClassicalOrthogonalPolynomials as cl
 #using ClassicalOrthogonalPolynomials: HermiteWeight
 #using ApproxFun.ApproxFunOrthogonalPolynomials: weight
 
-include("./plot.jl")
+#include("./plot.jl")
 
 
 
 # parameters 
 
-const m = 3 # number of conserved v components
+const m = parse(Int, ARGS[2]) # number of conserved v components
 const r = 10 # starting rank
 const r_min = 10
 const r_max = 10
+@assert m ≤ r_min ≤ r ≤ r_max
+
 const m_x, m_v = 512, 512 # points in x and v 
 
 const τ = 5e-4    # time step
-const t_start = 0.
-const t_end = 30.
+const t_start = parse(Float64, ARGS[3])
+const t_end = parse(Float64, ARGS[4])
 const t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
@@ -41,7 +43,9 @@ const V0 = v_basis[:, 1:r]
 const S0 = zeros(r, r)
 
 
-conditions = :nonsymmetric
+const conditions = Symbol(ARGS[1])
+@assert conditions ∈ [:landau, :twostream, :nonsymmetric]
+
 if conditions == :landau
     # Landau damping
     α = 0.5
@@ -82,11 +86,11 @@ include("./step.jl")
 
 f = X0 * S0 * V0' .* f0v'
 S0 ./= mass(f)   # normalized e⁻ density
-f = X0 * S0 * V0' .* f0v'
+#f = X0 * S0 * V0' .* f0v'
 
 
-plot_density(f, t=0)
-plot_density(RHS(f), title="RHS")
+#plot_density(f, t=0)
+#plot_density(RHS(f), title="RHS")
 
 
 
@@ -135,9 +139,12 @@ prog = Progress(length(t_start:record_step:t_end)-1, showspeed=true)
 # precompile
 try_step(X, S, V, t, τ, 1e-5, 1e-12)
 
+@info "run begin $conditions, $m"
+
 while !done
 
     global X, S, V, f, t, last_t, last_t_low_res, done
+    global X_last, S_last, V_last
 
     #X, S, V, t, τ_used = try_step(X, S, V, t, τ, 1e-7, 1e-11)    # adaptive step size
     X_last, S_last, V_last = copy(X), copy(S), copy(V)
@@ -188,9 +195,9 @@ while !done
 
     end
 
-    if t - last_t_low_res ≥ 0.1
+    if t - last_t_low_res ≥ 0.5
 
-        plot_step(x_grid, v_grid, f, X, S, V, t)#, mass_evolution, momentum_evolution, energy_evolution)
+        #plot_step(x_grid, v_grid, f, X, S, V, t)#, mass_evolution, momentum_evolution, energy_evolution)
         last_t_low_res = t
     
     end
