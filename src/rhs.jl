@@ -54,7 +54,7 @@ function E(f)
 end
 
 # 1 x dimension,  1 v dimension
-RHS(f) = E(f) .* ∇ᵥ(f')'  -  v_grid' .* ∇ₓ(f)
+RHS(f)  =  E(f) .* ∇ᵥ(f')'  -  v_grid' .* ∇ₓ(f)
 
 mass(f) = ∫dx(∫dv(f))
 particle_flux_density(f) = ∫dv(f .* v_grid')
@@ -94,7 +94,7 @@ end
 function RHS_over_f0v(X, S, V)
     term1 = v_grid' .* ( ∇ₓ(X) * S * V' )
     term2 = ( -2 * v_grid' .* E((X * S * V') .* f0v') ) .* (X * S * V')  +  X * S * ∇ᵥ(V)'
-    return - term1 - term2
+    return term2 - term1
 end
 
 function directional_continuity_error(Xₜ₊, Sₜ₊, Vₜ₊, Xₜ, Sₜ, Vₜ, τ, p)

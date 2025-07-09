@@ -43,77 +43,7 @@ function step_∂ₜ(X, S, V)
 
 end
 
-#=
-# Augmented BUG integrator
-function step(X, S, V, τ)
-        
-    #f = X * S * V' .* f0v'
-
-    U = @view V[:, 1:m]
-    W = @view V[:, m+1:r]
-    b = @view S[:, m+1:r]
-
-    # update K and L
-    K = X * S
-    L = W * b'b
-
-    ∂ₜK, _, ∂ₜL = step_∂ₜ(X, S, V)
-
-    K += τ * ∂ₜK
-    L += τ * ∂ₜL
-
-    # extend basis
-    X̃ = [X;; ∇ₓ(X);; K]
-    X̃, _R = gram_schmidt(X̃, x_gram, x_basis)
-
-    Ṽ = [V;; L]
-    Ṽ, _R = gram_schmidt(Ṽ, v_gram, v_basis, m)
-
-    W̃ = @view Ṽ[:, m+1:end]
-
-    @vielsimd M[k,l] := x_weights[x] * X[x,k] * X̃[x,l]
-    @vielsimd N[k,l] := v_weights[v] * f0v[v] * V[v,k] * Ṽ[v,l]
-
-    S̃ = M' * S * N
-    
-    _, ∂ₜS, _ = step_∂ₜ(X̃, S̃, Ṽ)
-
-    # update S̃
-    S̃ += τ * ∂ₜS
-
-    # split extended K
-    K̃ = X̃ * S̃
-
-    K̃cons = @view K̃[:, 1:m]
-    K̃rem = @view K̃[:, m+1:end]
-
-    # orthonormalize parts of X
-    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis)
-    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis)
-
-    # truncate via svd
-    svdSrem = svd(S̃rem)
-    Û = svdSrem.U[:, 1:r-m]
-    Ŝ = Diagonal(svdSrem.S[1:r-m])
-    Ŵ = svdSrem.Vt[1:r-m, :]'
-
-    Srem = Ŝ
-    W = W̃ * Ŵ
-    Xrem = X̃rem * Û
-    X̂ = [Xcons;; Xrem]
-
-    X, R = gram_schmidt(X̂, x_gram, x_basis)    # X update step
-    V = [U;; W]     # V update step
-    S = R * BlockDiagonal([Scons, Srem])    # S update step
-
-    #f = X * S * V' .* f0v'      # f update step
-
-    return X, S, V
-
-end
-=#
-
-# midpoint rule augmented BUG integrator
+# augmented BUG integrator (not midpoint rule)
 function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
         
     f = X * S * V' .* f0v'
@@ -126,11 +56,11 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     K = X * S
     L = W * b'b
 
-    # midpoint step
+    # midpoint step stuff is commented out
     ∂ₜK, _, ∂ₜL = step_∂ₜ(X, S, V)
 
-    K += τ/2 * ∂ₜK
-    L += τ/2 * ∂ₜL
+    K += τ#=/2=# * ∂ₜK
+    L += τ#=/2=# * ∂ₜL
 
     # extend basis
     X̃ = [X;; ∇ₓ(X);; Ef .* X;; K]
@@ -146,8 +76,9 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
 
     _, ∂ₜS, _ = step_∂ₜ(X̃, S̃, Ṽ)
     
-    S̃ += τ/2 * ∂ₜS
+    S̃ += τ#=/2=# * ∂ₜS
 
+    #=
     # full step
     ∂ₜK, _, ∂ₜL = step_∂ₜ(X̃, S̃, Ṽ)
 
@@ -173,6 +104,7 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     _, ∂ₜS, _ = step_∂ₜ(X̃, S̃, Ṽ)
     
     S̃ += τ * ∂ₜS
+    =#
     
     # split extended K
     K̃ = X̃ * S̃
@@ -180,7 +112,7 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     K̃cons = @view K̃[:, 1:m]
     K̃rem = @view K̃[:, m+1:end]
     
-    # orthonormalize parts of X
+    # orthonormalize parts of X     <-- is this a bug?
     Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis, TOL_quadrature, pivot=true)
     X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis, TOL_quadrature, pivot=true)
     
