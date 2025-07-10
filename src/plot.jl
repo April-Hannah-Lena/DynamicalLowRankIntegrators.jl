@@ -20,7 +20,7 @@ end
     p2 = plot_density(RHS(f), title="RHS", t=t)
     p3 = plot(x_grid, collect(eachcol(X)))
     p4 = plot(
-        v_grid[iperm], collect(eachcol( sign.(V[iperm, :]) .* log10.(abs.(V[iperm :]).+1) )),
+        v_grid[iperm], collect(eachcol( sign.(V[iperm, :]) .* log10.(abs.(V[iperm, :]).+1) )),
         yticks=(
             [-4., -2., -log10(11), -log10(2), 0, log10(2), log10(11), 2., 4.], 
             ["-10000", "-100", "-10", "-1", "0", "1", "10", "100", "10000"]
