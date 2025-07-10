@@ -63,10 +63,10 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     L += τ#=/2=# * ∂ₜL
 
     # extend basis
-    X̃ = [X;; ∇ₓ(X);; Ef .* X;; K]
+    X̃ = [X;; ∇ₓ(X);; #=Ef .* X;;=# K]
     X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL_quadrature, pivot=true)
 
-    Ṽ = [V;; L]
+    Ṽ = [#=V;;=#U;; L;; W]
     Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL_quadrature, pivot=false)
 
     M = X' * x_gram * X̃

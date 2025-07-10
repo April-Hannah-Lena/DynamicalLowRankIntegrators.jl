@@ -2,9 +2,9 @@ using Plots
 
 
 
-function plot_density(f; title="e⁻ density", t=0, size=(1_000,800), kwargs...)
+@views function plot_density(f; title="e⁻ density", t=0, size=(1_000,800), kwargs...)
     heatmap(
-        x_grid, v_grid, f', 
+        x_grid, v_grid[iperm], (f[:, iperm])', 
         title="$title, time = $(round(t, digits=3))", 
         xlabel="x",
         ylabel="v",
@@ -15,12 +15,12 @@ function plot_density(f; title="e⁻ density", t=0, size=(1_000,800), kwargs...)
     )
 end
 
-function plot_step(x_grid, v_grid, f, X, S, V, t; size=(1_000,800))#, mass_evolution, momentum_evolution, energy_evolution)
+@views function plot_step(x_grid, v_grid, f, X, S, V, t; size=(1_000,800))#, mass_evolution, momentum_evolution, energy_evolution)
     p1 = plot_density(f, t=t)
     p2 = plot_density(RHS(f), title="RHS", t=t)
     p3 = plot(x_grid, collect(eachcol(X)))
     p4 = plot(
-        v_grid, collect(eachcol( sign.(V) .* log10.(abs.(V).+1) )),
+        v_grid[iperm], collect(eachcol( sign.(V[iperm, :]) .* log10.(abs.(V[iperm :]).+1) )),
         yticks=(
             [-4., -2., -log10(11), -log10(2), 0, log10(2), log10(11), 2., 4.], 
             ["-10000", "-100", "-10", "-1", "0", "1", "10", "100", "10000"]

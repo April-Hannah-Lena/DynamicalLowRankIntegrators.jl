@@ -16,6 +16,11 @@ v_stretch = (vlims[2]-vlims[1])/2
 const x_grid = x_stretch .* _x_grid# .+ (xlims[2]+xlims[1])/2
 v_grid .*= v_stretch# .+ (vlims[2]+vlims[1])/2
 
+perm = sortperm(v_grid, by=abs, rev=true)
+v_grid .= v_grid[perm]
+v_weights .= v_weights[perm]
+iperm = invperm(perm)
+
 const x_weights = _x_weights * 2x_stretch
 v_weights .*= v_stretch
 
@@ -105,9 +110,12 @@ const v_basis_norms = diag(R)
 @views function gram_schmidt(f, gram, basis, TOL=50eps(); pivot=true)
     @assert size(f,2) ≤ size(basis,2)
     full_coeff_matrix = basis' * gram * f
+    
+    projection_error = diag( f' * gram * f  -  full_coeff_matrix' * full_coeff_matrix )
+    any(projection_error .> TOL) && @error "bad projection"
 
     cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
-        getindex(full_coeff_matrix, index) < TOL  &&  return 1
+        full_coeff_matrix[index] < TOL  &&  return 1
         i, _ = Tuple(index)
         return i
     end
@@ -124,11 +132,14 @@ end
 @views function gram_schmidt(f, gram, basis, rank::Integer, TOL=50eps(); pivot=false)
     @assert size(f,2) ≤ size(basis,2)
     full_coeff_matrix = basis' * gram * f
+    
+    projection_error = diag( f' * gram * f  -  full_coeff_matrix' * full_coeff_matrix )
+    any(projection_error .> TOL) && @error "bad projection"
 
     @assert all( abs.(full_coeff_matrix[1:rank, 1:rank] - I(rank)) .< sqrt(TOL) )
     @assert all( abs.(full_coeff_matrix[rank+1:end, 1:rank]) .< sqrt(TOL) )
-    full_coeff_matrix[1:rank, 1:rank] .= I(rank)
-    full_coeff_matrix[rank+1:end, 1:rank] .= 0
+    #full_coeff_matrix[1:rank, 1:rank] .= I(rank)
+    #full_coeff_matrix[rank+1:end, 1:rank] .= 0
 
     cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
         getindex(full_coeff_matrix, index) < TOL  &&  return 1

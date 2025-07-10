@@ -18,11 +18,11 @@ const m = 3 # number of conserved v components
 const r = 10 # starting rank
 const r_min = 10
 const r_max = 10
-const m_x, m_v = 512, 512 # points in x and v 
+const m_x, m_v = 256, 512 # points in x and v 
 
-const τ = 5e-4    # time step
+const τ = 1e-3    # time step
 const t_start = 0.
-const t_end = 30.
+const t_end = 50.
 const t_grid = t_start:τ:t_end
 
 # must be centered around 0 for now
@@ -41,7 +41,7 @@ const V0 = v_basis[:, 1:r]
 const S0 = zeros(r, r)
 
 
-conditions = :nonsymmetric
+conditions = :twostream
 if conditions == :landau
     # Landau damping
     α = 0.5
