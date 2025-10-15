@@ -35,12 +35,12 @@ v_weights .*= v_stretch                     # same for v
 
 const f0v = @. exp(-v_grid^2)       # Gauss weight
 
-const x_gram = Diagonal(x_weights)      # should be renamed since it's not a gram
-const sqrt_x_gram = sqrt(x_gram)
+const x_weight_matrix = Diagonal(x_weights)      # should be renamed since it's not a weight_matrix
+const sqrt_x_weight_matrix = sqrt(x_weight_matrix)
 
-const v_gram_unweighted = Diagonal(v_weights)
-const v_gram = Diagonal(f0v .* v_weights)
-const sqrt_v_gram = sqrt(v_gram)
+const v_weight_matrix_const_weight = Diagonal(v_weights)
+const v_weight_matrix = Diagonal(f0v .* v_weights)
+const sqrt_v_weight_matrix = sqrt(v_weight_matrix)
 
 
 
@@ -64,22 +64,22 @@ cjacobi = cl.jacobi(1, 1, vlims[1]..vlims[2])
 # normalize basis functions
 x_basis_norms = √(π) * ones(Mx)
 x_basis_norms[1] *= √(2)
-@assert diag(x_basis' * x_gram * x_basis) ≈ x_basis_norms
+@assert sqrt.(diag(x_basis' * x_weight_matrix * x_basis)) ≈ x_basis_norms
 x_basis ./= x_basis_norms'
 
 legendre_basis_norms = sqrt.(2 .* v_stretch ./ (2 .* (0:Mlegendre-1) .+ 1))
-@assert diag(legendre_basis' * v_gram_unweighted * legendre_basis) ≈ legendre_basis_norms
+@assert sqrt.(diag(legendre_basis' * v_weight_matrix_const_weight * legendre_basis)) ≈ legendre_basis_norms
 legendre_basis ./= legendre_basis_norms'
 
 
 # orthonormalization
 # not efficient but easy to implement
 #=
-function basic_gram_schmidt!(f, gram)
+function basic_gram_schmidt!(f, weight_matrix)
     R = zeros(eltype(f), size(f,2), size(f,2))
     for j in axes(f, 2)
         for k in axes(f, 2)
-            R[k,j] = f[:,k]' * gram * f[:,j]
+            R[k,j] = f[:,k]' * weight_matrix * f[:,j]
             if k < j 
                 f[:,j] .-= R[k,j] * f[:,k]
             elseif k == j
@@ -104,7 +104,7 @@ function gram_schmidt!(f, sqrt_gram, pivot::Bool)
 end
 
 # orthonormalize v basis
-_, R = gram_schmidt!(v_basis, sqrt_v_gram, false)
+_, R = gram_schmidt!(v_basis, sqrt_v_weight_matrix, false)
 const v_basis_norms = diag(R)
 # In theory this would = √( √(π)  .*  2.0 .^ (0:Mv-1)  .*  factorial.(big.(0:Mv-1)) )
 # but the cutoff causes us to lose (up to) 60% of a 
@@ -116,11 +116,11 @@ const v_basis_norms = diag(R)
 
 
 
-@views function gram_schmidt(f, gram, basis, TOL=50eps(); pivot=true)
+@views function gram_schmidt(f, weight_matrix, basis, TOL=50eps(); pivot=true)
     @assert size(f,2) ≤ size(basis,2)
-    full_coeff_matrix = basis' * gram * f
+    full_coeff_matrix = basis' * weight_matrix * f
     
-    projection_error = diag( f' * gram * f  -  full_coeff_matrix' * full_coeff_matrix )
+    projection_error = diag( f' * weight_matrix * f  -  full_coeff_matrix' * full_coeff_matrix )
     @assert all(projection_error .< TOL)
 
     cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
@@ -138,11 +138,11 @@ const v_basis_norms = diag(R)
     return basis[:,1:cutoff] * Matrix(Q), R
 end
 
-@views function gram_schmidt(f, gram, basis, rank::Integer, TOL=50eps(); pivot=false)
+@views function gram_schmidt(f, weight_matrix, basis, rank::Integer, TOL=50eps(); pivot=false)
     @assert size(f,2) ≤ size(basis,2)
-    full_coeff_matrix = basis' * gram * f
+    full_coeff_matrix = basis' * weight_matrix * f
     
-    projection_error = diag( f' * gram * f  -  full_coeff_matrix' * full_coeff_matrix )
+    projection_error = diag( f' * weight_matrix * f  -  full_coeff_matrix' * full_coeff_matrix )
     @assert all(projection_error .< TOL)
 
     should_be_small_1 = full_coeff_matrix[1:rank, 1:rank] - I(rank)
@@ -171,11 +171,11 @@ end
 
 
 #=
-@views function gram_schmidt(f, gram, basis, rank::Integer, TOL=50eps(); pivot=true)
+@views function gram_schmidt(f, weight_matrix, basis, rank::Integer, TOL=50eps(); pivot=true)
     r = size(f, 2)
     @assert rank < r ≤ size(basis, 2)
 
-    full_coeff_matrix = basis' * gram * f
+    full_coeff_matrix = basis' * weight_matrix * f
 
     @assert all( abs.(full_coeff_matrix[1:rank, 1:rank] - I(rank)) .< sqrt(TOL) )
     @assert all( abs.(full_coeff_matrix[rank+1:end, 1:rank]) .< sqrt(TOL) )

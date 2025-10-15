@@ -24,11 +24,11 @@ function step_∂ₜ(X, S, V)
     ∇ᵥV = ∇ᵥ_hermite(V)
     Ef = -E(f)
 
-    c1 = V' * v_gram * (v_grid .* V)
-    c2 = V' * v_gram * (-2 .* v_grid .* V  +  ∇ᵥV)
+    c1 = V' * v_weight_matrix * (v_grid .* V)
+    c2 = V' * v_weight_matrix * (-2 .* v_grid .* V  +  ∇ᵥV)
 
-    d1 = X' * x_gram * (Ef .* X)
-    d2 = X' * x_gram * ∇ₓX
+    d1 = X' * x_weight_matrix * (Ef .* X)
+    d2 = X' * x_weight_matrix * ∇ₓX
 
     # Einstein summation notation macro
     @vielsimd ∂ₜS[k,l] := ( - (d2[k,i] ⋅ c1[l,j]) + (d1[k,i] ⋅ c2[l,j]) ) * S[i,j]
@@ -67,13 +67,13 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
 
     # extend basis
     X̃ = [X;; ∇ₓ(X);; #=Ef .* X;;=# K]
-    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL_quadrature, pivot=true)
+    X̃, _ = gram_schmidt(X̃, x_weight_matrix, x_basis, TOL_quadrature, pivot=true)
 
     Ṽ = [#=V;;=#U;; L;; W]
-    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL_quadrature, pivot=false)
+    Ṽ, _ = gram_schmidt(Ṽ, v_weight_matrix, v_basis, m, TOL_quadrature, pivot=false)
 
-    M = X' * x_gram * X̃
-    N = V' * v_gram * Ṽ
+    M = X' * x_weight_matrix * X̃
+    N = V' * v_weight_matrix * Ṽ
     
     S̃ = M' * S * N
 
@@ -96,11 +96,11 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     X̃ = [X̃;; ∂ₜK]
     Ṽ = [Ṽ;; ∂ₜL]
 
-    X̃, _ = gram_schmidt(X̃, x_gram, x_basis, TOL_quadrature, pivot=false)
-    Ṽ, _ = gram_schmidt(Ṽ, v_gram, v_basis, m, TOL_quadrature, pivot=false)
+    X̃, _ = gram_schmidt(X̃, x_weight_matrix, x_basis, TOL_quadrature, pivot=false)
+    Ṽ, _ = gram_schmidt(Ṽ, v_weight_matrix, v_basis, m, TOL_quadrature, pivot=false)
 
-    M = X' * x_gram * X̃
-    N = V' * v_gram * Ṽ
+    M = X' * x_weight_matrix * X̃
+    N = V' * v_weight_matrix * Ṽ
 
     S̃ = M' * S * N
 
@@ -116,8 +116,8 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     K̃rem = @view K̃[:, m+1:end]
     
     # orthonormalize parts of X 
-    Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis, TOL_quadrature, pivot=true)
-    X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis, TOL_quadrature, pivot=true)
+    Xcons, Scons = gram_schmidt(K̃cons, x_weight_matrix, x_basis, TOL_quadrature, pivot=true)
+    X̃rem, S̃rem = gram_schmidt(K̃rem, x_weight_matrix, x_basis, TOL_quadrature, pivot=true)
     
     W̃ = @view Ṽ[:, m+1:end]
 
@@ -139,7 +139,7 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     Xrem = X̃rem * Û
     X̂ = [Xcons;; Xrem]
 
-    _X, R = gram_schmidt(X̂, x_gram, x_basis, TOL_quadrature, pivot=false)    # X update step
+    _X, R = gram_schmidt(X̂, x_weight_matrix, x_basis, TOL_quadrature, pivot=false)    # X update step
     _V = [U;; W]     # V update step
     _S = R * BlockDiagonal(Scons, Srem)    # S update step
 
