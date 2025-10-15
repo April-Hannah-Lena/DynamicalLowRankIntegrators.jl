@@ -27,7 +27,7 @@ end
         ),
         ylims=(-4,4)
     )
-    display(plot(p1, p2, p3, p4, size=size, layout=(2,2)))
+    plot(p1, p2, p3, p4, size=size, layout=(2,2))
     #@info "step" time=t mass=mass(f)[1] momentum=momentum(f)[1] energy=energy(f)[1]
     #@info "step" S=S
 end

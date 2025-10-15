@@ -20,12 +20,12 @@ const r_min = 10
 const r_max = 10
 const m_x, m_v = 256, 512 # points in x and v 
 
-const τ = 1e-3    # time step
+const τ = 7.5e-4    # time step
 const t_start = 0.
-const t_end = 50.
+const t_end = 45.
 const t_grid = t_start:τ:t_end
 
-# must be centered around 0 for now
+# must be centered around1 0 for now
 const xlims = (-π, π)
 const vlims = (-6, 6)
 
@@ -45,29 +45,29 @@ conditions = :twostream
 if conditions == :landau
     # Landau damping
     α = 0.5
-    S0[1, 1] = 1 / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
-    S0[3, 1] = -α / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+    S0[1, 1] = 1 / sqrt(π) 
+    S0[3, 1] = -α / sqrt(π)
 
 elseif conditions == :twostream
     # two-stream instability
     α = 0.3
     v̄ = 2.6
-    γ = exp(v̄^2) * ( v̄ .^ (0:r-1) + (-v̄) .^ (0:r-1) ) ./ (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
-    S0[1, :] .= γ / ( sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
-    S0[3, :] .= -α*γ / ( sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+    γ = exp(v̄^2) * ( v̄ .^ (0:r-1) + (-v̄) .^ (0:r-1) ) ./ sqrt.( factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
+    S0[1, :] .= γ / sqrt(π)
+    S0[3, :] .= -α*γ / sqrt(π)
 
 elseif conditions == :nonsymmetric
     α = 0.3
     β = 0.2
     v̄ = 2.6
     
-    γ1 = exp(v̄^2)  *  (v̄) .^ (0:r-1)  ./  (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
-    S0[1, :] .= γ1 / ( 2 * sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
-    S0[3, :] .= α * γ1 / ( 2 * sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+    γ1 = exp(v̄^2)  *  (v̄) .^ (0:r-1)  ./  sqrt.(factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
+    S0[1, :] .= γ1 / 2 * sqrt(π)
+    S0[3, :] .= α * γ1 / 2 * sqrt(π)
 
-    γ2 = exp(v̄^2)  *  (-v̄) .^ (0:r-1)  ./  (factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
-    S0[1, :] .+= γ2 / ( 2 * sqrt(π) * maximum(X0[:, 1]) * maximum(V0[:, 1]) )
-    S0[2, :] .= β * γ2 / ( 2 * sqrt(π) * maximum(X0[:, 3]) * maximum(V0[:, 1]) )
+    γ2 = exp(v̄^2)  *  (-v̄) .^ (0:r-1)  ./  sqrt.(factorial.(0:r-1) .* 2 .^ (0:r-1) ) 
+    S0[1, :] .+= γ2 / 2 * sqrt(π)
+    S0[2, :] .= β * γ2 / 2 * sqrt(π)
 end
 
 
@@ -141,7 +141,7 @@ while !done
 
     #X, S, V, t, τ_used = try_step(X, S, V, t, τ, 1e-7, 1e-11)    # adaptive step size
     X_last, S_last, V_last = copy(X), copy(S), copy(V)
-    X, S, V = step(X, S, V, τ, 1e-9)      # static step size
+    X, S, V = step(X, S, V, τ, 1e-7)      # static step size
     t += τ
 
     if t ≥ t_end
@@ -190,8 +190,10 @@ while !done
 
     if t - last_t_low_res ≥ 0.1
 
-        plot_step(x_grid, v_grid, f, X, S, V, t)#, mass_evolution, momentum_evolution, energy_evolution)
         last_t_low_res = t
+        p_time = plot_step(x_grid, v_grid, f, X, S, V, t)#, mass_evolution, momentum_evolution, energy_evolution)
+        display(p_time)
+        savefig(p_time, "./state_plots/$(replace("$t", "." => "d")).png")
     
     end
 

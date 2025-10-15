@@ -9,9 +9,11 @@ function BlockDiagonal(M1, M2)
     )
 end
 
+# if it's numerically beneficial to do so, inverse square root
 maybe_invsqrt(x, TOL) = x > TOL  ?  1/sqrt(x) : 1.
 
-
+# compute derivatives using the formulation in 
+# [Einkemmer Ostermann Scalone, p. 5]
 function step_∂ₜ(X, S, V)
 
     f = X * S * V' .* f0v'
@@ -20,7 +22,7 @@ function step_∂ₜ(X, S, V)
 
     ∇ₓX = ∇ₓ(X)
     ∇ᵥV = ∇ᵥ_hermite(V)
-    Ef = E(f)
+    Ef = -E(f)
 
     c1 = V' * v_gram * (v_grid .* V)
     c2 = V' * v_gram * (-2 .* v_grid .* V  +  ∇ᵥV)
@@ -28,6 +30,7 @@ function step_∂ₜ(X, S, V)
     d1 = X' * x_gram * (Ef .* X)
     d2 = X' * x_gram * ∇ₓX
 
+    # Einstein summation notation macro
     @vielsimd ∂ₜS[k,l] := ( - (d2[k,i] ⋅ c1[l,j]) + (d1[k,i] ⋅ c2[l,j]) ) * S[i,j]
     @vielsimd ∂ₜK[x,k] := ( - (c1[k,j] ⋅ ∇ₓX[x,i]) + (c2[k,j] ⋅ Ef[x]) * X[x,i] ) * S[i,j]
     
@@ -47,7 +50,7 @@ end
 function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
         
     f = X * S * V' .* f0v'
-    Ef = E(f)
+    Ef = -E(f)
 
     U = @view V[:, 1:m]
     W = @view V[:, m+1:end]
@@ -112,7 +115,7 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     K̃cons = @view K̃[:, 1:m]
     K̃rem = @view K̃[:, m+1:end]
     
-    # orthonormalize parts of X     <-- is this a bug?
+    # orthonormalize parts of X 
     Xcons, Scons = gram_schmidt(K̃cons, x_gram, x_basis, TOL_quadrature, pivot=true)
     X̃rem, S̃rem = gram_schmidt(K̃rem, x_gram, x_basis, TOL_quadrature, pivot=true)
     
@@ -141,6 +144,7 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
     _S = R * BlockDiagonal(Scons, Srem)    # S update step
 
     #=
+    # rank update based on error in low moments
     f = _X * _S * _V' .* f0v'
     mas = mas_new = mass(f)[1]
     momen = momen_new = momentum(f)[1]
@@ -178,6 +182,7 @@ function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
 
 end
 
+# adaptive stepping scheme where step size is based on error accumulation
 function try_step(X, S, V, t, τ, τ_min=1e-7, TOL=1e-12, TOL_conservation=1e-8)
     
     f = X * S * V' .* f0v'

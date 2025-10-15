@@ -5,8 +5,8 @@ using ApproxFun
 
 # rhs functions
 
-∫dx(f) = vec(sum(f .* x_weights, dims=1))
-∫dv(f) = vec(sum(f .* v_weights', dims=2))
+∫dx(f) = vec(sum(f .* x_weights, dims=1))  # Fourier integral
+∫dv(f) = vec(sum(f .* v_weights', dims=2)) # Gauss-Legendre integral (that means not Gauss-weighted)
 
 
 const ∂_fourier = Tridiagonal(
@@ -20,11 +20,15 @@ const ∂_legendre = BandedMatrix(1 => [0.1k for k in 2:Mlegendre])
 #∂_legendre .*= legendre_basis_norms
 ∂_legendre ./= legendre_basis_norms'
 
+# derivatives of legendre functions
+const ∂_legendre_basis = cjacobi[v_grid, 1:Mlegendre]
+
 const ∂_hermite = BandedMatrix(1 => [2.0*k for k in 1:Mv-1])
 ∂_hermite .*= v_basis_norms    # ∂( Hⱼ / || Hⱼ|| ) = ( || Hⱼ₋₁ || / || Hⱼ || )  ∂Hⱼ / || Hⱼ₋₁ ||
 ∂_hermite ./= v_basis_norms'   #                   = ( || Hⱼ₋₁ || / || Hⱼ || )  2(j-1) Hⱼ₋₁ / || Hⱼ₋₁ ||
 
 
+# functions to carry out spectral differentiation
 
 function ∇ₓ(f)  # 1-dimensional circle domain
     coeffs = x_basis' * x_gram * f
@@ -54,7 +58,7 @@ function E(f)
 end
 
 # 1 x dimension,  1 v dimension
-RHS(f)  =  E(f) .* ∇ᵥ(f')'  -  v_grid' .* ∇ₓ(f)
+RHS(f)  =  -E(f) .* ∇ᵥ(f')'  -  v_grid' .* ∇ₓ(f)
 
 mass(f) = ∫dx(∫dv(f))
 particle_flux_density(f) = ∫dv(f .* v_grid')
@@ -79,6 +83,7 @@ function orthogonal_complement(g, basis, gram)
     return g - basis * projection
 end
 
+# numerical implementation of the error representation
 function directional_continuity_error(fₜ₊, fₜ, τ, p)
     
     left = v_grid .^ p#orthogonal_complement(v_grid .^ p, v_basis[:, 1:m], v_gram)
@@ -91,12 +96,14 @@ function directional_continuity_error(fₜ₊, fₜ, τ, p)
     return x_weights' * x_dependent_error
 end
 
+# version of RHS/f0v that doesn't involve dividing by f0v since it has many small numbers
 function RHS_over_f0v(X, S, V)
     term1 = v_grid' .* ( ∇ₓ(X) * S * V' )
     term2 = ( -2 * v_grid' .* E((X * S * V') .* f0v') ) .* (X * S * V')  +  X * S * ∇ᵥ(V)'
     return term2 - term1
 end
 
+# version of the error representation that doen't divide by f0v
 function directional_continuity_error(Xₜ₊, Sₜ₊, Vₜ₊, Xₜ, Sₜ, Vₜ, τ, p)
     
     left = v_grid .^ p#orthogonal_complement(v_grid.^p, v_basis[:, 1:m], v_gram)
@@ -109,6 +116,7 @@ function directional_continuity_error(Xₜ₊, Sₜ₊, Vₜ₊, Xₜ, Sₜ, V�
     return x_dependent_error' * x_gram * x_dependent_error
 end
 
+# norm of orthogonal complement
 function norm_continuity_error(Xₜ₊, Sₜ₊, Vₜ₊, Xₜ, Sₜ, Vₜ, τ, p)
     
     orth_complement = orthogonal_complement(v_grid .^ p, v_basis[:, 1:m], v_gram)
