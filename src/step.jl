@@ -22,7 +22,7 @@ function step_∂ₜ(X, S, V)
 
     ∇ₓX = ∇ₓ(X)
     ∇ᵥV = ∇ᵥ_hermite(V)
-    Ef = -E(f)
+    Ef = E(f)
 
     c1 = V' * v_weight_matrix * (v_grid .* V)
     c2 = V' * v_weight_matrix * (-2 .* v_grid .* V  +  ∇ᵥV)
@@ -50,7 +50,7 @@ end
 function step(X, S, V, τ, TOL, TOL_quadrature=max(100eps(), 1e-3TOL))
         
     f = X * S * V' .* f0v'
-    Ef = -E(f)
+    Ef = E(f)
 
     U = @view V[:, 1:m]
     W = @view V[:, m+1:end]
