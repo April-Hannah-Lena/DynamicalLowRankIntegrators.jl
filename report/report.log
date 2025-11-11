@@ -1,0 +1,2507 @@
+This is LuaHBTeX, Version 1.22.0 (TeX Live 2025)  (format=lualatex 2025.3.21)  11 NOV 2025 15:21
+ restricted system commands enabled.
+ file:line:error style messages enabled.
+**/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report
+(/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+Lua module: luaotfload 2024-12-03 v3.29 Lua based OpenType font support
+Lua module: lualibs 2023-07-13 v2.76 ConTeXt Lua standard libraries.
+Lua module: lualibs-extended 2023-07-13 v2.76 ConTeXt Lua libraries -- extended collection.
+luaotfload | conf : Root cache directory is "/Users/april/Library/texlive/2025/texmf-var/luatex-cache/generic/names".
+luaotfload | init : Loading fontloader "fontloader-2023-12-28.lua" from kpse-resolved path "/usr/local/texlive/2025/texmf-dist/tex/luatex/luaotfload/fontloader-2023-12-28.lua".
+Lua-only attribute luaotfload@noligature = 1
+luaotfload | init : Context OpenType loader version 3.134
+Inserting `luaotfload.node_processor' in `pre_linebreak_filter'.
+Inserting `luaotfload.node_processor' in `hpack_filter'.
+Inserting `luaotfload.glyph_stream' in `glyph_stream_provider'.
+Inserting `luaotfload.define_font' in `define_font'.
+Lua-only attribute luaotfload_color_attribute = 2
+luaotfload | conf : Root cache directory is "/Users/april/Library/texlive/2025/texmf-var/luatex-cache/generic/names".
+Inserting `luaotfload.harf.strip_prefix' in `find_opentype_file'.
+Inserting `luaotfload.harf.strip_prefix' in `find_truetype_file'.
+Removing  `luaotfload.glyph_stream' from `glyph_stream_provider'.
+Inserting `luaotfload.harf.glyphstream' in `glyph_stream_provider'.
+Inserting `luaotfload.harf.finalize_vlist' in `post_linebreak_filter'.
+Inserting `luaotfload.harf.finalize_hlist' in `hpack_filter'.
+Inserting `luaotfload.cleanup_files' in `wrapup_run'.
+Inserting `luaotfload.harf.finalize_unicode' in `finish_pdffile'.
+Inserting `luaotfload.glyphinfo' in `glyph_info'.
+Lua-only attribute luaotfload.letterspace_done = 3
+Inserting `luaotfload.aux.set_sscale_dimens' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.set_font_index' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.patch_cambria_domh' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.fixup_fontdata' in `luaotfload.patch_font_unsafe'.
+Inserting `luaotfload.aux.set_capheight' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.set_xheight' in `luaotfload.patch_font'.
+Inserting `luaotfload.rewrite_fontname' in `luaotfload.patch_font'....cal/texlive/2025/texmf-dist/tex/latex/l3kernel/expl3.lua:318: module 'lua-uni-data' not found:
+	no field package.preload['lua-uni-data']
+	[kpse lua searcher] file not found: 'lua-uni-data'
+stack traceback:
+	[C]: in function 'require'
+	...cal/texlive/2025/texmf-dist/tex/latex/l3kernel/expl3.lua:318: in main chunk
+	[C]: in function 'require'
+	[\directlua]:1: in main chunk.
+\lua_now:e #1->\__lua_now:n {#1}
+                                
+l.1 
+    \documentclass[a4paper]{article}
+The lua interpreter ran into a problem, so the
+remainder of this lua chunk will be ignored.
+
+Inserting `tracingstacklevels' in `input_level_string'.
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.2 \usepackage
+               {import}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.2 \usepackage
+               {import}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.2 \usepackage
+               {import}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.2 \usepackage
+               {import}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.2 \usepackage
+               {import}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.2 \usepackage
+               {import}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: LaTeX Error: Option clash for document class 97\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: .
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.2 \usepackage
+               {import}
+The package 97\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f:  has already been loaded with options:
+  []
+There has now been an attempt to load it with options
+  [a4paper]
+Adding the global options:
+  ,a4paper
+to your \documentclass declaration may fix this.
+Try typing  <return>  to proceed.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.2 \usepackage
+               {import}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.2 \usepackage
+               {import}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.2 \usepackage
+               {import}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:2: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.2 \usepackage
+               {import}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 2, version
+               `' of document class 97\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@97 \exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: .cls\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:3: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.3 \usepackage
+               {amsmath}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:3: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.3 \usepackage
+               {amsmath}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:3: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.3 \usepackage
+               {amsmath}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:3: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.3 \usepackage
+               {amsmath}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:3: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.3 \usepackage
+               {amsmath}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:3: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.3 \usepackage
+               {amsmath}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:3: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.3 \usepackage
+               {amsmath}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 3, version
+               `' of package 105\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@105 \exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:4: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.4 \usepackage
+               {amssymb}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:4: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.4 \usepackage
+               {amssymb}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:4: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.4 \usepackage
+               {amssymb}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:4: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.4 \usepackage
+               {amssymb}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:4: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.4 \usepackage
+               {amssymb}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:4: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.4 \usepackage
+               {amssymb}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:4: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.4 \usepackage
+               {amssymb}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 4, version
+               `' of package 97\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@97 \exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:5: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.5 \usepackage
+               {amsthm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:5: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.5 \usepackage
+               {amsthm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:5: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.5 \usepackage
+               {amsthm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:5: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.5 \usepackage
+               {amsthm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:5: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.5 \usepackage
+               {amsthm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:5: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.5 \usepackage
+               {amsthm}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:5: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.5 \usepackage
+               {amsthm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 5, version
+               `' of package 97\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 121\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 98\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@97 \exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 121\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 98\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:6: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.6 \usepackage
+               {amsfonts}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:6: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.6 \usepackage
+               {amsfonts}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:6: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.6 \usepackage
+               {amsfonts}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:6: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.6 \usepackage
+               {amsfonts}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:6: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.6 \usepackage
+               {amsfonts}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:6: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.6 \usepackage
+               {amsfonts}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:6: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.6 \usepackage
+               {amsfonts}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 6, version
+               `' of package 97\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@97 \exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:7: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.7 \usepackage
+               {mathtools}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:7: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.7 \usepackage
+               {mathtools}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:7: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.7 \usepackage
+               {mathtools}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:7: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.7 \usepackage
+               {mathtools}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:7: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.7 \usepackage
+               {mathtools}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:7: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.7 \usepackage
+               {mathtools}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:7: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.7 \usepackage
+               {mathtools}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 7, version
+               `' of package 97\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 102\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@97 \exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 102\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:8: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.8 \usepackage
+               {bbm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:8: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.8 \usepackage
+               {bbm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:8: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.8 \usepackage
+               {bbm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:8: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.8 \usepackage
+               {bbm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:8: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.8 \usepackage
+               {bbm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:8: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.8 \usepackage
+               {bbm}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:8: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.8 \usepackage
+               {bbm}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 8, version
+               `' of package 109\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@109 \exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:9: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.9 \usepackage
+               {float}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:9: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.9 \usepackage
+               {float}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:9: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.9 \usepackage
+               {float}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:9: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.9 \usepackage
+               {float}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:9: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.9 \usepackage
+               {float}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:9: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.9 \usepackage
+               {float}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:9: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.9 \usepackage
+               {float}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 9, version
+               `' of package 98\exp_stop_f: 11\exp_stop_f: 98\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@98 \exp_stop_f: 11\exp_stop_f: 98\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:10: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.10 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:10: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.10 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:10: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.10 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:10: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.10 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:10: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.10 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:10: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.10 
+     
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:10: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.10 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 10, version
+               `' of package 102\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@102 \exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 2--10
+[]1
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:13: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.13 \usepackage
+                {graphicx}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:13: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.13 \usepackage
+                {graphicx}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:13: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.13 \usepackage
+                {graphicx}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:13: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.13 \usepackage
+                {graphicx}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:13: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.13 \usepackage
+                {graphicx}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:13: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.13 \usepackage
+                {graphicx}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:13: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.13 \usepackage
+                {graphicx}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:13: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.13 \usepackage
+                {graphicx}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 13, version
+               `' of package 104\exp_stop_f: 11\exp_stop_f: 121\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 102\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@104 \exp_stop_f: 11\exp_stop_f: 121\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 102\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:14: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.14 \usepackage
+                {color}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:14: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.14 \usepackage
+                {color}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:14: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.14 \usepackage
+                {color}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:14: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.14 \usepackage
+                {color}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:14: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.14 \usepackage
+                {color}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:14: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.14 \usepackage
+                {color}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:14: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.14 \usepackage
+                {color}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 14, version
+               `' of package 103\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 120\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@103 \exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 120\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:15: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.15 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:15: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.15 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:15: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.15 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:15: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.15 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:15: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.15 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:15: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.15 
+     
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:15: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.15 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 15, version
+               `' of package 99\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@99 \exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 13--15
+[]1
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:17: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.17 \usepackage
+                {subcaption}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:17: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.17 \usepackage
+                {subcaption}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:17: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.17 \usepackage
+                {subcaption}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:17: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.17 \usepackage
+                {subcaption}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:17: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.17 \usepackage
+                {subcaption}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:17: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.17 \usepackage
+                {subcaption}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:17: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.17 \usepackage
+                {subcaption}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:17: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.17 \usepackage
+                {subcaption}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 17, version
+               `' of package 99\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@99 \exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:18: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.18 \usepackage
+                {parskip}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:18: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.18 \usepackage
+                {parskip}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:18: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.18 \usepackage
+                {parskip}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:18: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.18 \usepackage
+                {parskip}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:18: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.18 \usepackage
+                {parskip}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:18: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.18 \usepackage
+                {parskip}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:18: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.18 \usepackage
+                {parskip}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 18, version
+               `' of package 115\exp_stop_f: 11\exp_stop_f: 117\exp_stop_f: 11\exp_stop_f: 98\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@115 \exp_stop_f: 11\exp_stop_f: 117\exp_stop_f: 11\exp_stop_f: 98\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:19: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.19 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:19: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.19 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:19: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.19 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:19: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.19 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:19: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.19 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:19: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.19 
+     
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:19: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.19 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 19, version
+               `' of package 112\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 107\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@112 \exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 107\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 17--19
+[]1
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:21: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.21 \usepackage
+                {algpseudocode}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:21: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.21 \usepackage
+                {algpseudocode}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:21: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.21 \usepackage
+                {algpseudocode}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:21: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.21 \usepackage
+                {algpseudocode}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:21: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.21 \usepackage
+                {algpseudocode}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:21: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.21 \usepackage
+                {algpseudocode}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:21: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.21 \usepackage
+                {algpseudocode}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:21: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.21 \usepackage
+                {algpseudocode}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 21, version
+               `' of package 97\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 103\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@97 \exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 103\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 104\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:22: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.22 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:22: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.22 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:22: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.22 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:22: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.22 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:22: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.22 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:22: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.22 
+     
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:22: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.22 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 22, version
+               `' of package 97\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 103\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 117\exp_stop_f: 11\exp_stop_f: 100\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 100\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@97 \exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 103\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 117\exp_stop_f: 11\exp_stop_f: 100\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 100\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 21--22
+[]1
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:28: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.28 \usepackage
+                [utf8]{inputenc}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:28: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.28 \usepackage
+                [utf8]{inputenc}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:28: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.28 \usepackage
+                [utf8]{inputenc}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:28: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.28 \usepackage
+                [utf8]{inputenc}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:28: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.28 \usepackage
+                [utf8]{inputenc}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:28: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.28 \usepackage
+                [utf8]{inputenc}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:28: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.28 \usepackage
+                [utf8]{inputenc}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:28: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.28 \usepackage
+                [utf8]{inputenc}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 28, version
+               `' of package 103\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 121\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@103 \exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 121\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.29 \usepackage
+                {fontspec}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.29 \usepackage
+                {fontspec}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.29 \usepackage
+                {fontspec}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.29 \usepackage
+                {fontspec}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.29 \usepackage
+                {fontspec}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.29 \usepackage
+                {fontspec}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: LaTeX Error: Option clash for package 105\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 117\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: .
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.29 \usepackage
+                {fontspec}
+The package 105\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 117\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f:  has already been loaded with options:
+  []
+There has now been an attempt to load it with options
+  [utf8]
+Adding the global options:
+  ,utf8
+to your \documentclass declaration may fix this.
+Try typing  <return>  to proceed.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.29 \usepackage
+                {fontspec}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.29 \usepackage
+                {fontspec}
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:29: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.29 \usepackage
+                {fontspec}
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 29, version
+               `' of package 105\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 117\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@105 \exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 117\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:30: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.30 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:30: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.30 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:30: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.30 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:30: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.30 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:30: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.30 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:30: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.30 
+     
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:30: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.30 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 30, version
+               `' of package 102\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@102 \exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: 112\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 28--30
+[]1
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:32: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.32 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:32: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.32 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:32: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.32 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:32: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.32 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:32: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.32 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:32: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.32 
+     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:32: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.32 
+     
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:32: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.32 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 32, version
+               `' of package 116\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 100\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@116 \exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 100\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 115\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 32--32
+[]1
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:34: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.34 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:34: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.34 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:34: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.34 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:34: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.34 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:34: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.34 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:34: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.34 
+     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:34: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.34 
+     
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:34: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.34 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 34, version
+               `' of package 98\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 98\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 120\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@98 \exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 98\exp_stop_f: 11\exp_stop_f: 108\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 120\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 34--34
+[]1
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:36: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.36 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:36: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.36 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:36: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.36 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:36: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.36 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:36: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.36 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:36: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.36 
+     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:36: Extra \endcsname.
+\@ifl@ter ...@ifl@t@r \csname ver@#2.#1\endcsname 
+                                                  
+l.36 
+     
+I'm ignoring this, since I wasn't doing a \csname.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:36: Missing \endcsname inserted.
+<to be read again> 
+                   \exp_stop_f: 
+l.36 
+     
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+
+LaTeX Warning: You have requested, on input line 36, version
+               `' of package 115\exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 102\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: ,
+               but only version
+               `\ver@115 \exp_stop_f: 11\exp_stop_f: 101\exp_stop_f: 11\exp_stop_f: 99\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: 105\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 110\exp_stop_f: 11\exp_stop_f: 102\exp_stop_f: 11\exp_stop_f: 111\exp_stop_f: 11\exp_stop_f: 114\exp_stop_f: 11\exp_stop_f: 109\exp_stop_f: 11\exp_stop_f: 97\exp_stop_f: 11\exp_stop_f: 116\exp_stop_f: 11\exp_stop_f: .sty\endcsname '
+               is available.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 36--36
+[]1
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:38: Undefined control sequence.
+l.38 \graphicspath
+                  { {./plots/} }
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:38: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.38 \graphicspath{ {.
+                      /plots/} }
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:39: Undefined control sequence.
+l.39 \addbibresource
+                    {report.bib}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 38--40
+[]./plots/
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \begin{document}
+                     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 51--51
+[]enddocument/info 
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \begin{document}
+                     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 51--51
+[]enddocument/info 
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \begin{document}
+                     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 51--51
+[]enddocument/info 
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \begin{document}
+                     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 51--51
+[]enddocument/info 
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \begin{document}
+                     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 51--51
+[]enddocument/info 
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \begin{document}
+                     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 51--51
+[]enddocument/info 
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \begin{document}
+                     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 51--51
+[]enddocument/info 
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \begin{document}
+                     
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Missing number, treated as zero.
+<to be read again> 
+                   {
+l.51 \begin{document}
+                     
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \prg_map_break:Nn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \prg_map_break:Nn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 51--51
+[]enddocument/info 
+ []
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Argument of \__hook_apply_label_pair:nnn has an extra }.
+<inserted text> 
+                \par 
+l.51 \begin{document}
+                     
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/report/report.tex:51: Paragraph ended before \__hook_apply_label_pair:nnn was complete.
+<to be read again> 
+                   \par 
+l.51 \begin{document}
+                     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+/Users/april/Documents/DynamicalLowRankIntegrators.jl/re

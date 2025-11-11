@@ -135,6 +135,7 @@ with
 Using a stepping scheme
 
 \begin{equation}
+    \label{eq:K_L_update}
     K (t + \tau) = K (t) + \tau \partial_t K (t), \quad\quad
     L (t + \tau) = L (t) + \tau \partial_t L (t)
 \end{equation}
@@ -271,6 +272,92 @@ order is immediate. Indeed, we refer to \cite{ceruti2024} for an extension of th
 integrator using the midpoint rule. Pseudocode for the presented algorithm can be found 
 in \cite{robustlowrank} and implementation of the algorithm (as well as the midpoint-rule 
 extension) in \cite{BUGimplementation}. 
+\begin{algorithm}
+\caption{Step Scheme}
+\label{alg:step}
+\begin{algorithmic}[1]
+\State Compute $K(t + \tau)$, $L(t + \tau)$ using \ref{eq:K_L_update}. Implementing 
+    \ref{eq:X_galerkin}, \ref{eq:V_galerkin}, \ref{eq:S_galerkin} can be done with 
+    \cite[pp. 5]{robustlowrank}. 
+\State Extend the bases 
+    \begin{equation*}
+        \widetilde{ X } = \textrm{Gram-Schmidt on } [ X(t),\ \nabla_x X (t),\ E(t) X(t),\ K(t + \tau) ]
+    \end{equation*}
+    \begin{equation*}
+        \widetilde{ V } = \textrm{Gram-Schmidt on } [ V(t),\ L(t + \tau) ]
+    \end{equation*}
+\State Extend 
+    \begin{equation*}
+        \widetilde{ M }_{i j} = \left\langle \widetilde{ X }_i, X_j (t) \right\rangle_x, \quad 
+        \widetilde{ N }_{i j} = \left\langle \widetilde{ V }_i, V_j (t) \right\rangle_v
+    \end{equation*}
+    \begin{equation*}
+        \widetilde{ S } (t) = \widetilde{ M }^T S(t) \widetilde{ N }
+    \end{equation*}
+    and compute $\widetilde{ S }(t + \tau) = \widetilde{ S }(t) + \tau \partial_t \widetilde{ S }(t)$
+    using \cite[pp. 6]{robustlowrank}. 
+\State Truncate using algorithm \ref{alg:truncate} which yields 
+    $\widecheck{ X }, R, S^{cons}, S^{rem}, \widecheck{ W }$.  
+\State \Return 
+    \begin{equation*}
+        X (t + \tau) = \widecheck{ X }, \quad\quad 
+        S (t + \tau) = R \begin{bmatrix}
+            S^{cons} & \\
+            & S^{rem}
+        \end{bmatrix}, \quad\quad
+        V (t + \tau) = \begin{bmatrix}
+            U \\[0.5em] 
+            \widecheck{ W }
+        \end{bmatrix} . 
+    \end{equation*}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Truncation}
+\label{alg:truncate}
+\begin{algorithmic}[1]
+\State Split $\widecheck{ K } = \widecheck{ X }^T \widecheck{ S }(t + \tau)$ into 
+    $\widecheck{ K } = [ \widecheck{ K }^{cons},\ \widecheck{ K }^{rem} ]$. 
+\State Orthogonalize 
+    \begin{equation*}
+        X^{cons}, S^{cons} = \textrm{Gram-Schmidt on } \widetilde{ K }^{cons}
+    \end{equation*}
+    \begin{equation*}
+        X^{rem}, S^{rem} = \textrm{Gram-Schmidt on } \widetilde{ K }^{rem}
+    \end{equation*}
+\State Decompose $\widetilde{ S }^{rem} \approx \widehat{ U } \widehat{ S } \widehat{ W }$, 
+    keeping the largest $r - m$ singular values. Use these to set $S^{rem} = \widehat{ S }$ 
+    and 
+    \begin{equation*}
+        X^{rem}_q = \sum_i \widetilde{ X }^{rem}_i\, \widehat{ U }_{i q} , \quad\quad 
+        \widecheck{ W }_q = \sum_j \widetilde{ W }_j\, \widehat{ W }_{j q} , 
+        \quad\quad 1 \leq q \leq r - m . 
+    \end{equation*}
+\State Combine and orthogonalize 
+    \begin{equation*}
+        \widecheck{ X }, R = \textrm{Gram-Schmidt on } [ X^{cons},\ X^{rem} ] . 
+    \end{equation*}
+\State \Return $\widecheck{ X }, R, S^{cons}, S^{rem}, \widecheck{ W }$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Gram-Schmidt of functions $F_1, \ldots, F_n$}
+\label{alg:gram-schmidt}
+\begin{algorithmic}[1]
+\Require Some (large) basis $\{ \Xi_1, \ldots, \Xi_{M_\Xi} \}$ which is orthonormal wrt. 
+    an inner product $\left\langle \cdot, \cdot \right\rangle$. 
+\State Construct the coefficient matrix $C_{i j} = \left\langle \Xi_i, F_j \right\rangle$. 
+\State Prune unused rows of $C$. This improves numerical stability. A row may be considered 
+    unused if e.g. its $\ell^1$ norm is less than a given tolerance such as machine 
+    precision. 
+\State Set $Q, R = \textrm{QR-decomposition on } C$. 
+\State \Return $F_j^{orth} = \sum_i \Xi_i Q_{i j},\quad j = 1, \ldots, n$. Optionally also return 
+    $R$. 
+\end{algorithmic}
+\end{algorithm}
+
 
 \subsection{Discrete Conservation Equations}
 
@@ -496,11 +583,15 @@ conservative. This is crucial in the proceeding theorem.
                     \right\|_x^2 \\ 
                     &= \left\| 
                         \left\langle 
-                        \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+                        %\Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+                        v^\varrho,\ 
                         \frac{f(t + \tau) - f(t)}{f_0 \tau} - \frac{1}{f_0} RHS (f(t))
                         \right\rangle_v 
                      \right\|_x^2 \\ 
-                    &\leq \left\| \Pi_{(\spn U)^\perp} \left[ v^\varrho \right] \right\|_v \ 
+                    &\leq \left\| 
+                        v^\varrho
+                        %\Pi_{(\spn U)^\perp} \left[ v^\varrho \right] 
+                    \right\|_v \ 
                     \int_{\Omega_x} \left\| \frac{f(t + \tau) - f(t)}{f_0 \tau} - \frac{1}{f_0} RHS (f(t)) \right\|_v \,dx . 
                 \end{split}
             \end{equation}
@@ -509,6 +600,20 @@ conservative. This is crucial in the proceeding theorem.
             Indeed, the inequality is highly pessimistic, the latter term is 
             often multiple orders of magnitude larger than the former, see 
             section \ref{sec:landau}. 
+        \item Within the update steps \ref{eq:K_L_update}, \ref{eq:S_step} we 
+            employ an explicit Euler scheme. If we instead use an implicit 
+            Euler scheme, then theorem \ref{thm:conservation} still holds 
+            at time $t + \tau$, that is, 
+
+            \begin{multline}
+                \frac{M_{P+1}^\iota (t + \tau) - M_{P+1}^\iota (t)}{\tau} 
+                + \nabla_x \cdot \int_{\Omega_v} v^{\varrho + 1} f(t + \tau) \,dv 
+                + E(t + \tau) \cdot \int_{\Omega_v} \varrho v^{\varrho - 1} f(t + \tau) \,dv \\[2ex] 
+                = \left( 
+                    \Pi_{(\spn U)^\perp} \left[ v^\varrho \right],\ 
+                    \frac{f(t + \tau) - f(t)}{\tau} - RHS (f(t + \tau))
+                \right)_v . 
+            \end{multline}
     \end{enumerate}
 \end{remark}
 
@@ -742,6 +847,19 @@ a final calculation must be made.
     \end{equation}
 
 \end{corollary}
+
+\begin{remark}
+    As with theorem \ref{thm:conservation}, if one uses an implicit Euler scheme for 
+    the $K$, $L$, and $S$ steps \ref{eq:K_L_update}, \ref{eq:S_step}, then corollary 
+    \ref{thm:electric_energy} holds instead at time $t + \tau$, 
+
+    \begin{equation}
+        \frac{e(t + \tau) - e(t)}{\tau}
+        + \frac{1}{2} \nabla_x \cdot (\trace M_3 (t + \tau)) 
+        + (M_1 (t + \tau) - \frac{E(t + \tau) - E(t)}{\tau}) \cdot E (t + \tau)
+        = \mathcal{O} (\tau^{2\mu - 1}) . 
+    \end{equation}
+\end{remark}
 
 \begin{proof}
     Note that 
