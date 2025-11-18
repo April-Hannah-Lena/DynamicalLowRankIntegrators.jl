@@ -38,8 +38,8 @@ const f0v = @. exp(-v_grid^2)       # Gauss weight
 const x_weight_matrix = Diagonal(x_weights)      # should be renamed since it's not a weight_matrix
 const sqrt_x_weight_matrix = sqrt(x_weight_matrix)
 
-const v_weight_matrix_const_weight = Diagonal(v_weights)
-const v_weight_matrix = Diagonal(f0v .* v_weights)
+const v_weight_matrix_const_weight = Diagonal(v_weights)    # unweighted inner product -> Gauß-Legendre weights
+const v_weight_matrix = Diagonal(f0v .* v_weights)          # Hermite weighted inner product 
 const sqrt_v_weight_matrix = sqrt(v_weight_matrix)
 
 
@@ -57,18 +57,18 @@ const v_basis = chermite[v_grid,1:Mv]
 
 const Mlegendre = min(2Mv, m_v÷2 + 1)
 clegendre = cl.Legendre()
-const legendre_basis = clegendre[v_grid ./ v_stretch, 1:Mlegendre]
+const legendre_basis = clegendre[v_grid ./ v_stretch, 1:Mlegendre]  # Legendre-polynomials only defined in [-1,1]
 
 cjacobi = cl.jacobi(1, 1, vlims[1]..vlims[2])
 
 # normalize basis functions
 x_basis_norms = √(π) * ones(Mx)
 x_basis_norms[1] *= √(2)
-@assert sqrt.(diag(x_basis' * x_weight_matrix * x_basis)) ≈ x_basis_norms
+@assert sqrt.(diag(x_basis' * x_weight_matrix * x_basis)) ≈ x_basis_norms   # sanity check
 x_basis ./= x_basis_norms'
 
 legendre_basis_norms = sqrt.(2 .* v_stretch ./ (2 .* (0:Mlegendre-1) .+ 1))
-@assert sqrt.(diag(legendre_basis' * v_weight_matrix_const_weight * legendre_basis)) ≈ legendre_basis_norms
+@assert sqrt.(diag(legendre_basis' * v_weight_matrix_const_weight * legendre_basis)) ≈ legendre_basis_norms # sanity check
 legendre_basis ./= legendre_basis_norms'
 
 
@@ -91,6 +91,10 @@ function basic_gram_schmidt!(f, weight_matrix)
     return f, R
 end
 =#
+
+# Given a matrix A we want a decomp. A = Q*R  with  Q'*W*Q = I
+# so we decompose  √(W)*A = Q̃*R̃,  Q̃'*Q̃ = I  and set  Q = inv(√(W))*Q̃
+# which has the desired property
 function gram_schmidt!(f, sqrt_gram, pivot::Bool)
     QR = qr(sqrt_gram * f, pivot ? ColumnNorm() : NoPivot())
     Q = inv(sqrt_gram) * Matrix(QR.Q)
@@ -106,7 +110,7 @@ end
 # orthonormalize v basis
 _, R = gram_schmidt!(v_basis, sqrt_v_weight_matrix, false)
 const v_basis_norms = diag(R)
-# In theory this would = √( √(π)  .*  2.0 .^ (0:Mv-1)  .*  factorial.(big.(0:Mv-1)) )
+# In theory this would == √( √(π)  .*  2.0 .^ (0:Mv-1)  .*  factorial.(big.(0:Mv-1)) )
 # but the cutoff causes us to lose (up to) 60% of a 
 # function's mass (in the high end, lower orders are integrated pretty much exact)
 
@@ -115,19 +119,19 @@ const v_basis_norms = diag(R)
 
 
 
-
+# this is the Gram-Schmidt we actually use now that we have accurate orthonormal bases
 @views function gram_schmidt(f, weight_matrix, basis, TOL=50eps(); pivot=true)
     @assert size(f,2) ≤ size(basis,2)
-    full_coeff_matrix = basis' * weight_matrix * f
+    full_coeff_matrix = basis' * weight_matrix * f      # coefficient representation
     
     projection_error = diag( f' * weight_matrix * f  -  full_coeff_matrix' * full_coeff_matrix )
-    @assert all(projection_error .< TOL)
+    @assert all(projection_error .< TOL)    # sanity check
 
-    cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
+    cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index      # remove unnecessary rows 
         full_coeff_matrix[index] < TOL  &&  return 1
         i, _ = Tuple(index)
         return i
-    end
+    end     
     cutoff = max(cutoff, size(f,2))
     coeff_matrix = full_coeff_matrix[1:cutoff,:]
     #coeff_matrix[abs.(coeff_matrix) .< TOL] .= 0
@@ -138,6 +142,8 @@ const v_basis_norms = diag(R)
     return basis[:,1:cutoff] * Matrix(Q), R
 end
 
+# same as before but utilize the fact that we know 
+# a priori what the first `rank` columns must be
 @views function gram_schmidt(f, weight_matrix, basis, rank::Integer, TOL=50eps(); pivot=false)
     @assert size(f,2) ≤ size(basis,2)
     full_coeff_matrix = basis' * weight_matrix * f
@@ -145,6 +151,7 @@ end
     projection_error = diag( f' * weight_matrix * f  -  full_coeff_matrix' * full_coeff_matrix )
     @assert all(projection_error .< TOL)
 
+    # test that our a priori info is correct
     should_be_small_1 = full_coeff_matrix[1:rank, 1:rank] - I(rank)
     should_be_small_2 = full_coeff_matrix[rank+1:end, 1:rank]
     @debug "quadrature error" should_be_small_1 should_be_small_2
@@ -154,8 +161,8 @@ end
     full_coeff_matrix[1:rank, 1:rank] .= I(rank)
     full_coeff_matrix[rank+1:end, 1:rank] .= 0
 
-    cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index
-        getindex(full_coeff_matrix, index) < TOL  &&  return 1
+    cutoff = maximum(CartesianIndices(full_coeff_matrix)) do index  # from here on it's the same as 
+        getindex(full_coeff_matrix, index) < TOL  &&  return 1      # the other Gram-Schmidt
         i, _ = Tuple(index)
         return i
     end

@@ -8,7 +8,7 @@ using ApproxFun
 ∫dx(f) = vec(sum(f .* x_weights, dims=1))  # Fourier integral
 ∫dv(f) = vec(sum(f .* v_weights', dims=2)) # Gauss-Legendre integral (that means not Gauss-weighted)
 
-
+# spectral differentiation matrices
 const ∂_fourier = Tridiagonal(
     [iseven(k) ? k÷2 : 0 for k in 1:Mx-1],
     zeros(Mx),
@@ -16,16 +16,17 @@ const ∂_fourier = Tridiagonal(
 )
 const ∂²_fourier = Diagonal(-[(iseven(k) ? k : k+1) / 2 for k in 0:Mx-1].^2)
 
-const ∂_legendre = BandedMatrix(1 => [0.1k for k in 2:Mlegendre])
+const ∂_legendre = BandedMatrix(1 => [k/2 for k in 2:Mlegendre])
 #∂_legendre .*= legendre_basis_norms
 ∂_legendre ./= legendre_basis_norms'
+∂_legendre ./= 2v_stretch
 
 # derivatives of legendre functions
 const ∂_legendre_basis = cjacobi[v_grid, 1:Mlegendre]
 
 const ∂_hermite = BandedMatrix(1 => [2.0*k for k in 1:Mv-1])
-∂_hermite .*= v_basis_norms    # ∂( Hⱼ / || Hⱼ|| ) = ( || Hⱼ₋₁ || / || Hⱼ || )  ∂Hⱼ / || Hⱼ₋₁ ||
-∂_hermite ./= v_basis_norms'   #                   = ( || Hⱼ₋₁ || / || Hⱼ || )  2(j-1) Hⱼ₋₁ / || Hⱼ₋₁ ||
+∂_hermite .*= v_basis_norms    # ∂( Hⱼ / || Hⱼ|| ) = ( || Hⱼ₋₁ || / || Hⱼ || )  ∂( Hⱼ / || Hⱼ₋₁ || )
+∂_hermite ./= v_basis_norms'   #                   = ( || Hⱼ₋₁ || / || Hⱼ || )  2(j-1)  ( Hⱼ₋₁ / || Hⱼ₋₁ || )
 
 
 # functions to carry out spectral differentiation
@@ -60,6 +61,7 @@ end
 # 1 x dimension,  1 v dimension
 RHS(f)  =  -E(f) .* ∇ᵥ(f')'  -  v_grid' .* ∇ₓ(f)
 
+# named moments wherever I found a name
 mass(f) = ∫dx(∫dv(f))
 particle_flux_density(f) = ∫dv(f .* v_grid')
 momentum(f) = ∫dx(particle_flux_density(f))
@@ -69,6 +71,7 @@ heat_flux_density(f) = ∫dv( f .* (v_grid' .- particle_flux_density(f)).^3 )
 heat_flux(f) = ∫dx(heat_flux_density(f))
 kinetic_energy(f) = ∫dx( ∫dv( f .* (v_grid .^ 2)' ) ) / 2
 electric_energy(f) = ∫dx( E(f) .^ 2 ) / 2
+
 energy(f) = kinetic_energy(f) + electric_energy(f)
 Lp(f, p) = ( ∫dx(∫dv( abs.(f) .^ p )) ) .^ (1/p)
 entropy(f) = -∫dx(∫dv( f .* log.(max.(f, eps())) ))
@@ -93,7 +96,7 @@ function directional_continuity_error(fₜ₊, fₜ, τ, p)
     right = forward_diff - rhs
 
     x_dependent_error = right * v_weight_matrix_const_weight * left
-    return x_weights' * x_dependent_error
+    return x_dependent_error' * x_weight_matrix * x_dependent_error
 end
 
 # version of RHS/f0v that doesn't involve dividing by f0v since it has many small numbers
