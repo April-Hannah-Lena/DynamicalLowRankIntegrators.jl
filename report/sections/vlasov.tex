@@ -26,26 +26,21 @@ $E = - \nabla \phi$ where
     - \Delta \phi\,(x) = 1 - \int_{\Omega_v} f(x, v, t)\ dv . 
 \end{equation}
 
-Equation \ref{eq:vlasov} contains infinitely many invariants. Indeed, all $L^p$ norms 
-$\left\| f \right\|_p$ as well as entropy 
-
-\begin{equation}
-    \mathcal{S} (t) = \iint_{\Omega_x \times \Omega_v} f(x, v, t)\ \log f(x, v, t)\ dv\,dx
-\end{equation}
-
-are conserved \cite{}\todo{cite entropy conservation}. Additionally it can be shown 
-that all moments of the velocity distrbution
+Equation \ref{eq:vlasov} contains infinitely many invariants. Indeed, all $L^p$
+norms $\left\| f \right\|_p$ as well as entropy are conserved
+\cite{MORRISON1980383,CROUSEILLES2015224}. Additionally it can be shown that all
+moments of the velocity distrbution
 
 \begin{equation}
     M_k (x, t) = \int_{\Omega_v} v v \ldots v f(x, v, t)\ dv 
 \end{equation}
 
 (wich are $k$-tensors) satisfy continuity equations and correspondingly their 
-space-integrals $\scrM_k = \int_{\Omega_x} M_k\, dx$ are also conserved. Specifically, 
+space-integrals $\scrM_k = \int_{\Omega_x} M_k\, dx$ are also of interest. Specifically, 
 for a cartesian index 
 $\iota = (\iota_1,\, \ldots,\, \iota_k) \in \left\{ 1, \ldots, d \right\}^k$ of $M_k$ 
 there is a multiindex $\varrho = \left( \varrho_1, \ldots \varrho_d \right) \in \bbN^d$ with 
-$| \iota | = k$ and 
+$| \varrho | = k$ and 
 
 \begin{equation}\label{eq:multiindex}
     M_k^\iota = \int_{\Omega_v} v_{\iota_1} v_{\iota_2} \ldots v_{\iota_k}\, f \,dv

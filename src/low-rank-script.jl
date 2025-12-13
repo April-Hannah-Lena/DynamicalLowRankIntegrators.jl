@@ -119,7 +119,7 @@ df = DataFrame(
     "7th moment" => v_moment(f, 7),
     ["moment $p continuity error" => directional_continuity_error(X, S, V, X, S, V, τ, p) for p in 0:7]...,
     ["moment $p norm error" => norm_continuity_error(X, S, V, X, S, V, τ, p) for p in 0:7]...,
-    ["representability error in v^$p" => v_norm(orthogonal_complement(v_grid .^ p, V, v_gram)) for p in 0:7]...,
+    ["representability error in v^$p" => v_norm(orthogonal_complement(v_grid .^ p, V, v_weight_matrix)) for p in 0:7]...,
     "entropy" => entropy(f),
     "L1 norm" => Lp(f, 1),
     "L2 norm" => Lp(f, 2),
@@ -176,7 +176,7 @@ while !done
             v_moment(f, 7)...;
             [directional_continuity_error(X, S, V, X_last, S_last, V_last, τ, p) for p in 0:7]...;
             [norm_continuity_error(X, S, V, X_last, S_last, V_last, τ, p) for p in 0:7]...;
-            [v_norm(orthogonal_complement(v_grid .^ p, V, v_gram)) for p in 0:7]...;
+            [v_norm(orthogonal_complement(v_grid .^ p, V, v_weight_matrix)) for p in 0:7]...;
             entropy(f)...;
             Lp(f, 1)...;
             Lp(f, 2)...;

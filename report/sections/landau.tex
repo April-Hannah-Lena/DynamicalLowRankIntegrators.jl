@@ -19,24 +19,33 @@ state distribution
     f(x, v, 0) = \frac{1}{2 \pi}(1 + \alpha \cos (x)) \exp (-v^2)
 \end{equation}
 
-for $\alpha \in \left[ 0, 1/2 \right]$, computed over the domain 
-$\Omega_x = \left[ -\pi, \pi \right)_{\text{periodic}}$, 
-$\Omega_v = \left[ -6, 6 \right]$. We use a grid of $512$ equally spaced points in 
-$\Omega_x$, $512$ Gauß-Legendre grid points transplanted to $\Omega_v$. Furthermore we 
-fix a rank $r = 10$ and a time step $\tau = 5 \cdot 10^{-4}$. 
+for $\alpha \in \left[ 0, 1/2 \right]$, computed over the domain $\Omega_x =
+\left[ -\pi, \pi \right)_{\text{periodic}}$, $\Omega_v = \left[ -6, 6 \right]$.
+We use a grid of $512$ equally spaced points in $\Omega_x$, $512$ Gauß-Legendre
+grid points transplanted to $\Omega_v$. Furthermore we fix a rank $r = 10$ and a
+time step $\tau = 5 \cdot 10^{-4}$. 
+
+Figure \ref{fig:moments_landau} shows the averaged error of the continuity
+equations (left hand side of equation \ref{eq:pessimistic_error}) for various
+$m$. When the moment $v^\varrho$ lies in $\spn \{ U_1, \ldots, U_m \}$ (i.e.
+when $\varrho \leq m$) the error reduces to the order of machine precision. The
+error is higher in those regions of time where the state is less energetically
+stable due to our use of the explicit Euler step scheme to update each of the
+components $X, S, V$. We conjecture that the use of a higher order or implicit
+step scheme would counteract the stiffness of the ODEs in these regions of time.
 
 \begin{figure}
     \centering
-    \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{e_density_landau_t_0.pdf}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=0.97\textwidth]{e_density_landau_t_0.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \includegraphics[width=\textwidth]{e_density_landau_t_10.pdf}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=0.97\textwidth]{e_density_landau_t_10.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
+    \begin{subfigure}{0.4\textwidth}
         \includegraphics[width=\textwidth]{rhs_landau_t_0.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
+    \begin{subfigure}{0.4\textwidth}
         \includegraphics[width=\textwidth]{rhs_landau_t_10.pdf}
     \end{subfigure}
     \caption{
@@ -50,42 +59,27 @@ fix a rank $r = 10$ and a time step $\tau = 5 \cdot 10^{-4}$.
 
 \begin{figure}
     \centering
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$0$th moment (mass) for $m = 1, 2, 3, 5$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{landau_moment_0_continuity_error.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$1$st moment (momentum) for $m = 1, 2, 3, 5$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{landau_moment_1_continuity_error.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$2$nd moment (kinetic energy) for $m = 1, 2, 3, 5$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{landau_moment_2_continuity_error.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$5$th moment for $m = 1, 2, 3, 5$}
-    \end{subfigure}
-    \caption{
-        Error in the continuity equations for the Landau damping scenario with 
-        $\alpha = 10^{-3}$. 
-    }\label{fig:moments_linear_landau}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$0$th moment (mass) for $m = 1, 2, 3, 5$}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$1$st moment (momentum) for $m = 1, 2, 3, 5$}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$2$nd moment (kinetic energy) for $m = 1, 2, 3, 5$}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$5$th moment for $m = 1, 2, 3, 5$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{landau_moment_3_continuity_error.pdf}
     \end{subfigure}
     \caption{
-        Error in the continuity equations for the Landau damping scenario with 
-        $\alpha = 1/2$. 
-    }\label{fig:moments_nonlinear_landau}
+        Error in the continuity equations for the Landau damping conditions. 
+        In all cases we set $m = 1, \ldots, 5$ and plot the left hand side of 
+        equation \ref{eq:pessimistic_error} (solid) vs the right hand side 
+        (dashed) with time. Blue: $m = 1$, orange: $m = 2$, green: $m = 3$, 
+        purple: $m = 4$, yellow: $m = 5$. Top left: $0$th moment (mass), 
+        top right: $1$st moment (momentum), bottom left: $2$nd moment 
+        (kinetic energy), bottom right: $3$rd moment. 
+    }\label{fig:moments_landau}
 \end{figure}
 
 \subsection{Two-stream Instability}\label{sec:two_stream}
@@ -106,41 +100,57 @@ time step as in the previous section. We note the translated gaussians can be
 expanded as
 
 \begin{equation}
-    \exp(-(v - \bar{v}/2)^2) = \exp(-v^2) 
-    \sum_{k \geq 0} \frac{\exp(-\bar{v}^2) \bar{v}^k}{2^k k!} H_k (v)
+    \exp(-(v \pm \bar{v}/2)^2) = \exp(-v^2) 
+    \sum_{k \geq 0} \frac{\exp(-\bar{v}^2) (\mp \bar{v})^k}{2^k k!} H_k (v)
 \end{equation}
 
 where $H_k$ is the $k$-th Hermite polynomial. 
 
 \begin{figure}
     \centering
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$e^-$ density for $t = 0$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=0.97\textwidth]{e_density_nonsymmetric_t_0.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$e^-$ density for $t = 10$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=0.97\textwidth]{e_density_nonsymmetric_t_10.pdf}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{rhs_nonsymmetric_t_0.pdf}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{rhs_nonsymmetric_t_10.pdf}
     \end{subfigure}
     \caption{
-        Two-stream instability. density for various times. 
+        Two-stream instability. 
+        Top: $e^-$ density in $\Omega_x \times \Omega_v$. 
+        Bottom: $RHS(f)$ for $f$ on top. 
+        Left: Time $t = 0$. 
+        Right: Time $t = 10$. 
     }\label{fig:density_two_stream}
 \end{figure}
 
 \begin{figure}
     \centering
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$0$th moment (mass) for $m = 1, 2, 3, 5$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{nonsymmetric_moment_0_continuity_error.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$1$st moment (momentum) for $m = 1, 2, 3, 5$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{nonsymmetric_moment_1_continuity_error.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$2$nd moment (kinetic energy) for $m = 1, 2, 3, 5$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{nonsymmetric_moment_2_continuity_error.pdf}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-        \missingfigure{$5$th moment for $m = 1, 2, 3, 5$}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth]{nonsymmetric_moment_3_continuity_error.pdf}
     \end{subfigure}
     \caption{
         Error in the continuity equations for the two-stream instability. 
+        In all cases we set $m = 1, \ldots, 5$ and plot the left hand side of 
+        equation \ref{eq:pessimistic_error} (solid) vs the right hand side 
+        (dashed) with time. Blue: $m = 1$, orange: $m = 2$, green: $m = 3$, 
+        purple: $m = 4$, yellow: $m = 5$. Top left: $0$th moment (mass), 
+        top right: $1$st moment (momentum), bottom left: $2$nd moment 
+        (kinetic energy), bottom right: $3$rd moment. 
     }\label{fig:moments_two_stream}
 \end{figure}
 
